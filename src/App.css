@@ -1,11 +1,229 @@
-.App {
-  text-align: center;
+@import url('https://fonts.googleapis.com/css2?family=Advent+Pro:ital,wght@0,100..900;1,100..900&display=swap');
+.First{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  /* margin-top: 10vh; */
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.box-for-hid-msg button:hover{
+  background-color: #001f3f;
+  /* background-color: #f5f5dc; */
+  /* color: #00563B; */
+  color: #a4c2f4;
+  border: 2px solid black;
 }
+
+.box-for-hid-msg > h2{
+  color: #f5f5dc;
+  background-color: #a4c2f4;
+  /* background-color: #00563B; */
+}
+.box-for-hid-msg{
+  margin-inline: auto;
+  border: 2px solid #a4c2f4;
+  /* border: 2px solid #00563B; */
+  border-radius: 20px;
+  width: 40vw;
+  overflow-wrap:anywhere;
+  height: fit-content;
+  background-color: #a4c2f4;
+  /* background-color: #00563B; */
+}
+
+.Login{
+  border: 2px solid #a4c2f4;
+  /* border: 2px solid #00563B; */
+  border-radius: 10px;
+  width: 30vw;
+  height: fit-content;
+  margin-inline: auto;
+  /* margin-top: 2rem; */
+  padding-bottom: 1rem;
+}
+
+@media all and (min-width:840px) {
+  form textArea{
+    height: 250px;
+    width: 550px;
+    resize: none;
+    border: 3px solid #a4c2f4;
+    /* border: 3px solid #00563B; */
+    border-radius: 10px;
+  }
+
+  .gobackk{
+    font-size: 20px;
+    margin-top: 1rem;
+    margin-inline: auto;
+    height: fit-content;
+  }
+
+  
+  /* .message-item{
+    border-bottom: 1px solid #a4c2f4;
+    border-radius: 10px;
+    font-size: 14px;
+    overflow-wrap:anywhere;
+    padding: 5px;
+  }
+  .message-list{
+    margin-inline: auto;
+    border: 3px solid #a4c2f4;
+    border-radius: 14px;
+    width: 30vw;
+    outline: none;
+    outline-offset: none;
+    margin-bottom: 4rem;
+  }
+  .Preview {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 1rem;  
+    height: 100vh; 
+    overflow-y: auto;  
+  } */
+  .gobackk{
+    position: fixed;
+    bottom: 15px;
+    left: 10px;
+    font-size: 25px;
+  }
+
+  .sub-but{
+    height: fit-content;
+    font-size: 35px;
+  }
+  #prev{
+    margin-inline: auto;
+  }
+  #goback{
+    font-size: 20px;
+    height: fit-content;
+  }
+  .logout-button{
+    position: fixed;
+    top: 15px;
+    right: 22px;
+    font-size: 20px;
+    height: fit-content;
+  }
+  .box-for-hid-msg button{
+    font-size: 20px;
+    height: fit-content;
+  }
+  .box-for-hid-msg{
+    margin-inline: auto;
+    border: 2px solid #a4c2f4;
+    /* border: 2px solid #00563B; */
+    border-radius: 20px;
+    width: 40vw;
+    overflow-wrap:anywhere;
+    height: fit-content;
+    background-color: #a4c2f4;
+    /* background-color: #00563B; */
+  }
+  form ::placeholder{
+    font-size: 20px;
+  }
+
+  #submitt {
+    font-size: 20px;
+    height: 50px;
+  }
+label {
+  font-size: 30px;
+}
+button{
+  outline-style: none;
+  border: 1px solid #a4c2f4;
+  /* border: 1px solid #00563B; */
+  border-radius: 10px;
+  height: 90px;
+  width: fit-content;
+  font-size: 50px;
+}
+
+form{
+  margin-top: 0;
+}
+
+.sub  {
+  font-size: 25px;
+  height: fit-content;
+}
+
+#text {
+  font-size: 25px;
+}
+#username{
+  height: 30px;
+}
+h1{
+  font-size: 80px;
+}
+}
+.greet{
+  width: 60vw;
+}
+form button {
+  width: auto;
+}
+
+button:hover{
+  color: #001f3f;
+  /* color: #f5f5dc; */
+  background-color: #a4c2f4;
+  /* background-color: #00563B; */
+  
+}
+
+input:focus{
+  border-color: #a4c2f4;
+  /* border-color: #00563B; */
+  outline: none;
+}
+form textArea:focus{
+  border-radius: 12px;
+  border-color: #a4c2f4;
+  /* border-color: #00563B; */
+  outline: none;
+}
+
+input{
+  /* border-color: #00563B; */
+  border-color: #a4c2f4;
+  text-align: center;
+  border-radius: 10px;
+  outline: none;
+  
+}
+form{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 1rem;
+}
+*{
+  /* background-color:#f5f5dc;
+  color: #00563B; */
+  background-color: #001f3f; /* Deep Navy */
+  color: #a4c2f4; /* Ice Blue */
+  font-family:"Advent Pro", sans-serif;
+  text-align: center;
+}
+.App {
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
 
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
@@ -35,4 +253,64 @@
   to {
     transform: rotate(360deg);
   }
+}
+@media all and (max-width:840px) {
+button{
+  outline-style: none;
+  border: 1px solid #a4c2f4;
+  /* border: 1px solid #00563B; */
+  border-radius: 10px;
+  height: 30px;
+  width: fit-content;
+  font-size: 20px;
+}
+#username{
+  height: 30px;
+}
+
+form textArea{
+  height: 150px;
+  width: 70vw;
+  resize: none;
+  /* border: 3px solid #00563B; */
+  border: 3px solid #a4c2f4;
+  border-radius: 10px;
+}
+
+.logout-button{
+  position: fixed;
+  top: 10px;
+  right: 5px;
+  font-size: 20px;
+  height: fit-content;
+}
+
+.message-item{
+  border-bottom: 1px solid #a4c2f4;
+  /* border-bottom: 1px solid #00563B; */
+  border-radius: 10px;
+  /* margin-bottom: 1rem; */
+}
+.message-list{
+  margin-inline: auto;
+  border: 3px solid #a4c2f4;
+  /* border: 3px solid #00563B; */
+  border-radius: 14px;
+  width: 60vw;
+  outline: none;
+  outline-offset: none;
+}
+.Preview{
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: start;
+  gap: 1rem;
+}
+
+.gobackk{
+  position: fixed;
+  bottom: 10px;
+  left: 10px;
+}
 }

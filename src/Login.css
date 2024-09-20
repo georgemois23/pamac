@@ -1,0 +1,58 @@
+.Login {
+    background-color: #00563B;
+    color: #f5f5dc;
+    font-family: "Advent Pro", sans-serif;
+  }
+  
+  .Login form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .Login form button {
+    width: auto;
+  }
+  
+  .Login button:hover {
+    color: #00563B;
+    background-color: #f5f5dc;
+  }
+  
+  .Login input:focus {
+    border-color: #f5f5dc;
+    outline: none;
+  }
+  
+  .Login textarea:focus {
+    border-radius: 12px;
+    border-color: #f5f5dc;
+    outline: none;
+  }
+  
+  .Login textarea {
+    height: 150px;
+    width: 300px;
+    resize: none;
+    border: 3px solid #f5f5dc;
+    border-radius: 10px;
+  }
+  
+  .Login input {
+    border-color: #f5f5dc;
+    text-align: center;
+    border-radius: 10px;
+    outline: none;
+  }
+  
+  .Login button {
+    outline-style: none;
+    border: 1px solid #f5f5dc;
+    border-radius: 10px;
+    height: 30px;
+    width: 60px;
+    font-size: 20px;
+  }
+  
