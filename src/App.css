@@ -32,18 +32,20 @@
   /* background-color: #00563B; */
 }
 
-.Login{
-  border: 2px solid #a4c2f4;
-  /* border: 2px solid #00563B; */
-  border-radius: 10px;
-  width: 30vw;
-  height: fit-content;
-  margin-inline: auto;
-  /* margin-top: 2rem; */
-  padding-bottom: 1rem;
-}
+
 
 @media all and (min-width:840px) {
+  .Login{
+    border: 2px solid #a4c2f4;
+    /* border: 2px solid #00563B; */
+    border-radius: 10px;
+    width: 30vw;
+    height: fit-content;
+    margin-inline: auto;
+    /* margin-top: 2rem; */
+    padding-bottom: 1rem;
+  }
+
   form textArea{
     height: 250px;
     width: 550px;
@@ -265,7 +267,8 @@ button{
   font-size: 20px;
 }
 #username{
-  height: 30px;
+  height: 25px;
+  width: 100px;
 }
 
 form textArea{
@@ -312,5 +315,17 @@ form textArea{
   position: fixed;
   bottom: 10px;
   left: 10px;
+}
+
+.Login{
+  border: 2px solid #a4c2f4;
+  /* border: 2px solid #00563B; */
+  border-radius: 10px;
+  width: 60vw;
+  min-width: 200px;
+  height: fit-content;
+  margin-inline: auto;
+  /* margin-top: 2rem; */
+  padding-bottom: 1rem;
 }
 }
