@@ -35,9 +35,9 @@ function App() {
     setIsLoggedIn(false);
     setLogout(true);
     setUsername('');
-    setMessages([]);
+    // setMessages([]);
     localStorage.removeItem('username');
-    sessionStorage.removeItem('messages');
+    // sessionStorage.removeItem('messages');
   };
 
   const handleMessage = (message) => {
@@ -55,12 +55,14 @@ function App() {
           </button>
         )}
 
-        { (isLoggedIn && logout) ?
+        {/* { (logout ) ?
         <Navigate to="/" /> : ''
-        }
+        } */}
         <Routes>
-          <Route path="/" element={isLoggedIn ? <Navigate to="/chat" /> : <FirstLand />} />
-          <Route path="/login" element={isLoggedIn ? <Navigate to="/chat" /> : <LoginPage onLogin={handleLogin} />} />
+          <Route path="/" element={(isLoggedIn) ? <Navigate to="/chat" /> : <FirstLand />} />
+          <Route path="/login" element={
+            (isLoggedIn) ? <Navigate to="/chat" /> : <LoginPage onLogin={handleLogin} />}
+             />
           <Route path="/chat" element={isLoggedIn ? (
             <Chat name={username} onMessage={handleMessage} />
           ) : <Navigate to="/login" />} />

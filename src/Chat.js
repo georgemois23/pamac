@@ -35,7 +35,7 @@ function Chat({ name, onMessage }) {
           id='text'
           value={message}
           onChange={handleMessageChange}
-          placeholder="Type your message..."
+          placeholder="Type your anonymous message..."
           maxLength={350}
         />
         <button className='sub-but' type='submit'>Send</button>
