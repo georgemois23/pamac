@@ -7,6 +7,10 @@
   /* margin-top: 10vh; */
 }
 
+#text::placeholder{
+  color: #a4c2f4;
+  opacity: 0.8;
+}
 .box-for-hid-msg button:hover{
   background-color: #001f3f;
   /* background-color: #f5f5dc; */
