@@ -34,6 +34,7 @@ function PreviewMsg() {
       )}
     </div>  
       <button className='gobackk' onClick={handleGoBack}>Go to chat</button>
+      <br/>
     </div>
   );
 }

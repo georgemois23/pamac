@@ -7,6 +7,7 @@
   /* margin-top: 10vh; */
 }
 
+
 #text::placeholder{
   color: #a4c2f4;
   opacity: 0.8;
@@ -43,11 +44,12 @@
     border: 2px solid #a4c2f4;
     /* border: 2px solid #00563B; */
     border-radius: 10px;
-    width: 30vw;
+    width: 40vw;
     height: fit-content;
     margin-inline: auto;
+    padding: 1rem;
     /* margin-top: 2rem; */
-    padding-bottom: 1rem;
+    padding-bottom: 2rem;
   }
 
   form textArea{
@@ -165,8 +167,12 @@ form{
 #text {
   font-size: 25px;
 }
+
+
 #username{
   height: 30px;
+  font-size: 20px;
+  width: fit-content;
 }
 h1{
   font-size: 80px;
@@ -272,7 +278,8 @@ button{
 }
 #username{
   height: 25px;
-  width: 100px;
+  width: 110px;
+  font-size: 16px;
 }
 
 form textArea{
@@ -286,7 +293,7 @@ form textArea{
 
 .logout-button{
   position: fixed;
-  top: 10px;
+  top: 5px;
   right: 5px;
   font-size: 20px;
   height: fit-content;
@@ -302,8 +309,11 @@ form textArea{
   margin-inline: auto;
   border: 3px solid #a4c2f4;
   /* border: 3px solid #00563B; */
+  
   border-radius: 14px;
-  width: 60vw;
+  width: 40vw;
+  min-width: 100px;
+  max-width: 400px;
   outline: none;
   outline-offset: none;
 }

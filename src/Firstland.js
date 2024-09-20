@@ -1,13 +1,15 @@
 import './App.css';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+// import { useState } from 'react';
 
 
-function FirstLand() {
+function FirstLand({ OnEnter }) {
     const navigate = useNavigate();
-
     const handleEnter = () => {
+        OnEnter();
         navigate('/login');  // Navigate to the login page
+        
       };
     
 return(

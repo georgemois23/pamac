@@ -1,5 +1,5 @@
 // import './Login.css';
-// import  './App.css';
+import  './App.css';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -19,7 +19,7 @@ function LoginPage({ onLogin }) {
         <div className='Login'>
             <h1>Κάνε Login!</h1>
             <form onSubmit={handleSubmit}>
-            <label htmlFor='username'>Username:</label>
+            <label html For='username'>Username:</label>
             <input
           id='username'
           className='username'
