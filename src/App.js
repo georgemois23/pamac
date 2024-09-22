@@ -13,6 +13,9 @@ function App() {
   const [logout, setLogout] = useState(false);
   const [enter, setEnter] = useState(false);
 
+  
+  const [logoutbutton,setLogoutbutton]=useState('Logout');
+
   useEffect(() => {
     const storedUsername = localStorage.getItem('username');
     const storedMessages = JSON.parse(sessionStorage.getItem('messages')) || [];
@@ -21,16 +24,40 @@ function App() {
       setIsLoggedIn(true);
       setUsername(storedUsername);
     }
-    setMessages(storedMessages);  // Retrieve messages regardless of login status
+    setMessages(storedMessages); // Retrieve messages regardless of login status
+
+    // Clear username when the session closes
+    const handleBeforeUnload = () => {
+      localStorage.removeItem('username');
+    };
+
+    
+    // Add event listener for session close
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    // Cleanup event listener
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
   }, []);
 
   const handleLogin = (username) => {
     setIsLoggedIn(true);
     setLogout(false);
+    if(username===''){
+      // setUsername('{anonymous user}');
+      setUsername('');
+      setLogoutbutton('Login')
+    }
+    else{
     setUsername(username);
     localStorage.setItem('username', username);
+    }
   };
 
+  const handlename = () => {
+    
+  };
   const handleLogout = () => {
     setIsLoggedIn(false);
     setLogout(true);
@@ -38,7 +65,7 @@ function App() {
     setEnter(false);
     localStorage.removeItem('username');
     // Do not clear session storage here
-    window.location.reload();  // Reload the page
+    window.location.reload(); // Reload the page
   };
 
   const handleEnter = () => {
@@ -56,7 +83,7 @@ function App() {
       <div className="App">
         {isLoggedIn && (
           <button onClick={handleLogout} className="logout-button">
-            Logout
+            {logoutbutton}
           </button>
         )}
 

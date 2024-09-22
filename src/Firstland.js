@@ -14,7 +14,7 @@ function FirstLand({ OnEnter }) {
     
 return(
     <div className='First'>
-        <h1 className='greet'>ΚΑΛΩΣ ΗΡΘΕΣ ΣΤΟΝ ΑΝΩΝΥΜΟ ΚΟΣΜΟ ΤΟΥ ΠΑΜΑΚ</h1>
+        <h1 className='greet'>ΚΑΛΩΣ ΗΡΘΕΣ ΣΤΟΝ ΑΝΩΝΥΜΟ ΚΟΣΜΟ </h1>
         <button className='Enter' onClick={handleEnter}>Enter</button>
     </div>
 );

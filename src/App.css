@@ -8,6 +8,8 @@
 }
 
 
+
+
 #text::placeholder{
   color: #a4c2f4;
   opacity: 0.8;
@@ -37,9 +39,85 @@
   /* background-color: #00563B; */
 }
 
+.Chat{
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  user-select: none;
+}
+
+.Enter{
+  height: fit-content;
+}
+
+@media all and (max-width:365px) {
+  .gobackk{
+  word-spacing: 9999px;
+  width: 60px;
+  height: fit-content;
+  padding: .1rem;
+  text-align: center;
+  }
+}
+
+
+@media all and (max-width:310px) {
+  .gobackk{
+    word-spacing: 0;
+    width: fit-content;
+    top: 5px;
+    left: 5px;
+  }
+}
+
+@media all and (max-width:210px) {
+  .gobackk{
+    word-spacing: 0;
+    width: fit-content;
+    top: 5px;
+    left: 5px;
+  }
+
+  backg{
+    background-color: #001f3f;
+    position: fixed;
+    top: 0;
+    width: 100vw;
+    height: 10px;
+  }
+}
+
+@media all and (max-width:160px) {
+  .gobackk{
+    visibility: hidden;
+  }
+
+  .logout-button{
+    visibility: hidden;
+  }
+}
 
 
 @media all and (min-width:840px) {
+  .choose{
+    display: flex;
+    flex-direction: row;
+    /* gap: 3rem; */
+    justify-content: space-around;
+  }
+  
+  .choose > *:hover{
+    background-color: #a4c2f4;
+    color: #001f3f;
+  }
+  .choose > *{
+    border: 2px solid #a4c2f4;
+    border-radius: 8px ;
+    padding: 10px;
+  }
+  
+  
+
   .Login{
     border: 2px solid #a4c2f4;
     /* border: 2px solid #00563B; */
@@ -52,6 +130,9 @@
     padding-bottom: 2rem;
   }
 
+  .namee{
+    font-size: 50px;
+  }
   form textArea{
     height: 250px;
     width: 550px;
@@ -169,7 +250,7 @@ form{
 }
 
 
-#username{
+.username{
   height: 30px;
   font-size: 20px;
   width: fit-content;
@@ -223,6 +304,7 @@ form{
 *{
   /* background-color:#f5f5dc;
   color: #00563B; */
+  user-select: none;
   background-color: #001f3f; /* Deep Navy */
   color: #a4c2f4; /* Ice Blue */
   font-family:"Advent Pro", sans-serif;
@@ -266,7 +348,32 @@ form{
     transform: rotate(360deg);
   }
 }
+
 @media all and (max-width:840px) {
+  .choose{
+    display: flex;
+    /* flex-direction: column; */
+    justify-content: center;
+    align-items: center;
+    margin-inline: auto;
+    /* gap: 1rem; */
+    justify-content: space-around;
+  }
+  
+  .choose > *:hover{
+    background-color: #a4c2f4;
+    color: #001f3f;
+  }
+  .choose > *{
+    border: 2px solid #a4c2f4;
+    border-radius: 7px ;
+    padding: 7px;
+    width: max-content;
+    font-size: 19px;
+  }
+  
+  
+
 button{
   outline-style: none;
   border: 1px solid #a4c2f4;
@@ -276,7 +383,7 @@ button{
   width: fit-content;
   font-size: 20px;
 }
-#username{
+.username{
   height: 25px;
   width: 110px;
   font-size: 16px;
@@ -313,7 +420,7 @@ form textArea{
   border-radius: 14px;
   width: 40vw;
   min-width: 100px;
-  max-width: 400px;
+  
   outline: none;
   outline-offset: none;
 }
@@ -342,4 +449,28 @@ form textArea{
   /* margin-top: 2rem; */
   padding-bottom: 1rem;
 }
+}
+@media all and (max-width:420px) {
+
+  .choose{
+    display: flex;
+    /* flex-direction: column; */
+    justify-content: center;
+    align-items: center;
+    margin-inline: auto;
+    /* gap: 1rem; */
+    justify-content: space-around;
+  }
+  
+  .choose > *:hover{
+    background-color: #a4c2f4;
+    color: #001f3f;
+  }
+  .choose > *{
+    border: 2px solid #a4c2f4;
+    border-radius: 7px ;
+    padding: 7px;
+    width: max-content;
+    font-size: 14px;
+  }
 }
