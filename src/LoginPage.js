@@ -69,10 +69,11 @@ function LoginPage({ onLogin }) {
           type='text'
           maxLength={12}
           value={username}
+          required
           onChange={(e) => setUsername(e.target.value)}
         />
             <label htmlFor='password'>Password:</label>
-            <input className='username' type='password'/>
+            <input className='username' type='password' required/>
             <button className='sub' type='submit'>Log In</button>
           
 
@@ -91,11 +92,12 @@ function LoginPage({ onLogin }) {
           className='username'
           type='text'
           maxLength={12}
+          required
           value={username}
           onChange={(e) => setUsername(e.target.value)}
         />
             <label htmlFor='password'>Password:</label> 
-             <input className='username' type='password' maxLength={16}/>
+             <input className='username' type='password' required maxLength={16}/>
             <button className='sub' type='submit'>Sign Up</button>
           
 
