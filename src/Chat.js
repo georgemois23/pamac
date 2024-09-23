@@ -5,11 +5,19 @@ import { useNavigate } from 'react-router-dom';
 function Chat({ name, onMessage }) {
   const navigate = useNavigate();
   const [message, setMessage] = useState('');
-
+  const [user, setUser] = useState('');
+  // if(name===''){
+  //   // setUser('anonymous');
+  // }
   const handleMessageChange = (event) => {
     setMessage(event.target.value);
   };
 
+
+
+  const handlename = () => {
+    
+  };
   const handleSend = (event) => {
     event.preventDefault();
     if (message.trim()) {
@@ -29,13 +37,15 @@ function Chat({ name, onMessage }) {
 
   return (
     <div className='Chat'>
-      <h1>Hello {name}!</h1>
+      <h1 className='namee'>Hello {name==='' ? 'anonymous user' : name}!</h1>
       <form onSubmit={handleSend}>
         <textarea
           id='text'
           value={message}
           onChange={handleMessageChange}
-          placeholder="Type your message..."
+          placeholder={(name==='') ? 'Type your anonymous message...' :
+          'Type your message...'}
+          
           maxLength={350}
         />
         <button className='sub-but' type='submit'>Send</button>

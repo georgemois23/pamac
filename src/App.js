@@ -11,7 +11,10 @@ function App() {
   const [username, setUsername] = useState('');
   const [messages, setMessages] = useState([]);
   const [logout, setLogout] = useState(false);
+  const [enter, setEnter] = useState(false);
 
+  
+  const [logoutbutton,setLogoutbutton]=useState('Logout');
 
   useEffect(() => {
     const storedUsername = localStorage.getItem('username');
@@ -20,30 +23,59 @@ function App() {
     if (storedUsername) {
       setIsLoggedIn(true);
       setUsername(storedUsername);
-      setMessages(storedMessages);
     }
+    setMessages(storedMessages); // Retrieve messages regardless of login status
+
+    // Clear username when the session closes
+    const handleBeforeUnload = () => {
+      localStorage.removeItem('username');
+    };
+
+    
+    // Add event listener for session close
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    // Cleanup event listener
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
   }, []);
 
   const handleLogin = (username) => {
     setIsLoggedIn(true);
     setLogout(false);
+    if(username===''){
+      // setUsername('{anonymous user}');
+      setUsername('');
+      setLogoutbutton('Login')
+    }
+    else{
     setUsername(username);
     localStorage.setItem('username', username);
+    }
   };
 
+  const handlename = () => {
+    
+  };
   const handleLogout = () => {
     setIsLoggedIn(false);
     setLogout(true);
     setUsername('');
-    setMessages([]);
+    setEnter(false);
     localStorage.removeItem('username');
-    sessionStorage.removeItem('messages');
+    // Do not clear session storage here
+    window.location.reload(); // Reload the page
+  };
+
+  const handleEnter = () => {
+    setEnter(true);
   };
 
   const handleMessage = (message) => {
     const updatedMessages = [...messages, message];
     setMessages(updatedMessages);
-    sessionStorage.setItem('messages', JSON.stringify(updatedMessages));
+    sessionStorage.setItem('messages', JSON.stringify(updatedMessages)); // Save messages to session storage
   };
 
   return (
@@ -51,23 +83,35 @@ function App() {
       <div className="App">
         {isLoggedIn && (
           <button onClick={handleLogout} className="logout-button">
-            Logout
+            {logoutbutton}
           </button>
         )}
 
-        { (isLoggedIn && logout) ?
-        <Navigate to="/" /> : ''
-        }
+        {logout && <Navigate to="/" replace />}
+
         <Routes>
-          <Route path="/" element={isLoggedIn ? <Navigate to="/chat" /> : <FirstLand />} />
-          <Route path="/login" element={isLoggedIn ? <Navigate to="/chat" /> : <LoginPage onLogin={handleLogin} />} />
-          <Route path="/chat" element={isLoggedIn ? (
-            <Chat name={username} onMessage={handleMessage} />
-          ) : <Navigate to="/login" />} />
-          <Route path="/messages" element={isLoggedIn ? (
-            <PreviewMsg messages={messages} />
-          ) : <Navigate to="/login" />} 
-             />
+          <Route
+            path="/"
+            element={isLoggedIn ? <Navigate to="/chat" /> : <FirstLand OnEnter={handleEnter} />}
+          />
+          <Route
+            path="/login"
+            element={
+              enter ? (
+                isLoggedIn ? <Navigate to="/chat" /> : <LoginPage onLogin={handleLogin} />
+              ) : (
+                <Navigate to="/" />
+              )
+            }
+          />
+          <Route
+            path="/chat"
+            element={isLoggedIn ? <Chat name={username} onMessage={handleMessage} /> : <Navigate to="/login" />}
+          />
+          <Route
+            path="/messages"
+            element={isLoggedIn ? <PreviewMsg messages={messages} /> : <Navigate to="/login" />}
+          />
           <Route path="*" element={<Navigate to={isLoggedIn ? "/chat" : "/login"} />} />
         </Routes>
       </div>

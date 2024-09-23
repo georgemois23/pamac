@@ -27,6 +27,8 @@ html, body {
     overflow-wrap:anywhere;
     padding: 5px;
   }
+
+  @media all and (min-width:840px) {
   .message-list{
     margin-top: 3rem;
     margin-inline: auto;
@@ -37,7 +39,20 @@ html, body {
     width: fit-content;
     outline: none;
     outline-offset: none;
-  }
+     margin-bottom: 2rem;
+  }}
   
- 
-  
+  @media all and (max-width:840px) {
+    .message-list{
+      /* visibility: hidden; */
+      margin-top: 3rem;
+      margin-inline: auto;
+      border: 3px solid #a4c2f4;
+      border-radius: 14px;
+      max-width: 50vw;
+      min-width: 100px;
+      width: fit-content;
+      outline: none;
+      outline-offset: none;
+      /* margin-bottom: 5rem; */
+    }}
