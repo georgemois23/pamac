@@ -1,4 +1,11 @@
 @import url('https://fonts.googleapis.com/css2?family=Advent+Pro:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,400..900;1,400..900&display=swap');
+
+/* Container for password input and icon */
+
+
+
 .First{
   display: flex;
   justify-content: center;
@@ -99,6 +106,25 @@
 
 
 @media all and (min-width:840px) {
+  .password-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  
+  /* Password input field */
+  .password-input {
+    /* padding-right: 10px; Adjust padding to prevent text from overlapping with the icon */
+  }
+  
+  /* Icon inside the input */
+  .password-icon {
+    position: absolute;
+    right: 10px; /* Position the icon to the right inside the input */
+    cursor: pointer;
+    /* top: 1.8px; */
+  }
+
   .choose{
     display: flex;
     flex-direction: row;
@@ -350,6 +376,25 @@ form{
 }
 
 @media all and (max-width:840px) {
+  .password-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  
+  /* Password input field */
+  .password-input {
+    /* padding-right: 10px; Adjust padding to prevent text from overlapping with the icon */
+  }
+  
+  /* Icon inside the input */
+  .password-icon {
+    position: absolute;
+    right: 7px; /* Position the icon to the right inside the input */
+    cursor: pointer;
+    top: 2px;
+  }
+  
   .choose{
     display: flex;
     /* flex-direction: column; */
@@ -385,7 +430,7 @@ button{
 }
 .username{
   height: 25px;
-  width: 110px;
+  width: 130px;
   font-size: 16px;
 }
 
@@ -407,11 +452,16 @@ form textArea{
 }
 
 .message-item{
+  display: flex;
+  flex-direction: column;
+
   border-bottom: 1px solid #a4c2f4;
   /* border-bottom: 1px solid #00563B; */
   border-radius: 10px;
   /* margin-bottom: 1rem; */
 }
+
+
 .message-list{
   margin-inline: auto;
   border: 3px solid #a4c2f4;
@@ -448,6 +498,7 @@ form textArea{
   margin-inline: auto;
   /* margin-top: 2rem; */
   padding-bottom: 1rem;
+  padding: .6rem;
 }
 }
 @media all and (max-width:420px) {
@@ -473,4 +524,8 @@ form textArea{
     width: max-content;
     font-size: 14px;
   }
+}
+
+.name-msg{
+  font-weight:200; 
 }
