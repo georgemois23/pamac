@@ -28,7 +28,7 @@ function PreviewMsg() {
             <div key={index} className="message-item">
               <div className='name-msg'> {(msg.name!=='') ? (msg.name+' wrote:') : 'anonymous user'}</div>
               <h2>
-                {msg.name}
+                {/* {msg.name} */}
                 {msg.text}
               </h2>
             </div>
