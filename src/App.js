@@ -42,7 +42,8 @@ function App() {
 
     // Clear username when the session closes
     const handleBeforeUnload = () => {
-      localStorage.removeItem('username');                           
+      // localStorage.removeItem('username');
+      localStorage.removeItem('enter');                           
     };
 
     // Add event listener for session close
@@ -59,7 +60,7 @@ function App() {
     setLogout(false);
     localStorage.setItem('isLoggedIn','true');
     if (username === '') {
-      setUsername('');
+      setUsername(null);
       setLogoutbutton('Login');
     } else {
       setUsername(username);
@@ -91,7 +92,7 @@ function App() {
   const handleThemeToggle = () => {
     const newTheme = (theme === 'purple') ? 'original' : 'purple';
     setTheme(newTheme);
-    // localStorage.setItem('theme', newTheme);
+    localStorage.setItem('theme', newTheme);
     document.body.setAttribute('data-theme', newTheme); // Apply the new theme
   };
 

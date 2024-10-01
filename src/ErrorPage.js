@@ -3,6 +3,7 @@ function ErrorPage(){
     return(
         <div className='Error'>
         <h1>Error 404!</h1>
+        <h4>Page not found</h4>
         <img 
         className='img-error'
         draggable={false}

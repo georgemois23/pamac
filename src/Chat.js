@@ -17,7 +17,7 @@ function Chat({ name, onMessage }) {
       // Get existing messages from sessionStorage
       const storedMessages = JSON.parse(sessionStorage.getItem('messages')) || [];
       // Add the new message with name to the array
-      const newMessage = { name: name === '' ? '' : name, text: message };
+      const newMessage = { name: !name ? '' : name, text: message };
       const updatedMessages = [...storedMessages, newMessage];
       // Save the updated messages to sessionStorage
       sessionStorage.setItem('messages', JSON.stringify(updatedMessages));
@@ -31,7 +31,7 @@ function Chat({ name, onMessage }) {
 
   return (
     <div className='Chat'>
-      <h1 className='namee'>Hello {name === '' ? 'anonymous user' : name}!</h1>
+      <h1 className='namee'>Hello {!name ? 'anonymous user' : name}!</h1>
       <form onSubmit={handleSend}>
         <textarea
           id='text'

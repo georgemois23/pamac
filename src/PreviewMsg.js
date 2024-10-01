@@ -26,7 +26,14 @@ function PreviewMsg() {
         {messages.length > 0 ? (
           messages.map((msg, index) => (
             <div key={index} className="message-item">
-              <div className='name-msg'> {(msg.name!=='') ? (msg.name+' wrote:') : 'anonymous user'}</div>
+              {/* <div className='name-msg'> {(msg.name!=='') ? (msg.name+' wrote:') : 'anonymous user'}</div> */}
+              <div className='name-msg'> 
+  {(msg.name !== '') ? (
+    <span>
+      <span className='wrote-italic'>{msg.name}</span> wrote:
+    </span>
+  ) : 'anonymous user'}
+</div>
               <h2>
                 {/* {msg.name} */}
                 {msg.text}

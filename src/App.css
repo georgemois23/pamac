@@ -4,11 +4,17 @@
 
 /* Container for password input and icon */
 
-.Error{
-}
+
 .Error > h1{
   /* color: black; */
   /* font-size: 5rem; */
+}
+
+.wrote-italic{
+  /* text-decoration: underline; */
+  /* color: black; */
+  font-weight: 500;
+  /* font-style:oblique; */
 }
 
 .message-item{
