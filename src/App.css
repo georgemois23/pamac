@@ -123,6 +123,31 @@
 
 @media all and (min-width:840px) {
 
+  .Pop-up{
+    position: fixed;
+    top: 80px;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    /* right: 50vw; */
+    z-index: 10000000000000;
+    width: fit-content;
+    min-width: 300px;
+    height: fit-content;
+    min-height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-inline: auto;
+    border: 1px solid var(--basic-txt-blue);
+    border-radius: 20px;
+    
+  }
+
+  .Pop-up button {
+    height: fit-content;
+    font-size: 18px;
+  }
+
   .img-error{
     display: block;
     height: 200px;

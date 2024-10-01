@@ -31,13 +31,13 @@ function Chat({ name, onMessage }) {
 
   return (
     <div className='Chat'>
-      <h1 className='namee'>Hello {!name ? 'anonymous user' : name}!</h1>
+      <h1 className='namee'>Hello {!name ? '[anonymous] user' : name}!</h1>
       <form onSubmit={handleSend}>
         <textarea
           id='text'
           value={message}
           onChange={handleMessageChange}
-          placeholder={name === '' ? 'Type your anonymous message...' : 'Type your message...'}
+          placeholder={!name ? 'Type your anonymous message...' : 'Type your message...'}
           maxLength={350}
         />
         <button className='sub-but' type='submit'>Send</button>

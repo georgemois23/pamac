@@ -1,5 +1,6 @@
 // Import necessary modules
 import './App.css';
+import { usePopUp } from './App'; 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Icon } from 'react-icons-kit';
@@ -7,6 +8,10 @@ import { eyeOff } from 'react-icons-kit/feather/eyeOff';
 import { eye } from 'react-icons-kit/feather/eye';
 
 function LoginPage({ onLogin }) {
+
+  const showPopUp = usePopUp();
+
+  
   const [username, setUsername] = useState('');
   const [incognito, setincognito] = useState(false);
   const [signup, setsignup] = useState(false);
@@ -68,7 +73,9 @@ function LoginPage({ onLogin }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     // if (username !== '') {
+      // showPopUp('Login was succesful!');
       onLogin(username); // Perform the login
+      
       navigate('/chat'); // Redirect to home page
     // }
   };

@@ -1,5 +1,5 @@
 import './App.css';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,createContext, useContext } from 'react';
 import FirstLand from './Firstland';
 import LoginPage from './LoginPage';
 import Chat from './Chat';
@@ -7,9 +7,12 @@ import PreviewMsg from './PreviewMsg';
 import { BrowserRouter as Router, Routes, Route, Navigate,useLocation } from 'react-router-dom';
 import ThemeOption from './ThemeOption';
 import ErrorPage from './ErrorPage';
+import PopUps from './PopUps';
 
+
+const PopUpContext = createContext();
+export const usePopUp = () => useContext(PopUpContext);
 function App() {
-  
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [username, setUsername] = useState('');
   const [messages, setMessages] = useState([]);
@@ -88,6 +91,19 @@ function App() {
     localStorage.setItem('enter', 'true'); // Save 'enter' state as string in localStorage
   };
 
+  const [popUpMessage, setPopUpMessage] = useState('');
+  const [isPopUpVisible, setIsPopUpVisible] = useState(false);
+  const showPopUp = (message) => {
+    setPopUpMessage(message);
+    setIsPopUpVisible(true);
+  };
+
+  // Function to hide the pop-up
+  const hidePopUp = () => {
+    setIsPopUpVisible(false);
+    setPopUpMessage('');
+  };
+
   const [theme, setTheme] = useState('original');
   const handleThemeToggle = () => {
     const newTheme = (theme === 'purple') ? 'original' : 'purple';
@@ -104,6 +120,7 @@ function App() {
 
   
   return (
+    <PopUpContext.Provider value={showPopUp}>
     <Router>
       <div className="App">
         {enter && <ThemeOption theme={theme} toggleTheme={handleThemeToggle} />}
@@ -135,7 +152,11 @@ function App() {
           <Route path="/404" element={<ErrorPage />} />
         </Routes>
       </div> 
+      {isPopUpVisible && (
+          <PopUps message={popUpMessage} onClose={hidePopUp} />
+        )}
     </Router>
+    </PopUpContext.Provider>
   );
 }
 
