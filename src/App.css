@@ -7,7 +7,7 @@
 .Error{
 }
 .Error > h1{
-  color: black;
+  /* color: black; */
   /* font-size: 5rem; */
 }
 
@@ -490,7 +490,7 @@ form{
     position: absolute;
     right: 7px; /* Position the icon to the right inside the input */
     cursor: pointer;
-    top: 2px;
+    top: 3.2px;
   }
   
   .choose{
