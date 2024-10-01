@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 function Chat({ name, onMessage }) {
   const navigate = useNavigate();
   const [message, setMessage] = useState('');
+  localStorage.setItem("name",name);
 
   const handleMessageChange = (event) => {
     setMessage(event.target.value);

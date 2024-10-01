@@ -4,8 +4,16 @@
 
 /* Container for password input and icon */
 
+.Error{
+}
+.Error > h1{
+  color: black;
+  /* font-size: 5rem; */
+}
 
-
+.message-item{
+  padding: 10rem;
+}
 .First{
   display: flex;
   justify-content: center;
@@ -15,34 +23,36 @@
 }
 
 
-
+#text{
+  padding: 1rem;
+}
 
 #text::placeholder{
-  color: #a4c2f4;
+  color: var(--basic-txt-blue);
   opacity: 0.8;
 }
 .box-for-hid-msg button:hover{
-  background-color: #001f3f;
+  background-color: var(--basic-background-blue);
   /* background-color: #f5f5dc; */
   /* color: #00563B; */
-  color: #a4c2f4;
+  color: var(--basic-txt-blue);
   border: 2px solid black;
 }
 
 .box-for-hid-msg > h2{
-  color: #f5f5dc;
-  background-color: #a4c2f4;
+  color: var(--basic-txt-blue);
+  background-color: var(--basic-background-blue);
   /* background-color: #00563B; */
 }
 .box-for-hid-msg{
   margin-inline: auto;
-  border: 2px solid #a4c2f4;
+  border: 2px solid var(--basic-txt-blue);
   /* border: 2px solid #00563B; */
   border-radius: 20px;
   width: 40vw;
   overflow-wrap:anywhere;
   height: fit-content;
-  background-color: #a4c2f4;
+  background-color: var(--basic-txt-blue);
   /* background-color: #00563B; */
 }
 
@@ -86,7 +96,7 @@
   }
 
   backg{
-    background-color: #001f3f;
+    background-color: var(--basic-background-blue);
     position: fixed;
     top: 0;
     width: 100vw;
@@ -106,12 +116,35 @@
 
 
 @media all and (min-width:840px) {
+
+  .img-error{
+    display: block;
+    height: 200px;
+    margin-left: 4rem;
+  }
+  .theme-options{
+    display: flex;
+    gap:10px;
+  }
+  
+  .theme-option{
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    height: 35px;
+    width:fit-content;
+    /* border: 2px solid; */
+    padding-inline: 5px;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+
   .message-item{
     display: flex;
     flex-direction: column;
 
     font-size: 20px;
-    border-bottom: 1px solid #a4c2f4;
+    border-bottom: 1px solid var(--basic-txt-blue);
     /* border-bottom: 1px solid #00563B; */
     border-radius: 10px;
     /* margin-bottom: 1rem; */
@@ -126,7 +159,7 @@
   
   .message-list{
     margin-inline: auto;
-    border: 3px solid #a4c2f4;
+    border: 3px solid var(--basic-txt-blue);
     /* border: 3px solid #00563B; */
     
     border-radius: 14px;
@@ -152,7 +185,7 @@
     position: absolute;
     right: 10px; /* Position the icon to the right inside the input */
     cursor: pointer;
-    /* top: 1.8px; */
+    top: 4.8px;
   }
 
   .choose{
@@ -163,11 +196,11 @@
   }
   
   .choose > *:hover{
-    background-color: #a4c2f4;
+    background-color: var(--basic-txt-blue);
     color: #001f3f;
   }
   .choose > *{
-    border: 2px solid #a4c2f4;
+    border: 2px solid var(--basic-txt-blue);
     border-radius: 8px ;
     padding: 10px;
   }
@@ -175,7 +208,7 @@
   
 
   .Login{
-    border: 2px solid #a4c2f4;
+    border: 2px solid var(--basic-txt-blue);
     /* border: 2px solid #00563B; */
     border-radius: 10px;
     width: 40vw;
@@ -193,7 +226,7 @@
     height: 250px;
     width: 550px;
     resize: none;
-    border: 3px solid #a4c2f4;
+    border: 3px solid var(--basic-txt-blue);
     /* border: 3px solid #00563B; */
     border-radius: 10px;
   }
@@ -262,13 +295,13 @@
   }
   .box-for-hid-msg{
     margin-inline: auto;
-    border: 2px solid #a4c2f4;
+    border: 2px solid var(--basic-txt-blue);
     /* border: 2px solid #00563B; */
     border-radius: 20px;
     width: 40vw;
     overflow-wrap:anywhere;
     height: fit-content;
-    background-color: #a4c2f4;
+    background-color: var(--basic-txt-blue);
     /* background-color: #00563B; */
   }
   form ::placeholder{
@@ -284,7 +317,7 @@ label {
 }
 button{
   outline-style: none;
-  border: 1px solid #a4c2f4;
+  border: 1px solid var(--basic-txt-blue);
   /* border: 1px solid #00563B; */
   border-radius: 10px;
   height: 90px;
@@ -323,28 +356,28 @@ form button {
 }
 
 button:hover{
-  color: #001f3f;
+  color: var(--basic-background-blue);
   /* color: #f5f5dc; */
-  background-color: #a4c2f4;
+  background-color: var(--basic-txt-blue);
   /* background-color: #00563B; */
   
 }
 
 input:focus{
-  border-color: #a4c2f4;
+  border-color: var(--basic-txt-blue);
   /* border-color: #00563B; */
   outline: none;
 }
 form textArea:focus{
   border-radius: 12px;
-  border-color: #a4c2f4;
+  border-color: var(--basic-txt-blue);
   /* border-color: #00563B; */
   outline: none;
 }
 
 input{
   /* border-color: #00563B; */
-  border-color: #a4c2f4;
+  border-color: var(--basic-txt-blue);
   text-align: center;
   border-radius: 10px;
   outline: none;
@@ -357,12 +390,29 @@ form{
   flex-direction: column;
   gap: 1rem;
 }
+:root{
+  --basic-background-blue: #001f3f;
+  /* --basic-background-blue: #190c25; */
+  --basic-txt-blue: #a4c2f4;
+  /* --basic-txt-blue: #D3D3D3; */
+
+}
+
+[data-theme="purple"]{
+  --basic-background-blue: #190c25;
+  --basic-txt-blue: #D3D3D3;
+}
 *{
   /* background-color:#f5f5dc;
   color: #00563B; */
   user-select: none;
-  background-color: #001f3f; /* Deep Navy */
-  color: #a4c2f4; /* Ice Blue */
+  background-color: var(--basic-background-blue);
+  /* background-color: #300d4f;  */
+  /* background-color: #190c25;  */
+  /* background-color: #001f3f;  */
+  /* color: #a4c2f4; */
+  /* color: #FFFFFF;   */
+  color: var(--basic-txt-blue);
   font-family:"Advent Pro", sans-serif;
   text-align: center;
 }
@@ -406,6 +456,24 @@ form{
 }
 
 @media all and (max-width:840px) {
+  .img-error{
+    display: block;
+    height: 140px;
+    /* margin-left: 2rem; */
+  }
+
+  .theme-option{
+    position: fixed;
+    top: 5px;
+    left: 5px;
+    height: 35px;
+    width:fit-content;
+    /* border: 2px solid; */
+    padding-inline: 5px;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+
   .password-container {
     position: relative;
     display: flex;
@@ -436,11 +504,11 @@ form{
   }
   
   .choose > *:hover{
-    background-color: #a4c2f4;
-    color: #001f3f;
+    background-color: var(--basic-txt-blue);
+    color: var(--basic-background-blue);
   }
   .choose > *{
-    border: 2px solid #a4c2f4;
+    border: 2px solid var(--basic-txt-blue);
     border-radius: 7px ;
     padding: 7px;
     width: max-content;
@@ -451,7 +519,7 @@ form{
 
 button{
   outline-style: none;
-  border: 1px solid #a4c2f4;
+  border: 1px solid var(--basic-txt-blue);
   /* border: 1px solid #00563B; */
   border-radius: 10px;
   height: 30px;
@@ -469,7 +537,7 @@ form textArea{
   width: 70vw;
   resize: none;
   /* border: 3px solid #00563B; */
-  border: 3px solid #a4c2f4;
+  border: 3px solid var(--basic-txt-blue);
   border-radius: 10px;
 }
 
@@ -485,7 +553,7 @@ form textArea{
   display: flex;
   flex-direction: column;
 
-  border-bottom: 1px solid #a4c2f4;
+  border-bottom: 1px solid var(--basic-txt-blue);
   /* border-bottom: 1px solid #00563B; */
   border-radius: 10px;
   /* margin-bottom: 1rem; */
@@ -494,7 +562,7 @@ form textArea{
 
 .message-list{
   margin-inline: auto;
-  border: 3px solid #a4c2f4;
+  border: 3px solid var(--basic-txt-blue);
   /* border: 3px solid #00563B; */
   
   border-radius: 14px;
@@ -519,7 +587,7 @@ form textArea{
 }
 
 .Login{
-  border: 2px solid #a4c2f4;
+  border: 2px solid var(--basic-txt-blue);
   /* border: 2px solid #00563B; */
   border-radius: 10px;
   width: 60vw;
@@ -544,11 +612,11 @@ form textArea{
   }
   
   .choose > *:hover{
-    background-color: #a4c2f4;
-    color: #001f3f;
+    background-color: var(--basic-txt-blue);
+    color: var(--basic-background-blue);
   }
   .choose > *{
-    border: 2px solid #a4c2f4;
+    border: 2px solid var(--basic-txt-blue);
     border-radius: 7px ;
     padding: 7px;
     width: max-content;

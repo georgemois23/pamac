@@ -26,9 +26,15 @@ function LoginPage({ onLogin }) {
     }
   };
   
+  const handleUsernameChange = (e) => {
+    // setUsername(e.target.value.replace(/\s/g, ''));
+    setUsername(e.target.value);
+  };
   const handlePasswordChange = (e) => {
     // Prevent whitespace by replacing spaces with an empty string
+    
     setPassword(e.target.value.replace(/\s/g, ''));
+    setPassword(e.target.value);
   };
 
   const handleKeyDown = (e) => {
@@ -61,10 +67,10 @@ function LoginPage({ onLogin }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (username !== '') {
+    // if (username !== '') {
       onLogin(username); // Perform the login
       navigate('/chat'); // Redirect to home page
-    }
+    // }
   };
 
   return (
@@ -96,8 +102,7 @@ function LoginPage({ onLogin }) {
                 type="text"
                 maxLength={12}
                 value={username}
-                required
-                onChange={(e) => setUsername(e.target.value)}
+                onChange={handleUsernameChange}
               />
               <label htmlFor="password">Password:</label>
               <div className="password-container">
@@ -108,13 +113,13 @@ function LoginPage({ onLogin }) {
                   onChange={handlePasswordChange}
                   onKeyDown={handleKeyDown}
                   maxLength={12}
-                  required
+                  
                 />
                 <span className="password-icon" onClick={handleToggle}>
                   <Icon icon={icon} size={12} />
                 </span>
               </div>
-              <button className="sub" type="submit">
+              <button disabled={(!username || !password)} className="sub" type="submit">
                 Log In
               </button>
             </form>
@@ -132,9 +137,9 @@ function LoginPage({ onLogin }) {
                 className="username"
                 type="text"
                 maxLength={12}
-                required
                 value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                // onChange={(e) => setUsername(e.target.value)}
+                onChange={handleUsernameChange}
               />
               <label htmlFor="password">Password:</label>
               <div className="password-container">
@@ -145,13 +150,12 @@ function LoginPage({ onLogin }) {
                   onChange={handlePasswordChange}
                   onKeyDown={handleKeyDown}
                   maxLength={12}
-                  required
                 />
                 <span className="password-icon" onClick={handleToggle}>
                   <Icon icon={icon} size={12} />
                 </span>
               </div>
-              <button className="sub" type="submit">
+              <button disabled={(!username || !password)} className="sub" type="submit">
                 Sign Up
               </button>
             </form>

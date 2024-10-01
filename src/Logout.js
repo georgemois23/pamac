@@ -9,7 +9,7 @@ function Logout() {
     // Clear session data and navigate to the home page or login page
     localStorage.removeItem('username');
     sessionStorage.removeItem('messages');
-    navigate('/'); // Redirect to the home page
+    navigate('/login'); // Redirect to the home page
   }, [navigate]);
 
   return (
