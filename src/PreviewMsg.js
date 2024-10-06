@@ -24,7 +24,7 @@ function PreviewMsg() {
       </div>
       <div className="message-list">
         {messages.length > 0 ? (
-          messages.map((msg, index) => (
+          messages.toReversed().map((msg, index) => (
             <div key={index} className="message-item">
               {/* <div className='name-msg'> {(msg.name!=='') ? (msg.name+' wrote:') : 'anonymous user'}</div> */}
               <div className='name-msg'> 

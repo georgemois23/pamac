@@ -123,7 +123,7 @@ function App() {
     <PopUpContext.Provider value={showPopUp}>
     <Router>
       <div className="App">
-        {enter && <ThemeOption theme={theme} toggleTheme={handleThemeToggle} />}
+        <ThemeOption theme={theme} toggleTheme={handleThemeToggle} />
         {isLoggedIn && (
           <button onClick={handleLogout} className="logout-button">
             {logoutbutton}

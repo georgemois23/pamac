@@ -4,6 +4,19 @@
 
 /* Container for password input and icon */
 
+.ERROR {
+  font-weight: 800;
+  /* border: 2px double var(--basic-txt-blue); */
+  border-radius: 12px;
+  width: fit-content;
+  height: fit-content;
+  padding: .5rem;
+  display: flex; /* Enables flexbox */
+  justify-content: center; /* Centers text horizontally */
+  align-items: center; /* Centers text vertically */
+  margin-inline: auto; /* Centers the box itself horizontally */
+  
+}
 
 .Error > h1{
   /* color: black; */
@@ -125,9 +138,10 @@
 
   .Pop-up{
     position: fixed;
-    top: 80px;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    top: 8px;
+    left: 10px;
+    /* left: 50%; */
+    /* transform: translate(-50%, -50%); */
     /* right: 50vw; */
     z-index: 10000000000000;
     width: fit-content;
@@ -657,4 +671,31 @@ form textArea{
 
 .name-msg{
   font-weight:200; 
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: black;
+  /* background: red; */
+  border-top-left-radius: 40px;
+  border-bottom-left-radius: 40px;
+  border-left: 2px solid black;
+  border-top: 2px solid black;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  border: 1px solid black;
+    border-radius: 100px;
+  background: var(--basic-txt-blue);
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: var(--basic-txt-blue);
 }

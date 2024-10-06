@@ -6,6 +6,8 @@ import { useNavigate } from 'react-router-dom';
 import { Icon } from 'react-icons-kit';
 import { eyeOff } from 'react-icons-kit/feather/eyeOff';
 import { eye } from 'react-icons-kit/feather/eye';
+import PopUps from './PopUps';
+import supabase from './config/supabaseClient';
 
 function LoginPage({ onLogin }) {
 
@@ -17,6 +19,7 @@ function LoginPage({ onLogin }) {
   const [signup, setsignup] = useState(false);
   const [login, setlogin] = useState(true);
 
+  const [errormessage, setErrormessage] = useState('');
   const [password, setPassword] = useState('');
   const [type, setType] = useState('password');
   const [icon, setIcon] = useState(eyeOff);
@@ -33,6 +36,7 @@ function LoginPage({ onLogin }) {
   
   const handleUsernameChange = (e) => {
     // setUsername(e.target.value.replace(/\s/g, ''));
+    setErrormessage("");
     setUsername(e.target.value);
   };
   const handlePasswordChange = (e) => {
@@ -51,6 +55,7 @@ function LoginPage({ onLogin }) {
   const navigate = useNavigate();
 
   const handleIncognito = () => {
+    setErrormessage("");
     setincognito(true);
     setsignup(false);
     setlogin(false);
@@ -59,27 +64,118 @@ function LoginPage({ onLogin }) {
   };
 
   const handlelogin = () => {
+    setErrormessage("");
     setsignup(false);
     setlogin(true);
     setincognito(false);
   };
 
   const handlesignup = () => {
+    setErrormessage("");
     setsignup(true);
     setlogin(false);
     setincognito(false);
   };
 
-  const handleSubmit = (e) => {
+  const handleLoginbutton = (e) => {
     e.preventDefault();
-    // if (username !== '') {
-      // showPopUp('Login was succesful!');
-      onLogin(username); // Perform the login
+    onLogin(username); // Perform the login
       
-      navigate('/chat'); // Redirect to home page
-    // }
-  };
+    navigate('/chat'); // Redirect to home page
 
+  }
+  const handleSignUp = async (e) => {
+    e.preventDefault();
+    const User={
+      name: username,
+      password: password
+    };
+
+    onLogin(username); // Perform the login
+    navigate('/chat');
+     {/*
+    const {data,error} = await supabase
+    .from('user1')
+    .insert([User])
+  
+  if(error){
+    setErrormessage('This username already exists');
+  }
+
+  
+
+fetch(`${supabaseUrl}/rest/v1/user1`, {
+  method: 'POST',
+  headers: {
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${supabasePublicKey}`, // Include your Supabase public key
+    "Accept": "application/json"
+  },
+  body: JSON.stringify(User) // User object should contain the data you want to send
+})
+.then(response => {
+  if (!response.ok) {
+    if (response.status === 409 || response.status === 401) {
+      setErrormessage("* This username already exists *");
+      console.log('This username already exists');
+      return;  // Stop further execution if the username exists
+    } else {
+      console.log(`Request failed with status: ${response.status}`);
+      setErrormessage(`Request failed with status: ${response.status}`);
+      return;  // Stop further execution for other failed statuses
+    }
+  }
+  
+  // If the response is successful, return the JSON data
+  return response.json(); // This will now correctly parse the JSON response
+})
+.then(data => {
+  if (data) {
+    console.log("User added successfully:", data);
+    onLogin(username); // Perform the login
+    navigate('/chat'); // Redirect to the chat page
+  }
+})
+.catch(error => {
+  console.error("There was an error:", error.message);
+  setErrormessage("Unexpected error: " + error.message);
+});
+
+    // fetch("http://localhost:8080/user/add",{
+    //   method:'POST',
+    //   headers:{"Content-Type":"application/json"},
+    //   body:JSON.stringify(User)
+    // })
+    // .then(response => {
+    //   if (!response.ok) {
+    //     if (response.status === 409 || response.status === 401) {
+    //       setErrormessage("* This username already exists *");
+    //       console.log('This username already exists');
+    //       return;  // Stop further execution if the username exists
+    //     } else {
+    //       console.log(`Request failed with status: ${response.status}`);
+    //       setErrormessage(`Request failed with status: ${response.status}`);
+    //       return;  // Stop further execution for other failed statuses
+    //     }
+    //   }
+      
+    //   // If the response is successful, return the JSON data
+    //   return response.json(); // This will now correctly parse the JSON response
+    // })
+    // .then(data => {
+    //   if (data) {
+    //     console.log("User added successfully:", data);
+    //     onLogin(username); // Perform the login
+    //     navigate('/chat'); // Redirect to the chat page
+    //   }
+    // })
+    // .catch(error => {
+    //   console.error("There was an error:", error.message);
+    //   setErrormessage("Unexpected error: " + error.message);
+    // });
+
+    */}
+  }
   return (
     <div>
       <div className="choose">
@@ -101,7 +197,7 @@ function LoginPage({ onLogin }) {
         {login ? (
           <>
             <h1>Κάνε Login!</h1>
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleLoginbutton}>
               <label htmlFor="username">Username:</label>
               <input
                 id="username"
@@ -136,8 +232,9 @@ function LoginPage({ onLogin }) {
         )}
         {signup ? (
           <>
+          {errormessage!=='' ? <h2 className='ERROR'>{errormessage}</h2> : null}
             <h1>Κάνε εγγραφή!</h1>
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSignUp}>
               <label htmlFor="username">Username:</label>
               <input
                 id="username"
@@ -168,7 +265,7 @@ function LoginPage({ onLogin }) {
             </form>
           </>
         ) : (
-          ''
+          null
         )}
       </div>
     </div>
