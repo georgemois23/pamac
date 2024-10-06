@@ -46,7 +46,7 @@ function App() {
     // Clear username when the session closes
     const handleBeforeUnload = () => {
       // localStorage.removeItem('username');
-      localStorage.removeItem('enter');                           
+      // localStorage.removeItem('enter');                           
     };
 
     // Add event listener for session close
@@ -123,7 +123,7 @@ function App() {
     <PopUpContext.Provider value={showPopUp}>
     <Router>
       <div className="App">
-        <ThemeOption theme={theme} toggleTheme={handleThemeToggle} />
+        {enter && <ThemeOption theme={theme} toggleTheme={handleThemeToggle} />}
         {isLoggedIn && (
           <button onClick={handleLogout} className="logout-button">
             {logoutbutton}
