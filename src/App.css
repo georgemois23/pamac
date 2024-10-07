@@ -134,6 +134,40 @@
 }
 
 
+@media all and (min-width:540px) {
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: black;
+  /* background: red; */
+  border-top-left-radius: 20px;
+  border-bottom-left-radius: 20px;
+  border-left: 2px solid black;
+  border-top: 2px solid black;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  border: 1px solid black;
+    border-radius: 100px;
+    border-top-left-radius: 300px;
+    border-bottom-left-radius: 300px;
+  background: var(--basic-txt-blue);
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  /* background: var(--basic-txt-blue); */
+  background: red;
+}
+
+}
+
+
 @media all and (min-width:840px) {
 
   .Pop-up{
@@ -673,29 +707,3 @@ form textArea{
   font-weight:200; 
 }
 
-/* width */
-::-webkit-scrollbar {
-  width: 10px;
-}
-
-/* Track */
-::-webkit-scrollbar-track {
-  background: black;
-  /* background: red; */
-  border-top-left-radius: 40px;
-  border-bottom-left-radius: 40px;
-  border-left: 2px solid black;
-  border-top: 2px solid black;
-}
-
-/* Handle */
-::-webkit-scrollbar-thumb {
-  border: 1px solid black;
-    border-radius: 100px;
-  background: var(--basic-txt-blue);
-}
-
-/* Handle on hover */
-::-webkit-scrollbar-thumb:hover {
-  background: var(--basic-txt-blue);
-}

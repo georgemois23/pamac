@@ -146,6 +146,7 @@ function App() {
           <Route
             path="/messages"
             element={isLoggedIn ? <PreviewMsg messages={messages} /> : <Navigate to="/login" />}
+            // element={<PreviewMsg messages={messages} />}
           />
           {/* <Route path="*" element={<Navigate to={isLoggedIn ? "/chat" : "/login"} />} /> */}
           <Route path="*" element={<Navigate to="/404" />} />
