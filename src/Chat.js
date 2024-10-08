@@ -1,8 +1,11 @@
 import './App.css';
-import React, { useState } from 'react';
+import React, { useState,useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-
+import ThemeOption from './ThemeOption';
+import Logout from './Logout';
+import { GlobalContext } from './GlobalContext';
 function Chat({ name, onMessage }) {
+
   const navigate = useNavigate();
   const [message, setMessage] = useState('');
   localStorage.setItem("name",name);
@@ -31,6 +34,8 @@ function Chat({ name, onMessage }) {
 
   return (
     <div className='Chat'>
+      {/* <Logout handleLogout={handleLogout} logmsg={!name ? 'Login' : 'Logout'}/> */}
+      <ThemeOption/>
       <h1 className='namee'>Hello {!name ? '[anonymous] user' : name}!</h1>
       <form onSubmit={handleSend}>
         <textarea

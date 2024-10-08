@@ -8,6 +8,7 @@ import { eyeOff } from 'react-icons-kit/feather/eyeOff';
 import { eye } from 'react-icons-kit/feather/eye';
 import PopUps from './PopUps';
 import supabase from './config/supabaseClient';
+import ThemeOption from './ThemeOption';
 
 function LoginPage({ onLogin }) {
 
@@ -178,6 +179,7 @@ fetch(`${supabaseUrl}/rest/v1/user1`, {
   }
   return (
     <div>
+      <ThemeOption/>
       <div className="choose">
         {login ? (
           <>

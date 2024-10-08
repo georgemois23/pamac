@@ -1,21 +1,19 @@
-// Logout.js
-import React, { useEffect } from 'react';
+import React, { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { GlobalContext } from './GlobalContext'; // Import the global context
 
 function Logout() {
+  const { handleLogout, logoutbutton } = useContext(GlobalContext); // Access global context
+
   const navigate = useNavigate();
-
-  useEffect(() => {
-    // Clear session data and navigate to the home page or login page
-    localStorage.removeItem('username');
-    sessionStorage.removeItem('messages');
-    navigate('/login'); // Redirect to the home page
-  }, [navigate]);
-
+  const handleLogoutClick = () => {
+    handleLogout(); // Perform logout actions (e.g., clearing localStorage)
+    navigate('/login'); // Redirect to the login page
+  };
   return (
-    <div>
-      <h1>Logging out...</h1>
-    </div>
+    <button onClick={handleLogoutClick} className="logout-button">
+      {logoutbutton}
+    </button>
   );
 }
 

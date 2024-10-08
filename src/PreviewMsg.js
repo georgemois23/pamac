@@ -2,6 +2,7 @@ import './App.css';
 import './Msg.css';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import ThemeOption from './ThemeOption';
 
 function PreviewMsg() {
   const navigate = useNavigate();
@@ -19,6 +20,7 @@ function PreviewMsg() {
 
   return (
     <div className="Preview">
+      <ThemeOption/>
       <div className="header">
         <h1>Messages </h1>
       </div>

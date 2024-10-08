@@ -39,7 +39,7 @@ function App() {
       setIsLoggedIn(true);}
     setMessages(storedMessages); // Retrieve messages regardless of login status
     setEnter(storedEnter); // Set 'enter' state based on stored value
-    setTheme(storedTheme); // Set theme from localStorage
+    // setTheme(storedTheme); // Set theme from localStorage
 
     document.body.setAttribute('data-theme', storedTheme); 
 
@@ -104,13 +104,13 @@ function App() {
     setPopUpMessage('');
   };
 
-  const [theme, setTheme] = useState('original');
-  const handleThemeToggle = () => {
-    const newTheme = (theme === 'purple') ? 'original' : 'purple';
-    setTheme(newTheme);
-    localStorage.setItem('theme', newTheme);
-    document.body.setAttribute('data-theme', newTheme); // Apply the new theme
-  };
+  // const [theme, setTheme] = useState('original');
+  // const handleThemeToggle = () => {
+  //   const newTheme = (theme === 'purple') ? 'original' : 'purple';
+  //   setTheme(newTheme);
+  //   localStorage.setItem('theme', newTheme);
+  //   document.body.setAttribute('data-theme', newTheme); // Apply the new theme
+  // };
 
   const handleMessage = (message) => {
     const updatedMessages = [...messages, message];
@@ -123,7 +123,7 @@ function App() {
     <PopUpContext.Provider value={showPopUp}>
     <Router>
       <div className="App">
-        {enter && <ThemeOption theme={theme} toggleTheme={handleThemeToggle} />}
+        {/* {enter && <ThemeOption theme={theme} toggleTheme={handleThemeToggle} />} */}
         {isLoggedIn && (
           <button onClick={handleLogout} className="logout-button">
             {logoutbutton}
@@ -133,7 +133,7 @@ function App() {
         <Routes>
           <Route
             path="/"
-            element={isLoggedIn ? <Navigate to="/chat" /> : <FirstLand OnEnter={handleEnter} />}
+            element={isLoggedIn || !enter ? <Navigate to="/chat" /> : <FirstLand OnEnter={handleEnter} />}
           />
           <Route
             path="/login"
