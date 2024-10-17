@@ -3,6 +3,16 @@
 @import url('https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,400..900;1,400..900&display=swap');
 
 /* Container for password input and icon */
+
+@font-face {
+  font-family: "Toppler W05 Regular";
+  src: url("https://db.onlinewebfonts.com/t/d4efe50000ab6b41b3e546b035abd2e0.eot");
+  src: url("https://db.onlinewebfonts.com/t/d4efe50000ab6b41b3e546b035abd2e0.eot?#iefix")format("embedded-opentype"),
+  url("https://db.onlinewebfonts.com/t/d4efe50000ab6b41b3e546b035abd2e0.woff2")format("woff2"),
+  url("https://db.onlinewebfonts.com/t/d4efe50000ab6b41b3e546b035abd2e0.woff")format("woff"),
+  url("https://db.onlinewebfonts.com/t/d4efe50000ab6b41b3e546b035abd2e0.ttf")format("truetype"),
+  url("https://db.onlinewebfonts.com/t/d4efe50000ab6b41b3e546b035abd2e0.svg#Toppler W05 Regular")format("svg");
+}
 .go-back{
   border-radius: 5px;
   /* font-size: 30px; */
@@ -23,9 +33,12 @@
   
 }
 
-.Error > h1{
-  /* color: black; */
-  /* font-size: 5rem; */
+.Error > *{
+  /* font-family: 'Toppler W05 Regular'; */
+}
+
+.Error img{
+  margin-inline: auto;
 }
 
 .wrote-italic{
@@ -103,6 +116,9 @@
 
 
 @media all and (max-width:310px) {
+  .theme-option{
+    display: none;
+  }
   .gobackk{
     word-spacing: 0;
     width: fit-content;
@@ -158,7 +174,7 @@
 /* Handle */
 ::-webkit-scrollbar-thumb {
   border: 1px solid black;
-    border-radius: 100px;
+    border-radius: 120px;
     border-top-left-radius: 300px;
     border-bottom-left-radius: 300px;
   background: var(--basic-txt-blue);
@@ -166,8 +182,8 @@
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  /* background: var(--basic-txt-blue); */
-  background: red;
+  background: var(--basic-txt-blue);  
+  /* background: red; */
 }
 
 }
@@ -438,8 +454,12 @@ h1{
 form button {
   width: auto;
 }
+button:disabled,button:disabled:hover{
+  color: var(--basic-txt-blue);
+  background-color: black;
+}
 
-button:hover{
+button:hover,button:focus{
   color: var(--basic-background-blue);
   /* color: #f5f5dc; */
   background-color: var(--basic-txt-blue);

@@ -9,6 +9,7 @@ function Chat({ name, onMessage }) {
   const navigate = useNavigate();
   const [message, setMessage] = useState('');
   localStorage.setItem("name",name);
+  
 
   const handleMessageChange = (event) => {
     setMessage(event.target.value);
@@ -28,6 +29,7 @@ function Chat({ name, onMessage }) {
       onMessage(newMessage);
       // Navigate to the preview messages page
       navigate('/messages');
+      document.title='Messages';
       setMessage('');
     }
   };

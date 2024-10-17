@@ -16,6 +16,7 @@ function PreviewMsg() {
 
   const handleGoBack = () => {
     navigate('/chat');
+    document.title='Chat';
   };
 
   return (
