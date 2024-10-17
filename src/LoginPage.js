@@ -24,6 +24,7 @@ function LoginPage({ onLogin }) {
   const [password, setPassword] = useState('');
   const [type, setType] = useState('password');
   const [icon, setIcon] = useState(eyeOff);
+  const [typepassword, setTypepassword] = useState(false);
 
   const handleToggle = () => {
     if (type === 'password') {
@@ -42,7 +43,7 @@ function LoginPage({ onLogin }) {
   };
   const handlePasswordChange = (e) => {
     // Prevent whitespace by replacing spaces with an empty string
-    
+    setTypepassword(true);
     setPassword(e.target.value.replace(/\s/g, ''));
     setPassword(e.target.value);
   };
@@ -62,9 +63,11 @@ function LoginPage({ onLogin }) {
     setlogin(false);
     onLogin('');
     navigate('/chat');
+    document.title='Chat';
   };
 
   const handlelogin = () => {
+    document.title='Login';
     setErrormessage("");
     setsignup(false);
     setlogin(true);
@@ -72,6 +75,7 @@ function LoginPage({ onLogin }) {
   };
 
   const handlesignup = () => {
+    document.title='Signup';
     setErrormessage("");
     setsignup(true);
     setlogin(false);
@@ -220,9 +224,9 @@ fetch(`${supabaseUrl}/rest/v1/user1`, {
                   maxLength={12}
                   
                 />
-                <span className="password-icon" onClick={handleToggle}>
+                {typepassword && <span className="password-icon" onClick={handleToggle}>
                   <Icon icon={icon} size={12} />
-                </span>
+                </span>}
               </div>
               <button disabled={(!username || !password)} className="sub" type="submit">
                 Log In
@@ -257,9 +261,9 @@ fetch(`${supabaseUrl}/rest/v1/user1`, {
                   onKeyDown={handleKeyDown}
                   maxLength={12}
                 />
-                <span className="password-icon" onClick={handleToggle}>
+               {typepassword && <span className="password-icon" onClick={handleToggle}>
                   <Icon icon={icon} size={12} />
-                </span>
+                </span>}
               </div>
               <button disabled={(!username || !password)} className="sub" type="submit">
                 Sign Up
