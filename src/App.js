@@ -83,12 +83,14 @@ function App() {
     setEnter(false);
     localStorage.removeItem('enter'); // Remove 'enter' state from localStorage on logout
     localStorage.removeItem('username');
+    document.title='Login';
   };
 
 
   const handleEnter = () => {
     setEnter(true);
     localStorage.setItem('enter', 'true'); // Save 'enter' state as string in localStorage
+    document.title='Login';
   };
 
   const [popUpMessage, setPopUpMessage] = useState('');
@@ -120,6 +122,7 @@ function App() {
 
   
   return (
+    <ThemeOption>
     <PopUpContext.Provider value={showPopUp}>
     <Router>
       <div className="App">
@@ -133,11 +136,12 @@ function App() {
         <Routes>
           <Route
             path="/"
-            element={isLoggedIn || !enter ? <Navigate to="/chat" /> : <FirstLand OnEnter={handleEnter} />}
+            // element={isLoggedIn ? <Navigate to="/chat" /> : <FirstLand OnEnter={handleEnter} />}
+            element={<FirstLand OnEnter={handleEnter} />}
           />
           <Route
             path="/login"
-            element={isLoggedIn ? <Navigate to="/chat" /> : <LoginPage onLogin={handleLogin} />}
+            element={(enter && isLoggedIn) ? <Navigate to="/chat" /> : <LoginPage onLogin={handleLogin} />}
           />
           <Route
             path="/chat"
@@ -145,8 +149,8 @@ function App() {
           />
           <Route
             path="/messages"
-            element={isLoggedIn ? <PreviewMsg messages={messages} /> : <Navigate to="/login" />}
-            // element={<PreviewMsg messages={messages} />}
+            // element={isLoggedIn ? <PreviewMsg messages={messages} /> : <Navigate to="/login" />}
+            element={<PreviewMsg messages={messages} />}
           />
           {/* <Route path="*" element={<Navigate to={isLoggedIn ? "/chat" : "/login"} />} /> */}
           <Route path="*" element={<Navigate to="/404" />} />
@@ -158,6 +162,7 @@ function App() {
         )}
     </Router>
     </PopUpContext.Provider>
+    </ThemeOption>
   );
 }
 
