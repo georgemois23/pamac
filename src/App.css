@@ -434,6 +434,8 @@ form{
   height: fit-content;
 }
 
+
+
 #text {
   font-size: 25px;
 }
@@ -456,7 +458,7 @@ form button {
 }
 button:disabled,button:disabled:hover{
   color: var(--basic-txt-blue);
-  background-color: black;
+  border-style: dashed;
 }
 
 button:hover,button:focus{
@@ -594,7 +596,7 @@ form{
     position: absolute;
     right: 7px; /* Position the icon to the right inside the input */
     cursor: pointer;
-    top: 3.2px;
+    top: 2px;
   }
   
   .choose{
@@ -731,4 +733,3 @@ form textArea{
 .name-msg{
   font-weight:200; 
 }
-

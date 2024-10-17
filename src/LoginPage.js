@@ -224,9 +224,9 @@ fetch(`${supabaseUrl}/rest/v1/user1`, {
                   maxLength={12}
                   
                 />
-                {typepassword && <span className="password-icon" onClick={handleToggle}>
-                  <Icon icon={icon} size={12} />
-                </span>}
+                <span className="password-icon" onClick={handleToggle}>
+                  {/* <Icon icon={icon} size={12} /> */}
+                </span>
               </div>
               <button disabled={(!username || !password)} className="sub" type="submit">
                 Log In
@@ -261,9 +261,9 @@ fetch(`${supabaseUrl}/rest/v1/user1`, {
                   onKeyDown={handleKeyDown}
                   maxLength={12}
                 />
-               {typepassword && <span className="password-icon" onClick={handleToggle}>
-                  <Icon icon={icon} size={12} />
-                </span>}
+               <span className="password-icon" onClick={handleToggle}>
+                  {/* <Icon icon={icon} size={12} /> */}
+                </span>
               </div>
               <button disabled={(!username || !password)} className="sub" type="submit">
                 Sign Up
