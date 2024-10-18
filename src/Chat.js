@@ -19,12 +19,12 @@ function Chat({ name, onMessage }) {
     event.preventDefault();
     if (message.trim()) {
       // Get existing messages from sessionStorage
-      const storedMessages = JSON.parse(sessionStorage.getItem('messages')) || [];
+      const storedMessages = JSON.parse(localStorage.getItem('messages')) || [];
       // Add the new message with name to the array
       const newMessage = { name: !name ? '' : name, text: message };
       const updatedMessages = [...storedMessages, newMessage];
       // Save the updated messages to sessionStorage
-      sessionStorage.setItem('messages', JSON.stringify(updatedMessages));
+      localStorage.setItem('messages', JSON.stringify(updatedMessages));
       // Notify the parent component of the new message
       onMessage(newMessage);
       // Navigate to the preview messages page
@@ -47,7 +47,7 @@ function Chat({ name, onMessage }) {
           placeholder={!name ? 'Type your anonymous message...' : 'Type your message...'}
           maxLength={350}
         />
-        <button className='sub-but' type='submit'>Send</button>
+        <button disabled={(!message)}  className='sub-but' type='submit'>Send</button>
       </form>
     </div>
   );

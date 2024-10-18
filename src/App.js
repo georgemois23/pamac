@@ -25,7 +25,7 @@ function App() {
   
   useEffect(() => {
     const storedUsername = localStorage.getItem('username');
-    const storedMessages = JSON.parse(sessionStorage.getItem('messages')) || [];
+    const storedMessages = JSON.parse(localStorage.getItem('messages')) || [];
     const storedEnter = localStorage.getItem('enter') === 'true'; // Convert string to boolean
     const storedLoggedIn = localStorage.getItem('isLoggedIn') === 'true'; // Convert string to boolean
     const storedTheme = localStorage.getItem('theme') || 'original';
@@ -75,12 +75,15 @@ function App() {
 
   
   const handleLogout = () => {
+    console.log("Logout button clicked, is loggedin:",isLoggedIn);
+    
     {isLoggedIn ? setWasLoggedIn(true) : setWasLoggedIn(false)}
     setIsLoggedIn(false);
     localStorage.setItem('isLoggedIn','false');
     setLogout(true);
     setUsername('');
     setEnter(false);
+    console.log()
     localStorage.removeItem('enter'); // Remove 'enter' state from localStorage on logout
     localStorage.removeItem('username');
     document.title='Login';
@@ -150,7 +153,7 @@ function App() {
           <Route
             path="/messages"
             // element={isLoggedIn ? <PreviewMsg messages={messages} /> : <Navigate to="/login" />}
-            element={<PreviewMsg messages={messages} />}
+            element={!logout ? <PreviewMsg messages={messages} /> : <Navigate to="/login" />}
           />
           {/* <Route path="*" element={<Navigate to={isLoggedIn ? "/chat" : "/login"} />} /> */}
           <Route path="*" element={<Navigate to="/404" />} />

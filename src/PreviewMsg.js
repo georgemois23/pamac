@@ -10,7 +10,7 @@ function PreviewMsg() {
 
   useEffect(() => {
     // Retrieve messages from sessionStorage
-    const storedMessages = JSON.parse(sessionStorage.getItem('messages')) || [];
+    const storedMessages = JSON.parse(localStorage.getItem('messages')) || [];
     setMessages(storedMessages);
   }, []);
 
@@ -22,6 +22,7 @@ function PreviewMsg() {
   return (
     <div className="Preview">
       <ThemeOption/>
+      <div className='nav-msg'></div>
       <div className="header">
         <h1>Messages </h1>
       </div>
