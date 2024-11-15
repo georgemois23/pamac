@@ -1,10 +1,12 @@
 import './App.css';
 import { Navigate, useNavigate } from 'react-router-dom';
 function ErrorPage(){
+    document.title='Page not found';
     localStorage.setItem('enter', 'false');
     const navigate = useNavigate(); 
     const goBack = () => {
         navigate('/');
+        document.title='Pamac';
     };
     return(
         <div className='Error'>
