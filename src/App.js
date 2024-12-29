@@ -155,7 +155,7 @@ function App() {
         <Routes>
           <Route
             path="/"
-            element={!(enter) ? <Navigate to="/chat" /> : <FirstLand OnEnter={handleEnter} />}
+            element={(enter) ? <Navigate to="/chat" /> : <FirstLand OnEnter={handleEnter} />}
             // element={<FirstLand OnEnter={handleEnter} />}
           />
           <Route
@@ -170,7 +170,7 @@ function App() {
           <Route
             path="/messages"
             // element={isLoggedIn ? <PreviewMsg messages={messages} /> : <Navigate to="/login" />}
-            element={enter ? <PreviewMsg messages={messages} /> : <Navigate to="/login" />}
+            element={enter&&isLoggedIn ? <PreviewMsg messages={messages} /> : <Navigate to="/login" />}
           />
           {/* <Route path="*" element={<Navigate to={isLoggedIn ? "/chat" : "/login"} />} /> */}
           <Route path="*" element={<Navigate to="/404" />} />

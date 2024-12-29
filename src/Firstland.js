@@ -13,6 +13,17 @@ function FirstLand({ OnEnter }) {
         window.location.reload();                         
       };
   
+      useEffect(() => {
+        // Check if the reload flag exists in localStorage
+        const hasReloaded = localStorage.getItem("hasReloaded");
+    
+        // If the flag doesn't exist, set it and reload the page
+        if (!hasReloaded) {
+          localStorage.setItem("hasReloaded", "true");
+          window.location.reload();
+        }
+      }, []);
+
     const navigate = useNavigate();
     const handleEnter = () => {
         OnEnter();
