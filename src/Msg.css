@@ -7,6 +7,10 @@ html{
 
 }
 
+.msg-time{
+  
+}
+
 html, body {
     height: 100%; /* Full height */
     margin: 0; /* Remove default margin */
@@ -20,7 +24,8 @@ html, body {
   }
   
   .header {
-    margin-top: 1rem;
+    /* margin-top: 1rem; */
+    margin-top: .5rem;
     height: 60px; /* Height of the header */
     background-color: var(--basic-background-blue); /* Background color for header */
     color: var(--basic-txt-blue); /* Text color */

@@ -4,37 +4,7 @@ import { ThemeProvider, createTheme, responsiveFontSizes} from "@mui/material/st
 import CssBaseline from "@mui/material/CssBaseline";
 import toggle1st from './assets/toggle_off_1st.svg';
 import toggle2nd from './assets/toggle_on_1st.svg';
-// import './App.css';
 
-// // Define your themes
-// const originalTheme = createTheme({
-//   palette: {
-//     background: {
-//       default: '#001f3f', // Original background color
-//     },
-//     text: {
-//       primary: '#a4c2f4', // Original text color
-//     },
-//   },
-//   typography: {
-//     fontFamily: 'Advent Pro',
-//   },
-// });
-
-// const purpleTheme = createTheme({
-//   palette: {
-//     background: {
-//       default: '#190c25', // Purple theme background color
-//     },
-//     text: {
-//       disabled: '#6d8ba7',
-//       primary: '#D3D3D3', // Purple theme text color
-//     },
-//   },
-//   typography: {
-//     fontFamily: 'Advent Pro',
-//   },
-// });
 
 const ThemeOption = ({ children }) => {
   const storedTheme = localStorage.getItem('theme') || 'original';

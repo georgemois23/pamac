@@ -3,12 +3,13 @@ import './App.css';
 import { usePopUp } from './App'; 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Icon } from 'react-icons-kit';
-import { eyeOff } from 'react-icons-kit/feather/eyeOff';
-import { eye } from 'react-icons-kit/feather/eye';
+// import { Icon } from 'react-icons-kit';
+// import { eyeOff } from 'react-icons-kit/feather/eyeOff';
+// import { eye } from 'react-icons-kit/feather/eye';
 import PopUps from './PopUps';
 import supabase from './config/supabaseClient';
 import ThemeOption from './ThemeOption';
+import axios from './api/axios';
 
 function LoginPage({ onLogin }) {
 
@@ -23,15 +24,15 @@ function LoginPage({ onLogin }) {
   const [errormessage, setErrormessage] = useState('');
   const [password, setPassword] = useState('');
   const [type, setType] = useState('password');
-  const [icon, setIcon] = useState(eyeOff);
+  // const [icon, setIcon] = useState(eyeOff);
   const [typepassword, setTypepassword] = useState(false);
 
   const handleToggle = () => {
     if (type === 'password') {
-      setIcon(eye);
+      // setIcon(eye);
       setType('text');
     } else {
-      setIcon(eyeOff);
+      // setIcon(eyeOff);
       setType('password');
     }
   };
@@ -39,11 +40,16 @@ function LoginPage({ onLogin }) {
   const handleUsernameChange = (e) => {
     // setUsername(e.target.value.replace(/\s/g, ''));
     setErrormessage("");
-    setUsername(e.target.value);
+    // input.value = input.value.replace(/[^a-zA-Z0-9]/g, '');
+    if (/[^a-zA-Z0-9]/.test(e.target.value)) {
+      setErrormessage('*Only letters and numbers are allowed in username*')
+    }  
+    setUsername(e.target.value.replace(/[^a-zA-Z0-9]/g, ''));
   };
   const handlePasswordChange = (e) => {
     // Prevent whitespace by replacing spaces with an empty string
     setTypepassword(true);
+    setErrormessage("");
     setPassword(e.target.value.replace(/\s/g, ''));
     setPassword(e.target.value);
   };
@@ -82,8 +88,13 @@ function LoginPage({ onLogin }) {
     setincognito(false);
   };
 
-  const handleLoginbutton = (e) => {
+  const handleLoginbutton = async(e) => {
     e.preventDefault();
+    // try {
+      // await axios.post('http://localhost:8000/login', {username,password})
+    // } catch (error) {
+      // console.log(error);
+    // }
     onLogin(username); // Perform the login
       
     navigate('/chat'); // Redirect to home page
@@ -91,10 +102,11 @@ function LoginPage({ onLogin }) {
   }
   const handleSignUp = async (e) => {
     e.preventDefault();
-    const User={
-      name: username,
-      password: password
-    };
+    // try {
+      // await axios.post('http://localhost:8000/register', {username,password})
+    // } catch (error) {
+      // console.log(error);
+    // }
 
     onLogin(username); // Perform the login
     navigate('/chat');
@@ -187,13 +199,15 @@ fetch(`${supabaseUrl}/rest/v1/user1`, {
       <div className="choose">
         {login ? (
           <>
-            <h2 onClick={handleIncognito}>Γράψε ανώνυμα</h2>
-            <h2 onClick={handlesignup}>Κάνε εγγραφή</h2>
+            {/* <h2 onClick={handleIncognito}>Γράψε ανώνυμα</h2> */}
+            <h2 onClick={handleIncognito}>Go incognito</h2>
+            {/* <h2 onClick={handlesignup}>Κάνε εγγραφή</h2> */}
+            <h2 onClick={handlesignup}>Sign up</h2>
           </>
         ) : signup ? (
           <>
-            <h2 onClick={handleIncognito}>Γράψε ανώνυμα</h2>
-            <h2 onClick={handlelogin}>Κάνε login!</h2>
+            <h2 onClick={handleIncognito}>Go incognito</h2>
+            <h2 onClick={handlelogin}>Log in</h2>
           </>
         ) : (
           ''
@@ -202,9 +216,10 @@ fetch(`${supabaseUrl}/rest/v1/user1`, {
       <div className="Login">
         {login ? (
           <>
-            <h1>Κάνε Login!</h1>
+            <h1>Log in!</h1>
+            
             <form onSubmit={handleLoginbutton}>
-              <label htmlFor="username">Username:</label>
+              <label htmlFor="username">Username: {errormessage!=='' ? <div className='ERROR'>{errormessage}</div> : null}</label>
               <input
                 id="username"
                 className="username"
@@ -238,8 +253,8 @@ fetch(`${supabaseUrl}/rest/v1/user1`, {
         )}
         {signup ? (
           <>
-          {errormessage!=='' ? <h2 className='ERROR'>{errormessage}</h2> : null}
-            <h1>Κάνε εγγραφή!</h1>
+            <h1>Sign up!</h1>
+            {errormessage!=='' ? <h4 className='ERROR'>{errormessage}</h4> : null}
             <form onSubmit={handleSignUp}>
               <label htmlFor="username">Username:</label>
               <input

@@ -1,20 +1,29 @@
 import './App.css';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 // import { useState } from 'react';
 import { Button, ButtonBase, Container, Typography } from '@mui/material';
-
+import Underconstruction from './Underconstruction';
 
 function FirstLand({ OnEnter }) {
+    const handleBeforeUnload = () => {
+        // localStorage.removeItem('username');
+        // localStorage.removeItem('enter');  
+        window.location.reload();                         
+      };
+  
     const navigate = useNavigate();
     const handleEnter = () => {
         OnEnter();
         navigate('/login');  // Navigate to the login page
         
       };
-    
+
+
 return(
     // <Container className='First'>
+    
     <Container
             // spacing={{ xs: 3, sm: 3, md: 3, l: 3 }}
             sx={{
@@ -31,12 +40,14 @@ return(
                 sx={{
                     fontFamily: "Advent Pro",
                     textAlign: 'center', // Center text within the Typography
-                    maxWidth: '600px',   // Limit the maximum width
-                    width: '70%',       // Allow it to take full width up to maxWidth
+                    maxWidth: '500px',   // Limit the maximum width
+                    width: '60%',       // Allow it to take full width up to maxWidth
                     mb: 2,
                 }}
+            // >
             >
-    ΚΑΛΩΣ ΗΡΘΕΣ ΣΤΟΝ ΑΝΩΝΥΜΟ ΚΟΣΜΟ </Typography>
+    {/* ΚΑΛΩΣ ΗΡΘΕΣ ΣΤΟΝ ΑΝΩΝΥΜΟ ΚΟΣΜΟ </Typography> */}
+    Welcome to the anonymous world! </Typography>
         {/* <button className='Enter' onClick={handleEnter}>Enter</button> */}
         {/* <Button  className='Enter' onClick={handleEnter}>Enter</Button> */}
         <button

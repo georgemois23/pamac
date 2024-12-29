@@ -37,11 +37,13 @@ function PreviewMsg() {
       <span className='wrote-italic'>{msg.name}</span> wrote:
     </span>
   ) : 'anonymous user'}
+  
 </div>
               <h2>
                 {/* {msg.name} */}
                 {msg.text}
               </h2>
+              <span className='msg-time'>{msg.time}</span>
             </div>
           ))
         ) : (

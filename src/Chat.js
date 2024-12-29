@@ -12,6 +12,8 @@ function Chat({ name, onMessage }) {
   
 
   const handleMessageChange = (event) => {
+    if(event.target.value.length<=0) 
+      document.querySelector('.sub-but').setAttribute("disabled", true); 
     setMessage(event.target.value);
   };
 
@@ -20,8 +22,12 @@ function Chat({ name, onMessage }) {
     if (message.trim()) {
       // Get existing messages from sessionStorage
       const storedMessages = JSON.parse(localStorage.getItem('messages')) || [];
+      const currentTime = new Intl.DateTimeFormat('en-GB', { 
+        dateStyle: 'short', 
+        timeStyle: 'short' 
+      }).format(new Date());
       // Add the new message with name to the array
-      const newMessage = { name: !name ? '' : name, text: message };
+      const newMessage = { name: !name ? '' : name, text: message, time:currentTime  };
       const updatedMessages = [...storedMessages, newMessage];
       // Save the updated messages to sessionStorage
       localStorage.setItem('messages', JSON.stringify(updatedMessages));
@@ -47,7 +53,7 @@ function Chat({ name, onMessage }) {
           placeholder={!name ? 'Type your anonymous message...' : 'Type your message...'}
           maxLength={350}
         />
-        <button disabled={(!message)}  className='sub-but' type='submit'>Send</button>
+        <button disabled={(!message) || message.trim().length<=0}  className='sub-but' type='submit'>Send</button>
       </form>
     </div>
   );

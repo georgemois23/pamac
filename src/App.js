@@ -8,7 +8,8 @@ import { BrowserRouter as Router, Routes, Route, Navigate,useLocation } from 're
 import ThemeOption from './ThemeOption';
 import ErrorPage from './ErrorPage';
 import PopUps from './PopUps';
-
+import DrawerComponent from './DrawerComponent';
+import axios from 'axios';
 
 const PopUpContext = createContext();
 export const usePopUp = () => useContext(PopUpContext);
@@ -18,7 +19,8 @@ function App() {
   const [messages, setMessages] = useState([]);
   const [logout, setLogout] = useState(false);
   const [wasLoggedin, setWasLoggedIn] = useState(false);
-  const [enter, setEnter] = useState(false);
+  // const [enter, setEnter] = useState(false);
+  const [enter, setEnter] = useState(localStorage.getItem('enter') === 'true');
   const [logoutbutton, setLogoutbutton] = useState('Logout');
   // const location = useLocation();
   
@@ -29,12 +31,16 @@ function App() {
     const storedEnter = localStorage.getItem('enter') === 'true'; // Convert string to boolean
     const storedLoggedIn = localStorage.getItem('isLoggedIn') === 'true'; // Convert string to boolean
     const storedTheme = localStorage.getItem('theme') || 'original';
+    const storedLogoutButton = localStorage.getItem('LogoutButton');
+
+
 
     if (storedUsername) {
       setIsLoggedIn(true);
       setUsername(storedUsername);
+      setLogoutbutton(storedLogoutButton);
     }
-    
+    setLogoutbutton(storedLogoutButton);
     if(storedLoggedIn){
       setIsLoggedIn(true);}
     setMessages(storedMessages); // Retrieve messages regardless of login status
@@ -46,7 +52,8 @@ function App() {
     // Clear username when the session closes
     const handleBeforeUnload = () => {
       // localStorage.removeItem('username');
-      // localStorage.removeItem('enter');                           
+      // localStorage.removeItem('enter');  
+      window.location.reload();                         
     };
 
     // Add event listener for session close
@@ -61,14 +68,16 @@ function App() {
   const handleLogin = (username) => {
     setIsLoggedIn(true);
     setLogout(false);
+    setEnter(true);
     localStorage.setItem('isLoggedIn','true');
     if (username === '') {
       setUsername(null);
       setLogoutbutton('Login');
+      localStorage.setItem('LogoutButton','Login');
     } else {
       setUsername(username);
       setLogoutbutton('Logout');
-      
+      localStorage.setItem('LogoutButton','Logout');
       localStorage.setItem('username', username);
     }
   };
@@ -82,15 +91,17 @@ function App() {
     localStorage.setItem('isLoggedIn','false');
     setLogout(true);
     setUsername('');
-    setEnter(false);
+    // setEnter(false);
     console.log()
-    localStorage.removeItem('enter'); // Remove 'enter' state from localStorage on logout
+    // localStorage.setItem('enter', 'false');
     localStorage.removeItem('username');
     document.title='Login';
+    window.location.reload(); 
   };
 
 
   const handleEnter = () => {
+    // alert('Enter');
     setEnter(true);
     localStorage.setItem('enter', 'true'); // Save 'enter' state as string in localStorage
     document.title='Login';
@@ -120,15 +131,20 @@ function App() {
   const handleMessage = (message) => {
     const updatedMessages = [...messages, message];
     setMessages(updatedMessages);
-    sessionStorage.setItem('messages', JSON.stringify(updatedMessages)); // Save messages to session storage
+    localStorage.setItem('messages', JSON.stringify(updatedMessages)); // Save messages to local storage
   };
+
 
   
   return (
+    
     <ThemeOption>
+      {/* <DrawerComponent/> */}
     <PopUpContext.Provider value={showPopUp}>
     <Router>
       <div className="App">
+        {/* <h1>LoggedIn:{isLoggedIn.toString()}</h1>
+        <h2>Enter:{enter.toString()}</h2> */}
         {/* {enter && <ThemeOption theme={theme} toggleTheme={handleThemeToggle} />} */}
         {isLoggedIn && (
           <button onClick={handleLogout} className="logout-button">
@@ -139,12 +155,13 @@ function App() {
         <Routes>
           <Route
             path="/"
-            // element={isLoggedIn ? <Navigate to="/chat" /> : <FirstLand OnEnter={handleEnter} />}
-            element={<FirstLand OnEnter={handleEnter} />}
+            element={!(enter) ? <Navigate to="/chat" /> : <FirstLand OnEnter={handleEnter} />}
+            // element={<FirstLand OnEnter={handleEnter} />}
           />
           <Route
             path="/login"
-            element={(enter && isLoggedIn) ? <Navigate to="/chat" /> : <LoginPage onLogin={handleLogin} />}
+            element={(enter && isLoggedIn) ? <Navigate to="/chat" /> : ( enter ? <LoginPage onLogin={handleLogin}  /> : <FirstLand OnEnter={handleEnter}/>)}
+            // element={(isLoggedIn) ? <Navigate to="/chat" /> : <LoginPage onLogin={handleLogin} />}
           />
           <Route
             path="/chat"
@@ -153,7 +170,7 @@ function App() {
           <Route
             path="/messages"
             // element={isLoggedIn ? <PreviewMsg messages={messages} /> : <Navigate to="/login" />}
-            element={!logout ? <PreviewMsg messages={messages} /> : <Navigate to="/login" />}
+            element={enter ? <PreviewMsg messages={messages} /> : <Navigate to="/login" />}
           />
           {/* <Route path="*" element={<Navigate to={isLoggedIn ? "/chat" : "/login"} />} /> */}
           <Route path="*" element={<Navigate to="/404" />} />
