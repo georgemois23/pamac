@@ -653,11 +653,10 @@ form textArea{
   margin-inline: auto;
   border: 3px solid var(--basic-txt-blue);
   /* border: 3px solid #00563B; */
-  
   border-radius: 14px;
-  width: 50vw;
-  min-width: 150px;
   
+  min-width: 150px;
+  width: 50vw;
   outline: none;
   outline-offset: none;
 }
