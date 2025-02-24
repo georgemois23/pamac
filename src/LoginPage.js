@@ -17,7 +17,7 @@ import { useContext } from 'react';
 
 function LoginPage() {
 
-  const { login,register,handleIncognitoMode } = useContext(AuthContext);
+  const { login,register,handleIncognitoMode,user } = useContext(AuthContext);
   // const showPopUp = usePopUp();
 
   
@@ -112,17 +112,24 @@ function LoginPage() {
     e.preventDefault();
     try {
       await login(username, password);
+  
+      // Ensure user is properly updated before setting success
+      if (!user) {
+        throw new Error("User not found after login");
+      }
       setSuccess(true);
-      setSuccessMessage("Login was successful, you are redirecting to Chat..."); // Set success message on successful registration
-      console.log(successMessage);
+      setSuccessMessage("Login was successful, redirecting to Chat...");
+  
       setTimeout(() => {
-        navigate("/chat"); // Redirect after showing success message
-      }, 10000);
+        navigate("/chat");
+      }, 3000);
     } catch (err) {
+      console.error("Login failed:", err);
+      setSuccess(false); // Ensure success is reset
+      setSuccessMessage(""); // Clear success message
       setErrorloginmessage("Invalid username or password");
     }
   };
-
 
  
   const handleSignUp = async (e) => {

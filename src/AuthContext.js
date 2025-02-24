@@ -29,6 +29,7 @@ export const AuthProvider = ({ children }) => {
       const response = await axios.get("https://pamac-backendd.onrender.com/users/me", {
         headers: { Authorization: `Bearer ${token}` },
       });
+      
       setUser(response.data);
     } catch (error) {
       console.log("Invalid or expired token, logging out.");

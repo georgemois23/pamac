@@ -6,7 +6,7 @@ import { useState, useEffect } from 'react';
 import { Button, ButtonBase, Container, Typography } from '@mui/material';
 import Underconstruction from './Underconstruction';
 
-function FirstLand({ OnEnter }) {
+function FirstLand() {
     const handleBeforeUnload = () => {
         // localStorage.removeItem('username');
         // localStorage.removeItem('enter');  
@@ -26,7 +26,7 @@ function FirstLand({ OnEnter }) {
 
     const navigate = useNavigate();
     const handleEnter = () => {
-        OnEnter();
+        // OnEnter();
         navigate('/login');  // Navigate to the login page
         
       };
