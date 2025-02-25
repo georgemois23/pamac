@@ -50,7 +50,7 @@ function PreviewMsg() {
           <h2>No messages found.</h2>
         )}
       </div>
-      <button className="gobackk" onClick={handleGoBack}>Go to chat</button>
+      <button className="gobackk" onClick={handleGoBack}>Back to chat</button>
       <br />
       <div className="backg"></div>
     </div>
