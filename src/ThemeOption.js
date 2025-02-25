@@ -12,7 +12,6 @@ const ThemeOption = ({ children }) => {
 
   // Apply theme only **if it actually changes**
   useEffect(() => {
-    console.log(`ThemeOption Rendered, theme: ${theme} From LocalStorage: ${localStorage.getItem('theme')}`);
     document.body.setAttribute('data-theme', theme);
   }, [theme]); // Re-run only when `theme` changes
 
