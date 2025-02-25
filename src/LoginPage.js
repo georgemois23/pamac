@@ -172,13 +172,13 @@ function LoginPage() {
           <div className="choose">
             {login_check ? (
               <>
-                <h2 onClick={handleIncognito}>Go incognito</h2>
-                <h2 onClick={handlesignup}>Sign up</h2>
+                <h2 onClick={handleIncognito} title='You can enter the app as anonymous user'>Go incognito</h2>
+                <h2 onClick={handlesignup} title='Create an account'>Sign up</h2>
               </>
             ) : signup ? (
               <>
-                <h2 onClick={handleIncognito}>Go incognito</h2>
-                <h2 onClick={handlelogin}>Log in</h2>
+                <h2 onClick={handleIncognito} title='You can enter the app as anonymous user'>Go incognito</h2>
+                <h2 onClick={handlelogin} title='Log in into your account'>Log in</h2>
               </>
             ) : null}
           </div>
