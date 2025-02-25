@@ -5,7 +5,7 @@ import LoginPage from './LoginPage';
 import Chat from './Chat';
 import PreviewMsg from './PreviewMsg';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import ThemeOption from './ThemeOption';
+// import ThemeOption from './ThemeOption';
 import ErrorPage from './ErrorPage';
 import PopUps from './PopUps';
 import AuthContext from "./AuthContext"; // Import the context
@@ -17,6 +17,14 @@ function App() {
   const { user, token, login, logout, isLoading } = useContext(AuthContext); // Use the context here
   const LogButton = localStorage.getItem('Button');
   // Show a loading spinner while the app checks the token and user
+
+  const [themeLoaded, setThemeLoaded] = useState(false);
+
+useEffect(() => {
+  const theme = localStorage.getItem("theme") || "original";
+  document.body.setAttribute("data-theme", theme);
+  setThemeLoaded(true);
+}, []);
   if (isLoading) return <CircularProgress sx={{marginTop:"1rem"}} />;
 
 
@@ -26,8 +34,8 @@ function App() {
   };
 
   return (
-    <ThemeOption>
-      {/* <PopUpContext.Provider value={{}}> */}
+    // <ThemeOption>
+      // {/* <PopUpContext.Provider value={{}}> */}
         <Router>
           <div className="App">
             {user && (
@@ -57,8 +65,8 @@ function App() {
             </Routes>
           </div>
         </Router>
-      {/* </PopUpContext.Provider> */}
-    </ThemeOption>
+      // {/* </PopUpContext.Provider> */}
+    // {/* </ThemeOption> */}
   );
 }
 

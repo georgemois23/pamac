@@ -17,7 +17,7 @@ import { useContext } from 'react';
 
 function LoginPage() {
 
-  const { login,register,handleIncognitoMode,user } = useContext(AuthContext);
+  const { login,register,handleIncognitoMode,user,isLoading } = useContext(AuthContext);
   // const showPopUp = usePopUp();
 
   
@@ -48,9 +48,10 @@ function LoginPage() {
   const handleUsernameChange = (e) => {
     // setUsername(e.target.value.replace(/\s/g, ''));
     setErrormessage("");
+    setErrorloginmessage("");
     // input.value = input.value.replace(/[^a-zA-Z0-9]/g, '');
     if (/[^a-zA-Z0-9]/.test(e.target.value)) {
-      setErrormessage('*Only letters and numbers are allowed in username*')
+      setErrorloginmessage('*Only letters and numbers are allowed in username*')
     }  
     setUsername(e.target.value.replace(/[^a-zA-Z0-9]/g, ''));
   };
@@ -111,7 +112,7 @@ function LoginPage() {
   const handleLoginbutton = async(e) => {
     e.preventDefault();
     try {
-      await login(username, password);
+      await login(username.toLowerCase(), password);
   
       // Ensure user is properly updated before setting success
       if (!user) {
@@ -127,7 +128,7 @@ function LoginPage() {
       console.error("Login failed:", err);
       setSuccess(false); // Ensure success is reset
       setSuccessMessage(""); // Clear success message
-      setErrorloginmessage("Invalid username or password");
+      setErrorloginmessage("*Invalid username or password*");
     }
   };
 

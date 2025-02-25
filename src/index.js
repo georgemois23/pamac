@@ -4,8 +4,10 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { AuthProvider } from "./AuthContext";
+import ThemeOption from './ThemeOption';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
+  <ThemeOption>
   <React.StrictMode>
     <AuthProvider>
     {/* <ChakraProvider> */}
@@ -13,6 +15,7 @@ root.render(
     </AuthProvider>
     {/* </ChakraProvider> */}
   </React.StrictMode>
+  </ThemeOption>
 );
 
 // If you want to start measuring performance in your app, pass a function

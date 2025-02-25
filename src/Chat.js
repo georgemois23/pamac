@@ -4,8 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import ThemeOption from './ThemeOption';
 import Logout from './Logout';
 import { GlobalContext } from './GlobalContext';
-function Chat({ name, onMessage }) {
-
+function Chat({username }) {
+  const name= username;
   const navigate = useNavigate();
   const [message, setMessage] = useState('');
   localStorage.setItem("name",name);
@@ -32,7 +32,7 @@ function Chat({ name, onMessage }) {
       // Save the updated messages to sessionStorage
       localStorage.setItem('messages', JSON.stringify(updatedMessages));
       // Notify the parent component of the new message
-      onMessage(newMessage);
+      // onMessage(newMessage);
       // Navigate to the preview messages page
       navigate('/messages');
       document.title='Messages';
