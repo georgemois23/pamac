@@ -14,7 +14,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 // export const usePopUp = () => useContext(PopUpContext);
 
 function App() {
-  const { user, token, login, logout, isLoading } = useContext(AuthContext); // Use the context here
+  const { user, token, login, logout, isLoading,loadingMessage  } = useContext(AuthContext); // Use the context here
   const LogButton = localStorage.getItem('Button');
   const [themeLoaded, setThemeLoaded] = useState(false);
 

@@ -7,6 +7,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem("token") || null);
   const [isLoading, setIsLoading] = useState(false);
+  
 
   // Function to fetch user data
   const fetchUser = async () => {
@@ -74,7 +75,7 @@ export const AuthProvider = ({ children }) => {
         { headers: { "Content-Type": "application/json" } }
       );
       console.log("Registration successful:", response.data);
-      login(username, password);
+      // login(username, password);
     } catch (error) {
       console.log("Error during registration:", error.response?.data);
       throw error; // Rethrow the error so you can handle it in your catch block in the UI

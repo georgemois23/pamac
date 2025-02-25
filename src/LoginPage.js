@@ -59,6 +59,7 @@ function LoginPage() {
     // Prevent whitespace by replacing spaces with an empty string
     setTypepassword(true);
     setErrormessage("");
+    setErrorloginmessage("");
     setPassword(e.target.value.replace(/\s/g, ''));
     setPassword(e.target.value);
   };
@@ -92,6 +93,7 @@ function LoginPage() {
 
   const handlelogin = () => {
     document.title='Login';
+    setErrorloginmessage("");
     setErrormessage("");
     setsignup(false);
     setlogin(true);
@@ -100,6 +102,7 @@ function LoginPage() {
 
   const handlesignup = () => {
     document.title='Signup';
+    setErrorloginmessage("");
     setErrormessage("");
     setsignup(true);
     setlogin(false);
@@ -112,7 +115,7 @@ function LoginPage() {
   const handleLoginbutton = async(e) => {
     e.preventDefault();
     try {
-      await login(username, password);
+      await login(username.toLowerCase(), password);
   
       // Ensure user is properly updated before setting success
       if (!user) {
@@ -141,14 +144,15 @@ function LoginPage() {
       // console.log(error);
     // }
     try {
-      await register(username, password, "", "");
+      await register(username.toLowerCase(), password, "", "");
       console.log("User registered");
       setSuccess(true);
-      setSuccessMessage("Register was successful, you are redirecting to Chat..."); // Set success message on successful registration
+      setSuccessMessage("Register was successful, you can now login..."); // Set success message on successful registration
+      handlelogin();
       console.log(successMessage);
       setTimeout(() => {
-        navigate("/chat"); // Redirect after showing success message
-      }, 1000);
+        setSuccess(false) // Redirect after showing success message
+      }, 3000);
     } catch (err) {
       setErrorloginmessage("User already exists");
     }
