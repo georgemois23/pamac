@@ -16,19 +16,16 @@ import CircularProgress from '@mui/material/CircularProgress';
 function App() {
   const { user, token, login, logout, isLoading } = useContext(AuthContext); // Use the context here
   const LogButton = localStorage.getItem('Button');
-  // Show a loading spinner while the app checks the token and user
-
   const [themeLoaded, setThemeLoaded] = useState(false);
 
-useEffect(() => {
-  const theme = localStorage.getItem("theme") || "original";
-  document.body.setAttribute("data-theme", theme);
-  setThemeLoaded(true);
-}, []);
+// useEffect(() => {
+//   const theme = localStorage.getItem("theme") || "original";
+//   document.body.setAttribute("data-theme", theme);
+//   setThemeLoaded(true);
+// }, []);
   if (isLoading) return <CircularProgress sx={{marginTop:"1rem"}} />;
 
 
-  // Handler for logging out
   const handleLogout = () => {
     logout();
   };

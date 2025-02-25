@@ -112,7 +112,7 @@ function LoginPage() {
   const handleLoginbutton = async(e) => {
     e.preventDefault();
     try {
-      await login(username.toLowerCase(), password);
+      await login(username, password);
   
       // Ensure user is properly updated before setting success
       if (!user) {

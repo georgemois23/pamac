@@ -35,6 +35,7 @@ export const AuthProvider = ({ children }) => {
       console.log("Invalid or expired token, logging out.");
       logout();
     } finally {
+      console.log("Fetch succeed");
       setIsLoading(false); // End loading state once request is done
     }
   };

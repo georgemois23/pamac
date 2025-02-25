@@ -4,11 +4,10 @@ import { useNavigate } from 'react-router-dom';
 import ThemeOption from './ThemeOption';
 import Logout from './Logout';
 import { GlobalContext } from './GlobalContext';
-function Chat({username }) {
-  const name= username;
+function Chat({name }) {
   const navigate = useNavigate();
   const [message, setMessage] = useState('');
-  localStorage.setItem("name",name);
+  // localStorage.setItem("name",name);
   
 
   const handleMessageChange = (event) => {
