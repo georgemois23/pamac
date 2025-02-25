@@ -17,7 +17,7 @@ import { useContext } from 'react';
 
 function LoginPage() {
 
-  const { login,register,handleIncognitoMode,user,isLoading } = useContext(AuthContext);
+  const { login,register,handleIncognitoMode,user,isLoading,loginMessage } = useContext(AuthContext);
   // const showPopUp = usePopUp();
 
   
@@ -121,6 +121,7 @@ function LoginPage() {
       if (!user) {
         throw new Error("User not found after login");
       }
+      console.log(loginMessage);
       setSuccess(true);
       setSuccessMessage("Login was successful, redirecting to Chat...");
   
@@ -152,7 +153,7 @@ function LoginPage() {
       console.log(successMessage);
       setTimeout(() => {
         setSuccess(false) // Redirect after showing success message
-      }, 3000);
+      }, 2000);
     } catch (err) {
       setErrorloginmessage("User already exists");
     }
@@ -165,7 +166,7 @@ function LoginPage() {
     <div>
       <ThemeOption />
   
-      {Success ? (
+      {(Success) ? (
         <div>{successMessage}</div>
       ) : (
         <>

@@ -245,6 +245,7 @@
     display: flex;
     flex-direction: row;
     /* gap: 3rem; */
+    font-size: 16px;
     justify-content: space-around;
   }
   
@@ -588,6 +589,7 @@ form{
     justify-content: center;
     align-items: center;
     margin-inline: auto;
+    font-size: 14px;
     /* gap: 1rem; */
     justify-content: space-around;
   }
@@ -678,7 +680,8 @@ form textArea{
   border: 2px solid var(--basic-txt-blue);
   /* border: 2px solid #00563B; */
   border-radius: 10px;
-  width: 60vw;
+  width: 80vw;
+  max-width: 300px;
   min-width: 200px;
   height: fit-content;
   margin-inline: auto;
@@ -701,6 +704,7 @@ form textArea{
     justify-content: center;
     align-items: center;
     margin-inline: auto;
+    font-size: 15px;
     /* gap: 1rem; */
     justify-content: space-around;
   }
@@ -714,7 +718,7 @@ form textArea{
     border-radius: 7px ;
     padding: 7px;
     width: max-content;
-    font-size: 14px;
+    /* font-size: 14px; */
   }
 }
 
@@ -765,6 +769,10 @@ form textArea{
     width: fit-content;
     top: 5px;
     left: 5px;
+  }
+
+  .choose{
+    font-size: 12px;
   }
 
   backg{

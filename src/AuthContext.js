@@ -7,39 +7,35 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem("token") || null);
   const [isLoading, setIsLoading] = useState(false);
+  const [loginMessage, setloginMessage] = useState(null);
   
 
   // Function to fetch user data
   const fetchUser = async () => {
-    // If in incognito mode, set a dummy user or skip fetching user data
-    if (sessionStorage.getItem('incognito') === 'true') {
-      setUser({ username: '', role: 'guest' });
-      localStorage.setItem("Button","Login");
-      setIsLoading(false);
-      return;
-    }
-
-    // If no token, set user as null
     if (!token) {
       setUser(null);
       setIsLoading(false);
       return;
     }
-
+  
     try {
       const response = await axios.get("https://pamac-backendd.onrender.com/users/me", {
         headers: { Authorization: `Bearer ${token}` },
       });
-      
+  
       setUser(response.data);
+      // setloginMessage("Login was successful, redirecting to Chat...");
+      // setTimeout(() => {
+      //   setloginMessage(null);
+      // }, 1000);
     } catch (error) {
       console.log("Invalid or expired token, logging out.");
       logout();
     } finally {
-      console.log("Fetch succeed");
-      setIsLoading(false); // End loading state once request is done
+      setIsLoading(false);
     }
   };
+  
 
   // Function to login
   const login = async (username, password) => {
@@ -53,10 +49,20 @@ export const AuthProvider = ({ children }) => {
       const accessToken = response.data.access_token;
       localStorage.setItem("token", accessToken);
       setToken(accessToken);
+      setloginMessage("Login was successful, redirecting to Chat...");
+
       fetchUser(); // Fetch the user after login
       console.log("Login succeeded");
+      setloginMessage("Login was successful, redirecting to Chat...");
+      setTimeout(() => {
+        setloginMessage(null);
+      }, 1000);
       localStorage.setItem("Button","Logout");
     } catch (error) {
+      setloginMessage("Login failed. Please try again.");
+      setTimeout(() => {
+        setloginMessage(null);
+      }, 1000);
       console.log("Login failed:", error);
     }
   };
@@ -129,7 +135,7 @@ export const AuthProvider = ({ children }) => {
   }, [token]);
 
   return (
-    <AuthContext.Provider value={{ user, token, login, logout, register, isLoading, handleIncognitoMode }}>
+    <AuthContext.Provider value={{ user, token, login, logout, register, isLoading, handleIncognitoMode, loginMessage }}>
       {children}
     </AuthContext.Provider>
   );

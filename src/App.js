@@ -14,7 +14,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 // export const usePopUp = () => useContext(PopUpContext);
 
 function App() {
-  const { user, token, login, logout, isLoading,loadingMessage  } = useContext(AuthContext); // Use the context here
+  const { user, token, login, logout, isLoading,loginMessage  } = useContext(AuthContext); // Use the context here
   const LogButton = localStorage.getItem('Button');
   const [themeLoaded, setThemeLoaded] = useState(false);
 
@@ -23,8 +23,29 @@ useEffect(() => {
   document.body.setAttribute("data-theme", theme);
   setThemeLoaded(true);
 }, []);
-  if (isLoading) return <CircularProgress sx={{marginTop:"1rem"}} />;
-
+  // if (isLoading) return <CircularProgress sx={{marginTop:"1rem"}} />;
+  if (isLoading) {
+    return (
+      <div style={{
+        position: "fixed", 
+        top: "50%", 
+        left: "50%", 
+        transform: "translate(-50%, -50%)", 
+        padding: "20px", 
+        borderRadius: "10px",
+        fontSize: "18px",
+        textAlign: "center",
+        zIndex: 1000
+      }}>
+        <CircularProgress sx={{ marginTop: "1rem" }} />
+        {loginMessage && (
+  <div>          
+    <p>{loginMessage}</p>
+  </div>)}
+      </div> 
+    );
+  }
+ 
 
   const handleLogout = () => {
     logout();
