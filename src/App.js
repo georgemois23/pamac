@@ -18,11 +18,11 @@ function App() {
   const LogButton = localStorage.getItem('Button');
   const [themeLoaded, setThemeLoaded] = useState(false);
 
-// useEffect(() => {
-//   const theme = localStorage.getItem("theme") || "original";
-//   document.body.setAttribute("data-theme", theme);
-//   setThemeLoaded(true);
-// }, []);
+useEffect(() => {
+  const theme = localStorage.getItem("theme") || "original";
+  document.body.setAttribute("data-theme", theme);
+  setThemeLoaded(true);
+}, []);
   if (isLoading) return <CircularProgress sx={{marginTop:"1rem"}} />;
 
 
