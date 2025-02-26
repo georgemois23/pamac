@@ -1,7 +1,7 @@
 // Import necessary modules
 import './App.css';
 // import { usePopUp } from './App'; 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Alert } from "@mui/material";
 import { CheckCircle as CheckIcon } from "@mui/icons-material"; // Correct import
@@ -34,6 +34,8 @@ function LoginPage() {
   const [type, setType] = useState('password');
   // const [icon, setIcon] = useState(eyeOff);
   const [typepassword, setTypepassword] = useState(false);
+
+ 
 
   const handleToggle = () => {
     if (type === 'password') {
@@ -109,6 +111,12 @@ function LoginPage() {
     setincognito(false);
   };
 
+  useEffect(()=>{
+    if (localStorage.getItem('vst') !== 'true'){
+      handlesignup();
+    }
+  },[localStorage.getItem('vst')]);
+  
   const handleIncognitobutton = async(e) => {
 
   };
@@ -116,7 +124,7 @@ function LoginPage() {
     e.preventDefault();
     try {
       await login(username.toLowerCase(), password);
-  
+      
       // Ensure user is properly updated before setting success
       if (!user) {
         throw new Error("User not found after login");
@@ -155,7 +163,7 @@ function LoginPage() {
         setSuccess(false) // Redirect after showing success message
       }, 2000);
     } catch (err) {
-      setErrorloginmessage("User already exists");
+      setErrorloginmessage("*User already exists*");
     }
 
     // onLogin(username); // Perform the login
@@ -197,6 +205,7 @@ function LoginPage() {
                   maxLength={12}
                   value={username}
                   onChange={handleUsernameChange}
+                  autocomplete="username"
                 />
                 <label htmlFor="password">Password:</label>
                 <div className="password-container">
@@ -207,6 +216,7 @@ function LoginPage() {
                     onChange={handlePasswordChange}
                     onKeyDown={handleKeyDown}
                     maxLength={12}
+                    autocomplete="current-password"
                   />
                   <span className="password-icon" onClick={handleToggle}></span>
                 </div>

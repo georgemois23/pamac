@@ -8,7 +8,7 @@ function Chat({name }) {
   const navigate = useNavigate();
   const [message, setMessage] = useState('');
   // localStorage.setItem("name",name);
-  
+    
 
   const handleMessageChange = (event) => {
     if(event.target.value.length<=0) 

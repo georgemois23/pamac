@@ -22,8 +22,9 @@ export const AuthProvider = ({ children }) => {
       const response = await axios.get("https://pamac-backendd.onrender.com/users/me", {
         headers: { Authorization: `Bearer ${token}` },
       });
-  
+      
       setUser(response.data);
+      setIsLoading(false);
       // setloginMessage("Login was successful, redirecting to Chat...");
       // setTimeout(() => {
       //   setloginMessage(null);
@@ -39,13 +40,15 @@ export const AuthProvider = ({ children }) => {
 
   // Function to login
   const login = async (username, password) => {
+    
     try {
       const response = await axios.post(
+        
         "https://pamac-backendd.onrender.com/token",
         new URLSearchParams({ username, password }),
         { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
       );
-
+      
       const accessToken = response.data.access_token;
       localStorage.setItem("token", accessToken);
       setToken(accessToken);
@@ -54,6 +57,7 @@ export const AuthProvider = ({ children }) => {
       fetchUser(); // Fetch the user after login
       console.log("Login succeeded");
       setloginMessage("Login was successful, redirecting to Chat...");
+      localStorage.setItem("vst",true);
       setTimeout(() => {
         setloginMessage(null);
       }, 1000);

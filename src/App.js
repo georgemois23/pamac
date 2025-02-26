@@ -18,6 +18,8 @@ function App() {
   const LogButton = localStorage.getItem('Button');
   const [themeLoaded, setThemeLoaded] = useState(false);
 
+
+  
 useEffect(() => {
   const theme = localStorage.getItem("theme") || "original";
   document.body.setAttribute("data-theme", theme);
@@ -56,6 +58,7 @@ useEffect(() => {
       // {/* <PopUpContext.Provider value={{}}> */}
         <Router>
           <div className="App">
+            
             {user && (
               <button onClick={handleLogout} className="logout-button">
                 {LogButton}

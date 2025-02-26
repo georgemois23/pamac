@@ -13,6 +13,9 @@
   url("https://db.onlinewebfonts.com/t/d4efe50000ab6b41b3e546b035abd2e0.ttf")format("truetype"),
   url("https://db.onlinewebfonts.com/t/d4efe50000ab6b41b3e546b035abd2e0.svg#Toppler W05 Regular")format("svg");
 }
+
+
+
 .go-back{
   border-radius: 5px;
   /* font-size: 30px; */
@@ -512,6 +515,14 @@ form{
   justify-content: center;
   align-items: center;
   height: 100vh;
+}
+
+
+::selection{
+  background-color: var(--basic-txt-blue);
+  color: var(--basic-background-blue);
+  border: 2px solid black;
+  border-radius: 5rem;
 }
 
 
