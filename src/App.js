@@ -7,11 +7,9 @@ import PreviewMsg from './PreviewMsg';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 // import ThemeOption from './ThemeOption';
 import ErrorPage from './ErrorPage';
-import PopUps from './PopUps';
 import AuthContext from "./AuthContext"; // Import the context
 import CircularProgress from '@mui/material/CircularProgress';
-// const PopUpContext = createContext();
-// export const usePopUp = () => useContext(PopUpContext);
+import UnderConstruction from './components/Underconstruction';
 
 function App() {
   const { user, token, login, logout, isLoading,loginMessage  } = useContext(AuthContext); // Use the context here
@@ -58,7 +56,7 @@ useEffect(() => {
       // {/* <PopUpContext.Provider value={{}}> */}
         <Router>
           <div className="App">
-            
+          <UnderConstruction/>
             {user && (
               <button onClick={handleLogout} className="logout-button">
                 {LogButton}

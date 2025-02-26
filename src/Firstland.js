@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 // import { useState } from 'react';
 import { Button, ButtonBase, Container, Typography } from '@mui/material';
-import Underconstruction from './Underconstruction';
 
 function FirstLand() {
     const handleBeforeUnload = () => {

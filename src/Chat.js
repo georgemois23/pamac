@@ -2,8 +2,6 @@ import './App.css';
 import React, { useState,useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ThemeOption from './ThemeOption';
-import Logout from './Logout';
-import { GlobalContext } from './GlobalContext';
 function Chat({name }) {
   const navigate = useNavigate();
   const [message, setMessage] = useState('');

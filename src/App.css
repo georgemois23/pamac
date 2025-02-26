@@ -480,6 +480,12 @@ form{
   flex-direction: column;
   gap: 1rem;
 }
+
+.MuiPaper-root.MuiSnackbarContent-root {
+  --Paper-overlay: none !important;
+  background-color: #0000 !important;
+  color: #a4c2f4 !important;
+}
 :root{
   --basic-background-blue: #001f3f;
   /* --basic-background-blue: #190c25; */

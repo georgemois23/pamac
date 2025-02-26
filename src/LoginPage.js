@@ -8,7 +8,6 @@ import { CheckCircle as CheckIcon } from "@mui/icons-material"; // Correct impor
 // import { Icon } from 'react-icons-kit';
 // import { eyeOff } from 'react-icons-kit/feather/eyeOff';
 // import { eye } from 'react-icons-kit/feather/eye';
-import PopUps from './PopUps';
 import supabase from './config/supabaseClient';
 import ThemeOption from './ThemeOption';
 import axios from './api/axios';
