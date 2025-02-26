@@ -24,11 +24,12 @@ export default function UnderConstruction() {
       open={open}
       sx={{
         border: "2px solid",
-        borderRadius: "10px"
+        borderRadius: "10px",
+        marginBottom: "0.3rem"
       }}
       onClose={handleClose}
       TransitionComponent={GrowTransition}
-      message="Site is currently under construction by Moysiadis George  "
+      message="This website is currently under construction by George Moysiadis."
       autoHideDuration={2000}
     />
   );
