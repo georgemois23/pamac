@@ -12,17 +12,24 @@ import CircularProgress from '@mui/material/CircularProgress';
 import UnderConstruction from './components/Underconstruction';
 
 function App() {
-  const { user, token, login, logout, isLoading,loginMessage  } = useContext(AuthContext); // Use the context here
-  const LogButton = localStorage.getItem('Button');
+  const { user, token, login, logout, isLoading,loginMessage,LogBut  } = useContext(AuthContext); // Use the context here
+  // const LogButton = localStorage.getItem("Button");
+  
   const [themeLoaded, setThemeLoaded] = useState(false);
 
 
+  console.table(user);
   
 useEffect(() => {
-  const theme = localStorage.getItem("theme") || "original";
-  document.body.setAttribute("data-theme", theme);
-  setThemeLoaded(true);
-}, []);
+  localStorage.setItem("Button",LogBut);
+ 
+}, [LogBut]);
+
+// useEffect(() => {
+//   const theme = localStorage.getItem("theme") || "original";
+//   document.body.setAttribute("data-theme", theme);
+//   setThemeLoaded(true);
+// }, []);
   // if (isLoading) return <CircularProgress sx={{marginTop:"1rem"}} />;
   if (isLoading) {
     return (
@@ -56,10 +63,10 @@ useEffect(() => {
       // {/* <PopUpContext.Provider value={{}}> */}
         <Router>
           <div className="App">
-          <UnderConstruction/>
+          <UnderConstruction message={"This website is currently under construction by George Moysiadis."}/>
             {user && (
               <button onClick={handleLogout} className="logout-button">
-                {LogButton}
+                {LogBut}
               </button>
             )}
             <Routes>
@@ -73,7 +80,7 @@ useEffect(() => {
               />
               <Route
                 path="/chat"
-                element={user ? <Chat name={user.username} /> : <Navigate to="/login" replace />}
+                element={user ? <Chat user={user} /> : <Navigate to="/login" replace />}
               />
               <Route
                 path="/messages"
