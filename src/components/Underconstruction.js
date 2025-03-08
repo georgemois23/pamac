@@ -6,7 +6,7 @@ function GrowTransition(props) {
   return <Grow {...props} />;
 }
 
-export default function UnderConstruction() {
+export default function UnderConstruction({message}) {
   const [open, setOpen] = useState(false);
 
   React.useEffect(() => {
@@ -14,6 +14,7 @@ export default function UnderConstruction() {
       setOpen(true);
     }
   }, []);
+ 
 
   const handleClose = () => {
     setOpen(false);
@@ -29,8 +30,8 @@ export default function UnderConstruction() {
       }}
       onClose={handleClose}
       TransitionComponent={GrowTransition}
-      message="This website is currently under construction by George Moysiadis."
-      autoHideDuration={2000}
+      message={message}
+      autoHideDuration={4000}
     />
   );
 }

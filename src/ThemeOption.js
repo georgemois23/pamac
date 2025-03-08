@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import toggle1st from "./assets/toggle_off_1st.svg";
 import toggle2nd from "./assets/toggle_on_1st.svg";
 
+// Base theme configuration
 const baseTheme = {
   palette: {
     mode: "dark",
@@ -39,11 +40,33 @@ const baseTheme = {
       styleOverrides: {
         root: {
           color: "#a4c2f4",
-          "& label": { color: "#a4c2f4" },
-          "& input": { color: "#a4c2f4" },
           "& .MuiOutlinedInput-root": {
-            "& fieldset": { borderColor: "#a4c2f4" },
-            "&:hover fieldset": { borderColor: "#a4c2f4" },
+            borderRadius: "10px", // Rounded border
+            textAlign: "center",
+            "& .MuiOutlinedInput-notchedOutline": {
+              borderColor: "#a4c2f4", // Set border color
+              "& legend": {
+                width: "0px !important", // Hide the default legend
+              },
+            },
+            "&:hover .MuiOutlinedInput-notchedOutline": {
+              borderColor: "#a4c2f4", // Set border color on hover
+            },
+            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+              borderColor: "#a4c2f4", // Set border color on focus
+              borderWidth: "2px", // Increase border width on focus to prevent gap
+            },
+          },
+          "& .MuiInputLabel-root": {
+            color: "#a4c2f4", // Label color
+            left: "12px", // Moves label slightly left to avoid gap
+            transformOrigin: "top left", // Ensures smooth shrinking
+          },
+          "& .MuiInputLabel-shrink": {
+            transform: "translate(0, -6px) scale(0.75) !important", // Ensures label moves correctly
+          },
+          "& .MuiOutlinedInput-input": {
+            padding: "10px 12px", // Ensures consistent spacing inside input
           },
         },
       },
@@ -51,32 +74,30 @@ const baseTheme = {
     MuiPaper: {
       styleOverrides: {
         root: {
-          backgroundColor: "#1e1e1e", // Set the background color for Paper
-          color: "#a4c2f4", // Set the text color for Paper
-          "--Paper-overlay": "none", // Disable the white overlay
+          backgroundColor: "#1e1e1e", // Paper background color
+          color: "#a4c2f4", // Paper text color
         },
       },
     },
     MuiSnackbar: {
       styleOverrides: {
         root: {
-          backgroundColor: "transparent", // Ensure Snackbar itself is transparent
+          backgroundColor: "transparent", // Transparent Snackbar background
         },
       },
     },
     MuiSnackbarContent: {
       styleOverrides: {
         root: {
-          backgroundColor: "#1e1e1e", // Set the background color for Snackbar content
-          color: "#a4c2f4", // Set the text color for Snackbar content
-          "& .MuiPaper-root": {
-            backgroundColor: "#1e1e1e", // Ensure nested Paper has the correct background
-          },
+          backgroundColor: "#1e1e1e", // Snackbar content background color
+          color: "#a4c2f4", // Snackbar text color
         },
       },
     },
   },
 };
+
+// Original theme setup
 export const originalTheme = responsiveFontSizes(
   createTheme({
     ...baseTheme,
@@ -88,7 +109,8 @@ export const originalTheme = responsiveFontSizes(
   })
 );
 
-export const purpleTheme = responsiveFontSizes(
+// Commented out purple theme setup
+/* export const purpleTheme = responsiveFontSizes(
   createTheme({
     ...baseTheme,
     palette: {
@@ -113,8 +135,9 @@ export const purpleTheme = responsiveFontSizes(
       },
     },
   })
-);
+); */
 
+// ThemeOption component to toggle themes
 export const ThemeOption = ({ children }) => {
   const [theme, setTheme] = useState(() => localStorage.getItem("theme") || "original");
 
@@ -123,113 +146,30 @@ export const ThemeOption = ({ children }) => {
   }, [theme]);
 
   const handleThemeToggle = () => {
-    setTheme(prevTheme => {
-      const newTheme = prevTheme === "purple" ? "original" : "purple";
+    setTheme((prevTheme) => {
+      const newTheme = prevTheme === "original" ? "original" : "original"; // Only "original" theme
       localStorage.setItem("theme", newTheme);
       document.body.setAttribute("data-theme", newTheme);
       return newTheme;
     });
   };
 
-  const appliedTheme = theme === "purple" ? purpleTheme : originalTheme;
+  const appliedTheme = originalTheme; // Only applying the original theme
 
   return (
     <ThemeProvider theme={appliedTheme}>
       <CssBaseline />
-      <img 
-        src={theme === "purple" ? toggle2nd : toggle1st} 
-        className="theme-option" 
-        id={`theme-${theme}`} 
-        onClick={handleThemeToggle} 
-        title="Change theme color" 
+      {/* <img
+        src={toggle1st}
+        className="theme-option"
+        id={`theme-original`}
+        onClick={handleThemeToggle}
+        title="Change theme color"
         alt="Toggle Theme"
-      />
+      /> */}
       {children}
     </ThemeProvider>
   );
 };
 
 export default ThemeOption;
-
-
-
-
-
-
-
-// import React, { useState, useEffect } from "react";
-// import { ThemeProvider, createTheme, responsiveFontSizes } from "@mui/material/styles";
-// import CssBaseline from "@mui/material/CssBaseline";
-// import toggle1st from './assets/toggle_off_1st.svg';
-// import toggle2nd from './assets/toggle_on_1st.svg';
-
-// const ThemeOption = ({ children }) => {
-//   // Get the theme **only once** on first render
-//   const [theme, setTheme] = useState(() => {
-//     return localStorage.getItem('theme') || 'original';
-//   });
-
-//   // Apply theme only **if it actually changes**
-//   useEffect(() => {
-//     document.body.setAttribute('data-theme', theme);
-//   }, [theme]); // Re-run only when `theme` changes
-
-//   const handleThemeToggle = () => {
-//     setTheme(prevTheme => {
-//       const newTheme = prevTheme === 'purple' ? 'original' : 'purple';
-//       localStorage.setItem('theme', newTheme);
-//       document.body.setAttribute('data-theme', newTheme);
-//       return newTheme; // Only update if necessary
-//     });
-//   };
-
-//   // Select theme
-//   const appliedTheme = theme === 'purple' ? purpleTheme : originalTheme;
-
-//   return (
-//     <ThemeProvider theme={appliedTheme}>
-//       <CssBaseline />
-//       <div>
-//         <img
-//           src={theme === 'purple' ? toggle2nd : toggle1st}
-//           className="theme-option"
-//           id={`theme-${theme}`}
-//           onClick={handleThemeToggle}
-//           title="Change theme color"
-//         />
-//       </div>
-//       {children}
-//     </ThemeProvider>
-//   );
-// };
-
-// const originalTheme = responsiveFontSizes(createTheme({
-//   palette: {
-//     background: { default: '#001f3f' },
-//     text: { primary: '#a4c2f4' },
-//   },
-// }));
-
-// const purpleTheme = createTheme({
-//   palette: {
-//     background: { default: '#190c25' },
-//     text: { disabled: '#6d8ba7', primary: '#D3D3D3' },
-//   },
-//   typography: { fontFamily: 'Advent Pro' },
-//   components: {
-//     MuiButton: {
-//       styleOverrides: {
-//         root: {
-//           color: '#D3D3D3',
-//           backgroundColor: '#190c25',
-//           transition: 'all 0.3s ease',
-//           '&:hover': { backgroundColor: '#D3D3D3', color: '#190c25' },
-//           '&:focus': { backgroundColor: '#D3D3D3', color: '#190c25' },
-//           '&:disabled': { backgroundColor: '#6d8ba7', color: '#4f4f4f' },
-//         },
-//       },
-//     },
-//   },
-// });
-
-// export default ThemeOption;
