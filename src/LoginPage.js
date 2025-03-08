@@ -3,20 +3,20 @@ import './App.css';
 // import { usePopUp } from './App'; 
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Alert } from "@mui/material";
+import { Alert, Typography } from "@mui/material";
 import { CheckCircle as CheckIcon } from "@mui/icons-material"; // Correct import
-// import { Icon } from 'react-icons-kit';
-// import { eyeOff } from 'react-icons-kit/feather/eyeOff';
-// import { eye } from 'react-icons-kit/feather/eye';
 import supabase from './config/supabaseClient';
 import ThemeOption from './ThemeOption';
 import axios from './api/axios';
 import AuthContext from "./AuthContext";
 import { useContext } from 'react';
-
+import CircularProgress from '@mui/material/CircularProgress';
+import UnderConstruction from './components/Underconstruction';
+import { TextField, InputAdornment, IconButton } from '@mui/material';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 function LoginPage() {
 
-  const { login,register,handleIncognitoMode,user,isLoading,loginMessage } = useContext(AuthContext);
+  const { login,register,handleIncognitoMode,user,isLoading,loginMessage,loginErrorMessage } = useContext(AuthContext);
   // const showPopUp = usePopUp();
 
   
@@ -31,19 +31,22 @@ function LoginPage() {
   const [errormessage, setErrormessage] = useState('');
   const [password, setPassword] = useState('');
   const [type, setType] = useState('password');
+  const [loadingg, setloadingg] = useState(false);
+  const [msgloading, setmsgloading] = useState("");
+  const [loginbut, setloginbut] = useState("");
+  const [signupbut, setsignupbut] = useState("");
   // const [icon, setIcon] = useState(eyeOff);
   const [typepassword, setTypepassword] = useState(false);
 
- 
+  useEffect(() => {
+    setErrorloginmessage(loginMessage);
+  }, [loginMessage]); // This runs whenever `loginMessage` changes
+  
 
-  const handleToggle = () => {
-    if (type === 'password') {
-      // setIcon(eye);
-      setType('text');
-    } else {
-      // setIcon(eyeOff);
-      setType('password');
-    }
+  const [showPassword, setShowPassword] = useState(false);
+
+  const handleClickShowPassword = () => {
+    setShowPassword((prev) => !prev);
   };
   
   const handleUsernameChange = (e) => {
@@ -121,48 +124,62 @@ function LoginPage() {
   };
   const handleLoginbutton = async(e) => {
     e.preventDefault();
+    setErrorloginmessage("");
+    setloadingg(true);
+    setloginbut("Trying to sign in");
     try {
       await login(username.toLowerCase(), password);
-      
       // Ensure user is properly updated before setting success
       if (!user) {
         throw new Error("User not found after login");
       }
-      console.log(loginMessage);
+      console.log("ddd",loginMessage);
       setSuccess(true);
       setSuccessMessage("Login was successful, redirecting to Chat...");
-  
+      setloadingg(false);
       setTimeout(() => {
         navigate("/chat");
       }, 3000);
     } catch (err) {
+      
+      setloginbut("")
       console.error("Login failed:", err);
       setSuccess(false); // Ensure success is reset
       setSuccessMessage(""); // Clear success message
-      setErrorloginmessage("*Invalid username or password*");
+      setErrorloginmessage(loginMessage);
+      console.log("loginMessage: ", loginMessage);
     }
   };
 
  
   const handleSignUp = async (e) => {
     e.preventDefault();
+    setErrorloginmessage("");
+    setloadingg(true);
+    setsignupbut("Trying to sign up");
+    console.log('Sign up?');
     // try {
       // await axios.post('http://localhost:8000/register', {username,password})
     // } catch (error) {
       // console.log(error);
     // }
     try {
+      console.log('Sign up? sure?');
       await register(username.toLowerCase(), password, "", "");
+      console.log('Sign up? sure?');
       console.log("User registered");
       setSuccess(true);
       setSuccessMessage("Register was successful, you can now login..."); // Set success message on successful registration
+      setloadingg(false);
       handlelogin();
       console.log(successMessage);
       setTimeout(() => {
         setSuccess(false) // Redirect after showing success message
       }, 2000);
     } catch (err) {
+      setloadingg(false);
       setErrorloginmessage("*User already exists*");
+      setsignupbut("");
     }
 
     // onLogin(username); // Perform the login
@@ -172,7 +189,6 @@ function LoginPage() {
   return (
     <div>
       <ThemeOption />
-  
       {(Success) ? (
         <div>{successMessage}</div>
       ) : (
@@ -193,45 +209,98 @@ function LoginPage() {
   
           {login_check && (
             <div className="Login">
-              <h1>Log in!</h1>
-              {errorloginmessage && <div className="ERROR">{errorloginmessage}</div>}
+              <div className='SPACE'>
+              <Typography variant='h1' sx={{fontWeight:"bold"}}>Log in!</Typography>
+              </div>
+              
               <form onSubmit={handleLoginbutton}>
+              {errorloginmessage && <span className='ERROR'>{errorloginmessage}</span>}
                 <label htmlFor="username">Username:</label>
-                <input
+                <input 
+                
                   id="username"
                   className="username"
+                  // variant="outlined"
+                  // label="Username"
                   type="text"
                   maxLength={12}
                   value={username}
                   onChange={handleUsernameChange}
-                  autocomplete="username"
+                  // fullWidth
+                
+                  //   "& .MuiOutlinedInput-root": {
+                  //     borderRadius: "10px",
+                  //     textAlign: "center",
+                  //   },
+                  //   "& .MuiOutlinedInput-notchedOutline": {
+                  //     borderColor: "var(--basic-txt-blue)", 
+                  //     "& legend": {
+                  //       width: "0px !important", 
+                  //     },
+                  //   },
+                  //   "& .MuiInputLabel-root": {
+                  //     color: "var(--basic-txt-blue)", // Match theme
+                  //     left: "12px", // ✅ Moves label slightly left to avoid gap
+                  //     transformOrigin: "top left", // ✅ Ensures smooth shrinking
+                  //   },
+                  //   "& .MuiInputLabel-shrink": {
+                  //     transform: "translate(0, -6px) scale(0.75) !important", // ✅ Ensures label moves correctly
+                  //   },
+                  //   "& .MuiOutlinedInput-input": {
+                  //     padding: "10px 12px", // ✅ Ensures consistent spacing inside input
+                  //   },
+                  // }}
                 />
+                
                 <label htmlFor="password">Password:</label>
                 <div className="password-container">
-                  <input
+                {/* <TextField */}
+                <input
                     className="username password-input"
+                    // variant="outlined"
+                    // label="Password"
                     type={type}
                     value={password}
                     onChange={handlePasswordChange}
                     onKeyDown={handleKeyDown}
                     maxLength={12}
                     autocomplete="current-password"
+                    // InputProps={{
+                    //   endAdornment: (
+                    //     <InputAdornment position="end">
+                    //       <IconButton
+                    //         aria-label={showPassword ? 'Hide password' : 'Show password'}
+                    //         onClick={handleClickShowPassword}
+                    //         edge="end"
+                    //       >
+                    //         {showPassword ? <VisibilityOff /> : <Visibility />}
+                    //       </IconButton>
+                    //     </InputAdornment>
+                    //   ),
+                    // }}
                   />
-                  <span className="password-icon" onClick={handleToggle}></span>
                 </div>
-                <button disabled={!(username && password)} className="sub" type="submit">
-                  Log In
+                <button disabled={!(username && password) || loginbut} className="sub" type="submit">
+                  Log in
                 </button>
+                {loginbut && (
+  <span style={{ display: "flex", alignItems: "center", gap: "5px", fontSize: "15px"}}>
+    <CircularProgress size={14} />
+    {loginbut}
+  </span>
+)}
               </form>
             </div>
           )}
   
           {signup && (
             <div className="Login" >
-              <h1>Sign up!</h1>
-              {errormessage && <h4 className="ERROR">{errormessage}</h4>}
-              {errorloginmessage && <div className="ERROR">{errorloginmessage}</div>}
+              <div className='SPACE'>
+              <Typography variant='h1' sx={{fontWeight:"bold"}}>Sign up!</Typography></div>
+              {(errormessage || loginErrorMessage) && <h4 className="ERROR">{errormessage} || {loginErrorMessage}</h4>}
+             
               <form onSubmit={handleSignUp}>
+              {errorloginmessage && <span className="ERROR">{errorloginmessage}</span>}
                 <label htmlFor="username">Username:</label>
                 <input
                   id="username"
@@ -251,11 +320,16 @@ function LoginPage() {
                     onKeyDown={handleKeyDown}
                     maxLength={12}
                   />
-                  <span className="password-icon" onClick={handleToggle}></span>
                 </div>
-                <button disabled={!(username && password)} className="sub" type="submit">
-                  Sign Up
+                <button disabled={!(username && password) || signupbut} className="sub" type="submit">
+                Sign Up
                 </button>
+                {signupbut && (
+  <span style={{ display: "flex", alignItems: "center", gap: "5px", fontSize: "15px"}}>
+    <CircularProgress size={14} />
+    {signupbut}
+  </span>
+)}
               </form>
             </div>
           )}
