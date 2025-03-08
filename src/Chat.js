@@ -2,7 +2,7 @@ import './App.css';
 import React, { useState,useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ThemeOption from './ThemeOption';
-function Chat({name }) {
+function Chat({user }) {
   const navigate = useNavigate();
   const [message, setMessage] = useState('');
   // localStorage.setItem("name",name);
@@ -24,7 +24,7 @@ function Chat({name }) {
         timeStyle: 'short' 
       }).format(new Date());
       // Add the new message with name to the array
-      const newMessage = { name: !name ? '' : name, text: message, time:currentTime  };
+      const newMessage = { name: !user.username ? '' : user.username, text: message, time:currentTime  };
       const updatedMessages = [...storedMessages, newMessage];
       // Save the updated messages to sessionStorage
       localStorage.setItem('messages', JSON.stringify(updatedMessages));
@@ -41,13 +41,13 @@ function Chat({name }) {
     <div className='Chat'>
       {/* <Logout handleLogout={handleLogout} logmsg={!name ? 'Login' : 'Logout'}/> */}
       <ThemeOption/>
-      <h1 className='namee'>Hello {!name ? '[anonymous] user' : name}!</h1>
+      <h1 className='namee'>Hello {!user.username ? '[anonymous] user' : user.username}!</h1>
       <form onSubmit={handleSend}>
         <textarea
           id='text'
           value={message}
           onChange={handleMessageChange}
-          placeholder={!name ? 'Type your anonymous message...' : 'Type your message...'}
+          placeholder={!user.username ? 'Type your anonymous message...' : 'Type your message...'}
           maxLength={350}
         />
         <button disabled={(!message) || message.trim().length<=0}  className='sub-but' type='submit'>Send</button>

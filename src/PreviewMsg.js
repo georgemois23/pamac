@@ -1,17 +1,35 @@
 import './App.css';
 import './Msg.css';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ThemeOption from './ThemeOption';
+import AuthContext from "./AuthContext"; // Import the context
 
 function PreviewMsg() {
   const navigate = useNavigate();
   const [messages, setMessages] = useState([]);
 
+
+
+
   useEffect(() => {
-    // Retrieve messages from sessionStorage
-    const storedMessages = JSON.parse(localStorage.getItem('messages')) || [];
-    setMessages(storedMessages);
+    // Function to update messages when storage changes
+    const handleStorageChange = (event) => {
+      if (event.key === 'messages') {
+        setMessages(JSON.parse(event.newValue) || []);
+      }
+    };
+  
+    // Retrieve messages from localStorage when component mounts
+    setMessages(JSON.parse(localStorage.getItem('messages')) || []);
+  
+    // Listen for changes in localStorage
+    window.addEventListener('storage', handleStorageChange);
+  
+    // Cleanup the event listener on unmount
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, []);
 
   const handleGoBack = () => {
