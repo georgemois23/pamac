@@ -18,7 +18,7 @@ function App() {
   const [themeLoaded, setThemeLoaded] = useState(false);
 
 
-  console.table(user);
+  // console.table(user);
   
 useEffect(() => {
   localStorage.setItem("Button",LogBut);

@@ -80,14 +80,18 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem("Button","Logout");
     } catch (error) {
       if (error.code === 'ECONNABORTED') {
-        setloginMessage("Login request timed out. Please try again.")
+        setloginMessage("*Login request timed out. Please try again.*")
+        setTimeout(() => {
+          setloginMessage(null);
+          window.location.reload();
+        }, 2000);
       }
       else{
-      setloginMessage("Login failed. Please try again.");
+      setloginMessage("*Please check username or password and try again.*");
     }
-      setTimeout(() => {
-        setloginMessage(null);
-      }, 1000);
+      // setTimeout(() => {
+      //   setloginMessage(null);
+      // }, 4000);
       console.log("Login failed:", error);
     }
   };

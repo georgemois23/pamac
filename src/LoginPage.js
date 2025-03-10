@@ -37,11 +37,31 @@ function LoginPage() {
   const [signupbut, setsignupbut] = useState("");
   // const [icon, setIcon] = useState(eyeOff);
   const [typepassword, setTypepassword] = useState(false);
+  const [forgotpassword, setforgotpassword] = useState(null);
+  const [loginError, setloginError] = useState(false);
+  
+  
+  const [EmailInput, setEmailInput] = useState(false);
+  const [ShowEmailSpan, setShowEmailSpan] = useState(true);
+  const [email, setEmail] = useState('');
+
+
+
 
   useEffect(() => {
     setErrorloginmessage(loginMessage);
   }, [loginMessage]); // This runs whenever `loginMessage` changes
   
+
+  useEffect(() => {
+    if(loginError){
+      setforgotpassword("Forgot password?")
+    }
+    else {
+      setforgotpassword(null);
+    }
+    
+  }, [loginError]);
 
   const [showPassword, setShowPassword] = useState(false);
 
@@ -49,6 +69,21 @@ function LoginPage() {
     setShowPassword((prev) => !prev);
   };
   
+  const handleEmailChange = (e) => {
+    setErrormessage("");
+    setErrorloginmessage("");
+    if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(e.target.value)) {
+      setErrorloginmessage('*Invalid email format*');
+    }
+    
+    else
+    {
+      setErrorloginmessage(""); 
+    }
+    
+    setEmail(e.target.value.replace(/[^a-zA-Z0-9._%+-@.-]/g, ''));
+
+  };
   const handleUsernameChange = (e) => {
     // setUsername(e.target.value.replace(/\s/g, ''));
     setErrormessage("");
@@ -119,6 +154,16 @@ function LoginPage() {
     }
   },[localStorage.getItem('vst')]);
   
+
+
+  const handleforgotpassword = () => {
+    setforgotpassword("Sorry I am still working on that :(")
+
+  };
+  const handleEmailInput = () => {
+    setEmailInput(true);
+    setShowEmailSpan(false);
+  };
   const handleIncognitobutton = async(e) => {
 
   };
@@ -141,7 +186,7 @@ function LoginPage() {
         navigate("/chat");
       }, 3000);
     } catch (err) {
-      
+      setloginError(true);
       setloginbut("")
       console.error("Login failed:", err);
       setSuccess(false); // Ensure success is reset
@@ -165,18 +210,20 @@ function LoginPage() {
     // }
     try {
       console.log('Sign up? sure?');
-      await register(username.toLowerCase(), password, "", "");
+      await register(username.toLowerCase(), password, email, "");
       console.log('Sign up? sure?');
       console.log("User registered");
       setSuccess(true);
       setSuccessMessage("Register was successful, you can now login..."); // Set success message on successful registration
       setloadingg(false);
+      setsignupbut("");
       handlelogin();
       console.log(successMessage);
       setTimeout(() => {
         setSuccess(false) // Redirect after showing success message
       }, 2000);
     } catch (err) {
+      
       setloadingg(false);
       setErrorloginmessage("*User already exists*");
       setsignupbut("");
@@ -280,6 +327,7 @@ function LoginPage() {
                     // }}
                   />
                 </div>
+                <span onClick={handleforgotpassword} style={{cursor:"pointer"}}>{forgotpassword}</span>
                 <button disabled={!(username && password) || loginbut} className="sub" type="submit">
                   Log in
                 </button>
@@ -296,9 +344,9 @@ function LoginPage() {
           {signup && (
             <div className="Login" >
               <div className='SPACE'>
-              <Typography variant='h1' sx={{fontWeight:"bold"}}>Sign up!</Typography></div>
+              <Typography variant='h1' overflow={"visible"} sx={{fontWeight:"bold"}}>Sign up!</Typography></div>
               {(errormessage || loginErrorMessage) && <h4 className="ERROR">{errormessage} || {loginErrorMessage}</h4>}
-             
+              
               <form onSubmit={handleSignUp}>
               {errorloginmessage && <span className="ERROR">{errorloginmessage}</span>}
                 <label htmlFor="username">Username:</label>
@@ -321,6 +369,23 @@ function LoginPage() {
                     maxLength={12}
                   />
                 </div>
+                {ShowEmailSpan &&
+                <Typography sx={{maxWidth:"19ch", cursor:"pointer"}} variant='span' onClick={handleEmailInput} >Add an email (optional) for password recovery</Typography>
+              }
+              {EmailInput && (
+                <>
+                <label htmlFor="email" title='Email is optional, used for password recovery'>Email:</label>
+                <input
+                  id="email"
+                  className="username"
+                  type="text"
+                  maxLength={254}
+                  value={email}
+                  onChange={handleEmailChange}
+                  style={{width:"30ch"}}
+                />
+                </>
+              )}
                 <button disabled={!(username && password) || signupbut} className="sub" type="submit">
                 Sign Up
                 </button>

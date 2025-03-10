@@ -42,10 +42,11 @@ function Chat({user }) {
       {/* <Logout handleLogout={handleLogout} logmsg={!name ? 'Login' : 'Logout'}/> */}
       <ThemeOption/>
       <h1 className='namee'>Hello {!user.username ? '[anonymous] user' : user.username}!</h1>
-      <form onSubmit={handleSend}>
+      <form spellcheck={false} onSubmit={handleSend}>
         <textarea
           id='text'
           value={message}
+          spellcheck="false"
           onChange={handleMessageChange}
           placeholder={!user.username ? 'Type your anonymous message...' : 'Type your message...'}
           maxLength={350}
