@@ -45,7 +45,9 @@ function LoginPage() {
   const [ShowEmailSpan, setShowEmailSpan] = useState(true);
   const [email, setEmail] = useState('');
 
-
+if(document.title!=='Login' && document.title!=='Signup' ){
+  document.title='Login'
+}
 
 
   useEffect(() => {
@@ -157,7 +159,10 @@ function LoginPage() {
 
 
   const handleforgotpassword = () => {
+    if(forgotpassword==='Forgot password?'){
     setforgotpassword("Sorry I am still working on that :(")
+  }
+  else {setforgotpassword("Forgot password?")}
 
   };
   const handleEmailInput = () => {
@@ -172,6 +177,7 @@ function LoginPage() {
     setErrorloginmessage("");
     setloadingg(true);
     setloginbut("Trying to sign in");
+    setloginError(false);
     try {
       await login(username.toLowerCase(), password);
       // Ensure user is properly updated before setting success
@@ -261,7 +267,7 @@ function LoginPage() {
               </div>
               
               <form onSubmit={handleLoginbutton}>
-              {errorloginmessage && <span className='ERROR'>{errorloginmessage}</span>}
+              {errorloginmessage && <Typography  sx={{fontWeight:"bold"}} variant='span' >{errorloginmessage}</Typography>}
                 <label htmlFor="username">Username:</label>
                 <input 
                 

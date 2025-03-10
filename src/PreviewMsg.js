@@ -9,7 +9,7 @@ function PreviewMsg() {
   const navigate = useNavigate();
   const [messages, setMessages] = useState([]);
 
-
+  document.title='Messages';
 
 
   useEffect(() => {

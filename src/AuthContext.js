@@ -61,7 +61,8 @@ export const AuthProvider = ({ children }) => {
         "https://pamac-backendd.onrender.com/token",
         new URLSearchParams({ username, password }),
         { headers: { "Content-Type": "application/x-www-form-urlencoded" }, 
-                timeout: 5500,}
+                timeout: 15000,
+              }
       );
       
       const accessToken = response.data.access_token;
