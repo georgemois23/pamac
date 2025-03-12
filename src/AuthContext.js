@@ -2,6 +2,8 @@ import React, { createContext, useState, useEffect } from "react";
 import axios from "./api/axios"; // Assuming you have axios instance configured
 
 const AuthContext = createContext();
+// https://pamac-backendd.onrender.com/
+
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
@@ -179,6 +181,18 @@ export const AuthProvider = ({ children }) => {
       setIsLoading(false); // If no token or incognito, end the loading state
     }}
   }, [token]);
+
+  const pingServer = async () => {
+    try {
+      await fetch('https://pamac-backendd.onrender.com/test');
+      console.log('Server is still alive');
+    } catch (error) {
+      console.error('Error pinging the server:', error);
+    }
+  };
+  
+  // Run the ping every 5 minutes (300000 ms)
+  setInterval(pingServer, 300000);
 
   return (
     <AuthContext.Provider value={{ user, token, login, logout, register, isLoading, handleIncognitoMode, loginMessage,LogBut }}>
