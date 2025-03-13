@@ -17,7 +17,33 @@ function App() {
   
   const [themeLoaded, setThemeLoaded] = useState(false);
 
+  const WarmtheServer = async () => {
+    try {
+      await fetch("https://pamac-backendd.onrender.com/test");
+      // console.log("sessionVst set to true");
+      sessionStorage.setItem("sessionVst", "true"); // Store as string
+    } catch (error) {
+      console.error("Error pinging the server:", error);
+    }
+  };
+  
+  // Run when the site first loads
+  if (sessionStorage.getItem("sessionVst") !== "true") {
+    WarmtheServer();
+  }
+  
 
+  const pingServer = async () => {
+    try {
+      await fetch('https://pamac-backendd.onrender.com/test');
+      // console.log('Server is still alive');
+    } catch (error) {
+      console.error('Error pinging the server:', error);
+    }
+  };
+  
+  // Run the ping every 5 minutes (300000 ms)
+  setInterval(pingServer, 30000);
   // console.table(user);
   
 useEffect(() => {

@@ -279,6 +279,7 @@ if(document.title!=='Login' && document.title!=='Signup' ){
                   maxLength={12}
                   value={username}
                   onChange={handleUsernameChange}
+                  spellCheck={false}
                   // fullWidth
                 
                   //   "& .MuiOutlinedInput-root": {
@@ -317,7 +318,7 @@ if(document.title!=='Login' && document.title!=='Signup' ){
                     onChange={handlePasswordChange}
                     onKeyDown={handleKeyDown}
                     maxLength={12}
-                    autocomplete="current-password"
+                    autoComplete="current-password"
                     // InputProps={{
                     //   endAdornment: (
                     //     <InputAdornment position="end">

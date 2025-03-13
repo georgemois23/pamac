@@ -182,17 +182,17 @@ export const AuthProvider = ({ children }) => {
     }}
   }, [token]);
 
-  const pingServer = async () => {
-    try {
-      await fetch('https://pamac-backendd.onrender.com/test');
-      console.log('Server is still alive');
-    } catch (error) {
-      console.error('Error pinging the server:', error);
-    }
-  };
+  // const pingServer = async () => {
+  //   try {
+  //     await fetch('https://pamac-backendd.onrender.com/test');
+  //     console.log('Server is still alive');
+  //   } catch (error) {
+  //     console.error('Error pinging the server:', error);
+  //   }
+  // };
   
-  // Run the ping every 5 minutes (300000 ms)
-  setInterval(pingServer, 300000);
+  // // Run the ping every 5 minutes (300000 ms)
+  // setInterval(pingServer, 300000);
 
   return (
     <AuthContext.Provider value={{ user, token, login, logout, register, isLoading, handleIncognitoMode, loginMessage,LogBut }}>
