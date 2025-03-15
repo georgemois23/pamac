@@ -2,7 +2,6 @@
 import './App.css';
 // import { usePopUp } from './App'; 
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Alert, Typography } from "@mui/material";
 import { CheckCircle as CheckIcon } from "@mui/icons-material"; // Correct import
 import supabase from './config/supabaseClient';
@@ -14,6 +13,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import UnderConstruction from './components/Underconstruction';
 import { TextField, InputAdornment, IconButton } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
+import { useNavigate, useLocation } from "react-router-dom";
 function LoginPage() {
 
   const { login,register,handleIncognitoMode,user,isLoading,loginMessage,loginErrorMessage } = useContext(AuthContext);
@@ -45,13 +45,27 @@ function LoginPage() {
   const [ShowEmailSpan, setShowEmailSpan] = useState(true);
   const [email, setEmail] = useState('');
 
+  const location = useLocation();
+  const navigate = useNavigate();
+  // let from = location.state?.from?.pathname || "/";
+  let from = location.state?.from?.pathname || '/chat'; 
+  console.log('From: ',from);
+
+  
+  useEffect(() => {
+    if (user) {
+      console.log("Redirecting to:", from);
+      navigate(from, { replace: true });
+    }
+  }, [user, from, navigate]);
+
 if(document.title!=='Login' && document.title!=='Signup' ){
   document.title='Login'
 }
 
 
   useEffect(() => {
-    setErrorloginmessage(loginMessage);
+    // setErrorloginmessage(loginMessage);
   }, [loginMessage]); // This runs whenever `loginMessage` changes
   
 
@@ -111,7 +125,7 @@ if(document.title!=='Login' && document.title!=='Signup' ){
       e.preventDefault();
     }
   };
-  const navigate = useNavigate();
+ 
 
   const handleIncognito = async(e) => {
     e.preventDefault();
@@ -189,7 +203,7 @@ if(document.title!=='Login' && document.title!=='Signup' ){
       setSuccessMessage("Login was successful, redirecting to Chat...");
       setloadingg(false);
       setTimeout(() => {
-        navigate("/chat");
+        navigate(from, { replace: true });
       }, 3000);
     } catch (err) {
       setloginError(true);

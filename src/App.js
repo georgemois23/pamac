@@ -4,47 +4,37 @@ import FirstLand from './Firstland';
 import LoginPage from './LoginPage';
 import Chat from './Chat';
 import PreviewMsg from './PreviewMsg';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate} from 'react-router-dom';
 // import ThemeOption from './ThemeOption';
 import ErrorPage from './ErrorPage';
 import AuthContext from "./AuthContext"; // Import the context
 import CircularProgress from '@mui/material/CircularProgress';
 import UnderConstruction from './components/Underconstruction';
-
+import Profile from './Profile';
+import AccountBoxIcon from '@mui/icons-material/AccountBox';
+import { useNavigate, useLocation } from "react-router-dom";
+import ChatIcon from '@mui/icons-material/Chat';
 function App() {
-  const { user, token, login, logout, isLoading,loginMessage,LogBut  } = useContext(AuthContext); // Use the context here
-  // const LogButton = localStorage.getItem("Button");
-  
+  const navigate = useNavigate();
+  const { user, token, login, logout, isLoading,loginMessage,LogBut,incognito  } = useContext(AuthContext); // Use the context here
   const [themeLoaded, setThemeLoaded] = useState(false);
 
-  const WarmtheServer = async () => {
-    try {
-      await fetch("https://pamac-backendd.onrender.com/test");
-      // console.log("sessionVst set to true");
-      sessionStorage.setItem("sessionVst", "true"); // Store as string
-    } catch (error) {
-      console.error("Error pinging the server:", error);
-    }
+  const handleProfile = () => {
+    navigate('/profile');
   };
-  
-  // Run when the site first loads
-  if (sessionStorage.getItem("sessionVst") !== "true") {
-    WarmtheServer();
-  }
-  
+  const location = useLocation();
+  const handleChat = () => {
+    navigate('/chat');
+  };
 
-  const pingServer = async () => {
-    try {
-      await fetch('https://pamac-backendd.onrender.com/test');
-      // console.log('Server is still alive');
-    } catch (error) {
-      console.error('Error pinging the server:', error);
+  const ProtectedRoute = ({ children }) => {
+    const location = useLocation();
+    if (!user) {
+      // If the user is not logged in, redirect to login
+      return <Navigate to="/login" state={{ from: location.pathname }} replace />;
     }
+    return children; // Otherwise, render the protected route's children
   };
-  
-  // Run the ping every 5 minutes (300000 ms)
-  setInterval(pingServer, 30000);
-  // console.table(user);
   
 useEffect(() => {
   localStorage.setItem("Button",LogBut);
@@ -80,6 +70,8 @@ useEffect(() => {
   }
  
 
+ 
+  
   const handleLogout = () => {
     logout();
   };
@@ -87,27 +79,39 @@ useEffect(() => {
   return (
     // <ThemeOption>
       // {/* <PopUpContext.Provider value={{}}> */}
-        <Router>
           <div className="App">
           <UnderConstruction message={"This website is currently under construction by George Moysiadis."}/>
-            {user && (
+          {user && !incognito && location.pathname !== "/profile" && (
+        <AccountBoxIcon titleAccess='Visit profile info' onClick={handleProfile} sx={{ position: 'fixed', top: '1rem', left: '1rem',cursor:'pointer' }} className='accountIcon' />
+      )}
+
+      {user && !incognito && location.pathname === "/profile" && (
+        <ChatIcon titleAccess='Visit chat' onClick={handleChat} sx={{ position: 'fixed', top: '1rem', left: '1rem',cursor:'pointer' }} className='chatIcon' />
+      )}
+            {user && location.pathname !== "/profile"&& location.pathname !== "/" &&(
               <button onClick={handleLogout} className="logout-button">
                 {LogBut}
               </button>
             )}
+           
             <Routes>
               <Route
                 path="/"
                 element={user ? <Navigate to="/chat" /> : <FirstLand />}
+                // element={<FirstLand />}
               />
               <Route
                 path="/login"
                 element={user ? <Navigate to="/chat" replace /> : <LoginPage />}
               />
-              <Route
+            <Route
                 path="/chat"
                 element={user ? <Chat user={user} /> : <Navigate to="/login" replace />}
               />
+          <Route
+            path="/profile"
+            element={<ProtectedRoute><Profile user={user} incognito={incognito} /></ProtectedRoute>}
+          />
               <Route
                 path="/messages"
                 element={user ? <PreviewMsg /> : <Navigate to="/login" />}
@@ -116,7 +120,6 @@ useEffect(() => {
               <Route path="/404" element={<ErrorPage />} />
             </Routes>
           </div>
-        </Router>
       // {/* </PopUpContext.Provider> */}
     // {/* </ThemeOption> */}
   );

@@ -5,8 +5,10 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { AuthProvider } from "./AuthContext";
 import ThemeOption from './ThemeOption';
+import { BrowserRouter as Router } from 'react-router-dom';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
+  <Router>
   <ThemeOption>
   <React.StrictMode>
     <AuthProvider>
@@ -16,6 +18,7 @@ root.render(
     {/* </ChakraProvider> */}
   </React.StrictMode>
   </ThemeOption>
+  </Router>
 );
 
 // If you want to start measuring performance in your app, pass a function
