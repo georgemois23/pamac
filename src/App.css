@@ -21,7 +21,9 @@
   font-style: normal;
 }
 
-
+html {
+  height: 100vh; /* Forces the page to be taller */
+}
 .go-back{
   border-radius: 5px;
   /* font-size: 30px; */

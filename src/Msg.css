@@ -11,12 +11,17 @@ html{
   
 }
 
-html, body {
-    height: 100%; /* Full height */
+
+html {
+
+    /* height: 100%; Full height */
     margin: 0; /* Remove default margin */
     overflow: auto; /* Enable scrolling on the body */
   }
   
+  Preview {
+    min-height: 300vh; /* Forces the page to be taller */
+  }
   .Preview {
     display: flex;
     flex-direction: column; /* Stack elements vertically */

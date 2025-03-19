@@ -49,7 +49,7 @@ function LoginPage() {
   const navigate = useNavigate();
   // let from = location.state?.from?.pathname || "/";
   let from = location.state?.from?.pathname || '/chat'; 
-  console.log('From: ',from);
+  // console.log('From: ',from);
 
   
   useEffect(() => {

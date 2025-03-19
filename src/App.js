@@ -81,12 +81,12 @@ useEffect(() => {
       // {/* <PopUpContext.Provider value={{}}> */}
           <div className="App">
           <UnderConstruction message={"This website is currently under construction by George Moysiadis."}/>
-          {user && !incognito && location.pathname !== "/profile" && (
-        <AccountBoxIcon titleAccess='Visit profile info' onClick={handleProfile} sx={{ position: 'fixed', top: '1rem', left: '1rem',cursor:'pointer' }} className='accountIcon' />
+          {user && !incognito && location.pathname !== "/profile" && location.pathname !== "/messages" && (
+        <AccountBoxIcon titleAccess='Visit profile info' onClick={handleProfile} sx={{ position: 'fixed', top: '.8rem', left: '.8rem',cursor:'pointer' }} className='accountIcon' />
       )}
 
       {user && !incognito && location.pathname === "/profile" && (
-        <ChatIcon titleAccess='Visit chat' onClick={handleChat} sx={{ position: 'fixed', top: '1rem', left: '1rem',cursor:'pointer' }} className='chatIcon' />
+        <ChatIcon titleAccess='Visit chat' onClick={handleChat} sx={{ position: 'fixed', top: '.8rem', left: '.8rem',cursor:'pointer' }} className='chatIcon' />
       )}
             {user && location.pathname !== "/profile"&& location.pathname !== "/" &&(
               <button onClick={handleLogout} className="logout-button">
@@ -114,7 +114,8 @@ useEffect(() => {
           />
               <Route
                 path="/messages"
-                element={user ? <PreviewMsg /> : <Navigate to="/login" />}
+                // element={user ? <PreviewMsg /> : <Navigate to="/login" />}
+                element={<PreviewMsg />}
               />
               <Route path="*" element={<Navigate to="/404" />} />
               <Route path="/404" element={<ErrorPage />} />
