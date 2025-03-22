@@ -6,6 +6,7 @@ import ThemeOption from './ThemeOption';
 import AuthContext from "./AuthContext"; // Import the context
 import ArrowCircleUpIcon from '@mui/icons-material/ArrowCircleUp';
 import ArrowCircleRightRoundedIcon from '@mui/icons-material/ArrowCircleRightRounded';
+import { Container, Typography } from '@mui/material';
 
 function PreviewMsg() {
   const navigate = useNavigate();
@@ -47,7 +48,7 @@ function PreviewMsg() {
 
     const toggleVisible = () => {
         const scrollTop = window.scrollY || document.documentElement.scrollTop;
-        console.log("Scroll event fired! ScrollTop:", scrollTop); // Should log when scrolling
+        // console.log("Scroll event fired! ScrollTop:", scrollTop); // Should log when scrolling
         setVisible(scrollTop > 200);
     };
 
@@ -80,25 +81,7 @@ const scrollToTop = () => {
 
   return (
     <div className="Preview">
-    {/* <ArrowCircleUpIcon 
-  onClick={scrollToTop}
-  sx={{ 
-    opacity: visible ? 1 : 0, 
-    transition: "opacity 0.4s ease-in-out",
-    pointerEvents: visible ? 'auto' : 'none',
-    position: 'fixed', 
-    bottom: ".8rem", 
-    right: '.8rem', 
-    cursor: "pointer", 
-    fontSize: 30, 
-    color: "#1976d2", 
-    zIndex: 1000,
-    '&:hover': {
-      transform: 'scale(1.05)',
-    } 
-  }} 
-/> */}
-<div
+ <div
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onClick={scrollToTop}
@@ -136,7 +119,7 @@ const scrollToTop = () => {
       <ThemeOption/>
       <div className='nav-msg'></div>
       <div className="header">
-        <h1>Messages </h1>
+        <Typography variant='h2' sx={{fontWeight:'bold'}}>Messages </Typography>
       </div>
       <div className="message-list">
         {messages.length > 0 ? (

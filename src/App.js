@@ -104,11 +104,12 @@ useEffect(() => {
                 path="/login"
                 element={user ? <Navigate to="/chat" replace /> : <LoginPage />}
               />
+               <Route path="/c/*" element={<Navigate to="/chat" replace />} />
             <Route
                 path="/chat"
                 element={user ? <Chat user={user} /> : <Navigate to="/login" replace />}
               />
-          <Route
+             <Route
             path="/profile"
             element={<ProtectedRoute><Profile user={user} incognito={incognito} /></ProtectedRoute>}
           />

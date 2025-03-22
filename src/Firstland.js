@@ -3,7 +3,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 // import { useState } from 'react';
-import { Button, ButtonBase, Container, Typography } from '@mui/material';
+import { Container, Typography } from '@mui/material';
 
 function FirstLand() {
     const handleBeforeUnload = () => {

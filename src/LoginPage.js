@@ -14,6 +14,8 @@ import UnderConstruction from './components/Underconstruction';
 import { TextField, InputAdornment, IconButton } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useNavigate, useLocation } from "react-router-dom";
+import ArrowCircleLeftIcon from '@mui/icons-material/ArrowCircleLeft';
+import ArrowCircleRightIcon from '@mui/icons-material/ArrowCircleRight';
 function LoginPage() {
 
   const { login,register,handleIncognitoMode,user,isLoading,loginMessage,loginErrorMessage } = useContext(AuthContext);
@@ -39,11 +41,15 @@ function LoginPage() {
   const [typepassword, setTypepassword] = useState(false);
   const [forgotpassword, setforgotpassword] = useState(null);
   const [loginError, setloginError] = useState(false);
-  
+  const [VisibleFullName, setVisibleFullName] = useState(false);
   
   const [EmailInput, setEmailInput] = useState(false);
   const [ShowEmailSpan, setShowEmailSpan] = useState(true);
   const [email, setEmail] = useState('');
+  const [last_name, setLast_name] = useState('');
+  const [first_name, setFirst_name] = useState('');
+  const [ValidEmail, setValidEmail] = useState(true);
+  const [WhyButDisabled, setWhyButDisabled] = useState('Fill username and password');
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -80,9 +86,15 @@ if(document.title!=='Login' && document.title!=='Signup' ){
   }, [loginError]);
 
   const [showPassword, setShowPassword] = useState(false);
+  const [GoToNext, setGoToNext] = useState(false);
 
   const handleClickShowPassword = () => {
     setShowPassword((prev) => !prev);
+  };
+
+  const handleBackToUseranme = () => {
+      setGoToNext(true);
+      setEmailInput(false);
   };
   
   const handleEmailChange = (e) => {
@@ -90,10 +102,14 @@ if(document.title!=='Login' && document.title!=='Signup' ){
     setErrorloginmessage("");
     if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(e.target.value)) {
       setErrorloginmessage('*Invalid email format*');
+      setValidEmail(false);
+      setWhyButDisabled('Invalid Email Format')
     }
     
     else
     {
+      setWhyButDisabled('')
+      setValidEmail(true);
       setErrorloginmessage(""); 
     }
     
@@ -106,17 +122,62 @@ if(document.title!=='Login' && document.title!=='Signup' ){
     setErrorloginmessage("");
     // input.value = input.value.replace(/[^a-zA-Z0-9]/g, '');
     if (/[^a-zA-Z0-9]/.test(e.target.value)) {
+      setWhyButDisabled('Username is blank');
       setErrorloginmessage('*Only letters and numbers are allowed in username*')
     }  
     setUsername(e.target.value.replace(/[^a-zA-Z0-9]/g, ''));
+    if(username===''){ setWhyButDisabled('Username is blank');}
   };
   const handlePasswordChange = (e) => {
     // Prevent whitespace by replacing spaces with an empty string
     setTypepassword(true);
     setErrormessage("");
     setErrorloginmessage("");
+    if(password!==''){ setWhyButDisabled('');}
+   
     setPassword(e.target.value.replace(/\s/g, ''));
     setPassword(e.target.value);
+  };
+
+
+  useEffect(()=>{
+    if(username==='' && password!==''){
+      setWhyButDisabled('Fill username')
+    }
+    if(username!=='' && password===''){
+      setWhyButDisabled('Fill password')
+    }
+    if(username==='' && password===''){
+      setWhyButDisabled('Fill username and password')
+    }
+    if(username!=='' && password!==''){
+      setWhyButDisabled('')
+    }
+  },[username,password]);
+  
+
+  const handleFirstNameChange = (e) => {
+    // setUsername(e.target.value.replace(/\s/g, ''));
+    setErrormessage("");
+    setErrorloginmessage("");
+    // input.value = input.value.replace(/[^a-zA-Z0-9]/g, '');
+    if (/[^A-Za-z]/.test(e.target.value)) {
+      setErrorloginmessage('*Only letters are allowed in last name*');
+    }
+    setFirst_name(e.target.value.replace(/[^A-Za-z]/g, ''));
+    
+  };
+  const handleLastNameChange = (e) => {
+    // setUsername(e.target.value.replace(/\s/g, ''));
+    setErrormessage("");
+    setErrorloginmessage("");
+    // input.value = input.value.replace(/[^a-zA-Z0-9]/g, '');
+    if (/[^A-Za-z]/.test(e.target.value)) {
+      setErrorloginmessage('*Only letters are allowed in last name*');
+    }
+    
+    setLast_name(e.target.value.replace(/[^A-Za-z]/g, ''));
+    
   };
 
   const handleKeyDown = (e) => {
@@ -230,7 +291,7 @@ if(document.title!=='Login' && document.title!=='Signup' ){
     // }
     try {
       console.log('Sign up? sure?');
-      await register(username.toLowerCase(), password, email, "");
+      await register(username.toLowerCase(), password, email,first_name !== '' ? first_name + ' ' + last_name : '');
       console.log('Sign up? sure?');
       console.log("User registered");
       setSuccess(true);
@@ -370,6 +431,9 @@ if(document.title!=='Login' && document.title!=='Signup' ){
               
               <form onSubmit={handleSignUp}>
               {errorloginmessage && <span className="ERROR">{errorloginmessage}</span>}
+              {!EmailInput && (
+                <>
+                {GoToNext && (<ArrowCircleRightIcon fontSize='large' onClick={handleEmailInput} />)}
                 <label htmlFor="username">Username:</label>
                 <input
                   id="username"
@@ -390,11 +454,15 @@ if(document.title!=='Login' && document.title!=='Signup' ){
                     maxLength={12}
                   />
                 </div>
+                </>)}
                 {ShowEmailSpan &&
-                <Typography sx={{maxWidth:"19ch", cursor:"pointer"}} variant='span' onClick={handleEmailInput} >Add an email (optional) for password recovery</Typography>
+                <Typography sx={{maxWidth:"19ch", cursor:"pointer"}} variant='span' onClick={handleEmailInput}  onMouseEnter={() => setVisibleFullName(true)}
+                onMouseLeave={() => setVisibleFullName(false)}  >Add an email (optional) for password recovery <span className='fullName' style={{display: VisibleFullName ? "block" : "none",}}>and full name</span></Typography>
+                
               }
               {EmailInput && (
                 <>
+                <ArrowCircleLeftIcon fontSize='large' onClick={handleBackToUseranme} />
                 <label htmlFor="email" title='Email is optional, used for password recovery'>Email:</label>
                 <input
                   id="email"
@@ -403,11 +471,31 @@ if(document.title!=='Login' && document.title!=='Signup' ){
                   maxLength={254}
                   value={email}
                   onChange={handleEmailChange}
-                  style={{width:"30ch"}}
+                />
+               
+                <label htmlFor="full_name" >First name:</label>
+                <input
+                  id="first_name"
+                  className="username"
+                  type="text"
+                  maxLength={54}
+                  value={first_name}
+                  onChange={handleFirstNameChange}
+                  // style={{width:"15ch"}}
+                />
+                 <label htmlFor="full_name" >Last name:</label>
+                <input
+                  id="last_name"
+                  className="username"
+                  type="text"
+                  maxLength={54}
+                  value={last_name}
+                  onChange={handleLastNameChange}
+                  // style={{width:"15ch"}}
                 />
                 </>
               )}
-                <button disabled={!(username && password) || signupbut} className="sub" type="submit">
+                <button disabled={!(username && password && ValidEmail) || signupbut} className="sub" type="submit" title={WhyButDisabled} >
                 Sign Up
                 </button>
                 {signupbut && (
