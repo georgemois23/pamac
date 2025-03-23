@@ -128,7 +128,7 @@ function Profile({user,incognito}) {
 else{
  return(
   <Container>
-  <Typography variant='h2'>Content is only available to registered users, not anonymous users.</Typography>
+  <Typography variant='h2'>Content is only available to registered users, not anonymous users!</Typography>
   <br/>
   <Typography>If you want to access more features of this website, please <span style={{textDecoration:'underline', cursor:'pointer'}}onClick={handleCreateAnAccount} >create an account.</span></Typography>
   <br/>

@@ -65,8 +65,8 @@ function LoginPage() {
     }
   }, [user, from, navigate]);
 
-if(document.title!=='Login' && document.title!=='Signup' ){
-  document.title='Login'
+if(document.title!=='Log in' && document.title!=='Sign up' ){
+  document.title='Log in'
 }
 
 
@@ -105,7 +105,6 @@ if(document.title!=='Login' && document.title!=='Signup' ){
       setValidEmail(false);
       setWhyButDisabled('Invalid Email Format')
     }
-    
     else
     {
       setWhyButDisabled('')
@@ -113,6 +112,11 @@ if(document.title!=='Login' && document.title!=='Signup' ){
       setErrorloginmessage(""); 
     }
     
+    if(username && password && email=== ''){
+      setValidEmail(true);
+      setWhyButDisabled('');
+    }
+
     setEmail(e.target.value.replace(/[^a-zA-Z0-9._%+-@.-]/g, ''));
 
   };
@@ -153,7 +157,14 @@ if(document.title!=='Login' && document.title!=='Signup' ){
     if(username!=='' && password!==''){
       setWhyButDisabled('')
     }
-  },[username,password]);
+    if(email && email.length<5){
+      setValidEmail(false);
+    }
+    if(email.length===0){
+      setValidEmail(true);
+      setErrorloginmessage("");
+    }
+  },[username,password,email]);
   
 
   const handleFirstNameChange = (e) => {
@@ -208,7 +219,7 @@ if(document.title!=='Login' && document.title!=='Signup' ){
   };
 
   const handlelogin = () => {
-    document.title='Login';
+    document.title='Log in';
     setErrorloginmessage("");
     setErrormessage("");
     setsignup(false);
@@ -217,7 +228,7 @@ if(document.title!=='Login' && document.title!=='Signup' ){
   };
 
   const handlesignup = () => {
-    document.title='Signup';
+    document.title='Sign up';
     setErrorloginmessage("");
     setErrormessage("");
     setsignup(true);
@@ -324,13 +335,13 @@ if(document.title!=='Login' && document.title!=='Signup' ){
           <div className="choose">
             {login_check ? (
               <>
-                <h2 onClick={handleIncognito} title='You can enter the app as anonymous user'>Go incognito</h2>
-                <h2 onClick={handlesignup} title='Create an account'>Sign up</h2>
+                <h2 onClick={handleIncognito} style={{cursor:'pointer'}} title='You can enter the app as anonymous user'>Go incognito</h2>
+                <h2 onClick={handlesignup} style={{cursor:'pointer'}} title='Create an account'>Sign up</h2>
               </>
             ) : signup ? (
               <>
-                <h2 onClick={handleIncognito} title='You can enter the app as anonymous user'>Go incognito</h2>
-                <h2 onClick={handlelogin} title='Log in into your account'>Log in</h2>
+                <h2 onClick={handleIncognito} style={{cursor:'pointer'}} title='You can enter the app as anonymous user'>Go incognito</h2>
+                <h2 onClick={handlelogin} style={{cursor:'pointer'}} title='Log in into your account'>Log in</h2>
               </>
             ) : null}
           </div>
@@ -410,7 +421,7 @@ if(document.title!=='Login' && document.title!=='Signup' ){
                   />
                 </div>
                 <span onClick={handleforgotpassword} style={{cursor:"pointer"}}>{forgotpassword}</span>
-                <button disabled={!(username && password) || loginbut} className="sub" type="submit">
+                <button disabled={!(username && password) || loginbut} className="sub" type="submit" title={WhyButDisabled}>
                   Log in
                 </button>
                 {loginbut && (
@@ -433,7 +444,7 @@ if(document.title!=='Login' && document.title!=='Signup' ){
               {errorloginmessage && <span className="ERROR">{errorloginmessage}</span>}
               {!EmailInput && (
                 <>
-                {GoToNext && (<ArrowCircleRightIcon fontSize='large' onClick={handleEmailInput} />)}
+                {GoToNext && (<ArrowCircleRightIcon style={{cursor:'pointer'}} fontSize='large' onClick={handleEmailInput}  titleAccess='View email and full name'/>)}
                 <label htmlFor="username">Username:</label>
                 <input
                   id="username"
@@ -456,13 +467,15 @@ if(document.title!=='Login' && document.title!=='Signup' ){
                 </div>
                 </>)}
                 {ShowEmailSpan &&
-                <Typography sx={{maxWidth:"19ch", cursor:"pointer"}} variant='span' onClick={handleEmailInput}  onMouseEnter={() => setVisibleFullName(true)}
-                onMouseLeave={() => setVisibleFullName(false)}  >Add an email (optional) for password recovery <span className='fullName' style={{display: VisibleFullName ? "block" : "none",}}>and full name</span></Typography>
+                <Typography sx={{maxWidth:"26ch", cursor:"pointer"}} variant='span' onClick={handleEmailInput}  onMouseEnter={() => setVisibleFullName(true)}
+                onMouseLeave={() => setVisibleFullName(false)}  >Add email and full name (optional) <span className='fullName' 
+                // style={{display: VisibleFullName ? "block" : "none",}}
+                  > for password recovery </span></Typography>
                 
               }
               {EmailInput && (
                 <>
-                <ArrowCircleLeftIcon fontSize='large' onClick={handleBackToUseranme} />
+                <ArrowCircleLeftIcon titleAccess='View username and password' fontSize='large' style={{cursor:'pointer'}} onClick={handleBackToUseranme} />
                 <label htmlFor="email" title='Email is optional, used for password recovery'>Email:</label>
                 <input
                   id="email"
@@ -495,7 +508,7 @@ if(document.title!=='Login' && document.title!=='Signup' ){
                 />
                 </>
               )}
-                <button disabled={!(username && password && ValidEmail) || signupbut} className="sub" type="submit" title={WhyButDisabled} >
+                <button disabled={!(username && password && ValidEmail) || signupbut} className="sub" type="submit" title={WhyButDisabled}  >
                 Sign Up
                 </button>
                 {signupbut && (

@@ -17,89 +17,100 @@ export const AuthProvider = ({ children }) => {
   const [incognito, setincognito] = useState(sessionStorage.getItem("incognito"));
 
   // Function to fetch user data
-    const fetchUser = async () => {
-          if (sessionStorage.getItem('incognito') === 'true') {
-            setUser({ username: '', role: 'guest' });
-            localStorage.setItem("user", JSON.stringify({ username: '', role: 'guest' }));
-            setincognito(true);
-            setLogBut("Login");
-            setIsLoading(false);
-            return;
-          }
-    
-    
+  const fetchUser = async (token) => {
+    console.log("Fetching user...");
+  
+    if (sessionStorage.getItem("incognito") === "true") {
+      console.log("Incognito mode detected.");
+      setUser({ username: "", role: "guest" });
+      localStorage.setItem("user", JSON.stringify({ username: "", role: "guest" }));
+      setincognito(true);
+      setLogBut("Login");
+      setIsLoading(false);
+      return true; // Incognito login is considered successful
+    }
+  
     if (!token) {
+      console.log("No token found, setting user to null.");
       setUser(null);
       setIsLoading(false);
-      return;
+      return false;
     }
   
     try {
+      console.log("Sending request to /users/me...");
       const response = await axios.get("https://pamac-backendd.onrender.com/users/me", {
         headers: { Authorization: `Bearer ${token}` },
       });
       
+      
+      console.log("User fetched successfully:", response.data);
       setUser(response.data);
       localStorage.setItem("user", JSON.stringify(response.data));
       setincognito(false);
       setIsLoading(false);
-      // setloginMessage("Login was successful, redirecting to Chat...");
-      setTimeout(() => {
-        setloginMessage(null);
-      }, 2000);
+  
+      return true; // Success!
     } catch (error) {
-      console.log("Invalid or expired token, logging out.");
+      console.log("Error fetching user, logging out:", error);
       logout();
-    } finally {
-      setIsLoading(false);
+      return false;
     }
   };
+  
+  
   
 
   // Function to login
   const login = async (username, password) => {
-    
     try {
       const response = await axios.post(
-        
         "https://pamac-backendd.onrender.com/token",
         new URLSearchParams({ username, password }),
-        { headers: { "Content-Type": "application/x-www-form-urlencoded" }, 
-                timeout: 15000,
-              }
+        {
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          timeout: 15000,
+        }
       );
-      
+  
       const accessToken = response.data.access_token;
-      localStorage.setItem("token", accessToken);
       setToken(accessToken);
+      localStorage.setItem("token", accessToken);
+      console.log("Token? , ",token);
       setloginMessage("Login was successful, redirecting to Chat...");
-
-      fetchUser(); // Fetch the user after login
+  
+      // 🛠 Await fetchUser() and check if it fails
+      const userFetchSuccess = await fetchUser(accessToken);
+  
+      if (!userFetchSuccess) {
+        setloginMessage("*User fetch failed, but login was successful.*");
+      }
+  
       console.log("Login succeeded");
-      setloginMessage("Login was successful, redirecting to Chat...");
-      localStorage.setItem("vst",true);
+      localStorage.setItem("vst", true);
       setLogBut("Logout");
+      localStorage.setItem("Button", "Logout");
+  
       setTimeout(() => {
         setloginMessage(null);
       }, 2000);
-      localStorage.setItem("Button","Logout");
     } catch (error) {
-      if (error.code === 'ECONNABORTED') {
-        setloginMessage("*Login request timed out. Please try again.*")
+      if (error.code === "ECONNABORTED") {
+        setloginMessage("*Login request timed out. Please try again.*");
         setTimeout(() => {
           setloginMessage(null);
           window.location.reload();
         }, 2000);
+      } else {
+        setloginMessage("*Please check username or password and try again.*");
       }
-      else{
-      setloginMessage("*Please check username or password and try again.*");
-    }
-      // setTimeout(() => {
-      //   setloginMessage(null);
-      // }, 4000);
-      console.log("Login failed:", error);
+  
+      console.log("Login failed:s", error);
     }
   };
+  
+  
+  
 
   // Function to register a new user
   const register = async (username, password, email = "", full_name = "") => {

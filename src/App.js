@@ -81,14 +81,14 @@ useEffect(() => {
       // {/* <PopUpContext.Provider value={{}}> */}
           <div className="App">
           <UnderConstruction message={"This website is currently under construction by George Moysiadis."}/>
-          {user && !incognito && location.pathname !== "/profile" && location.pathname !== "/messages" && (
+          {user && !incognito && location.pathname !== "/profile" && location.pathname !== "/messages" && window.location.pathname !== "/404" &&(
         <AccountBoxIcon titleAccess='Visit profile info' onClick={handleProfile} sx={{ position: 'fixed', top: '.8rem', left: '.8rem',cursor:'pointer' }} className='accountIcon' />
       )}
 
       {user && !incognito && location.pathname === "/profile" && (
         <ChatIcon titleAccess='Visit chat' onClick={handleChat} sx={{ position: 'fixed', top: '.8rem', left: '.8rem',cursor:'pointer' }} className='chatIcon' />
       )}
-            {user && location.pathname !== "/profile"&& location.pathname !== "/" &&(
+            {user && location.pathname !== "/profile"&& location.pathname !== "/" && window.location.pathname !== "/404" &&(
               <button onClick={handleLogout} className="logout-button">
                 {LogBut}
               </button>

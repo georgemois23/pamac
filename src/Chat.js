@@ -44,7 +44,7 @@ function Chat({user }) {
     <Container sx={{display:'flex', gap:'2rem',flexDirection:'column'}}>
        {/* <Logout handleLogout={handleLogout} logmsg={!name ? 'Login' : 'Logout'}/> */}
       <ThemeOption/>
-      <Typography variant='h3' sx={{fontWeight:"bold"}}>Hello {!user.username ? '[anonymous] user' : user.username}!</Typography>
+      <Typography variant='h3' sx={{fontWeight:"bold"}}>Hello {!user.username ? '[anonymous] user' : (user.full_name ? user.full_name.split(' ')[0] : user.username)}!</Typography>
       <form spellCheck={false} onSubmit={handleSend}>
         <textarea
           id='text'
