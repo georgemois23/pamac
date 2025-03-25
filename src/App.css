@@ -14,11 +14,18 @@
   url("https://db.onlinewebfonts.com/t/d4efe50000ab6b41b3e546b035abd2e0.svg#Toppler W05 Regular")format("svg");
 }
 
+
+
 @font-face {
   font-family: 'Bricolage Grotesque';
   src: url('./assets/fonts/Bricolage\ Grotesque.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
+
+}
+
+button{
+  cursor: pointer;
 }
 
 html {
@@ -594,6 +601,16 @@ form{
 }
 
 @media all and (max-width:840px) {
+  .password-toggle {
+    margin: 15px;
+    right: 5px !important;
+    font-size: 11px !important; 
+  }
+
+  .password-input {
+    padding-right: 15px !important;
+  }
+
   .img-error{
     display: block;
     height: 140px;
@@ -890,8 +907,10 @@ form textArea{
 
 @media all and (width:840px) {
   .Login{
-    overflow:auto;
-    width: 1100px;
-    height: 500px;
+    justify-content: center;
+    overflow:visible;
+    border: none;
+    width: 100vw;
+    height: 50vh;
   }
   }

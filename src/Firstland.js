@@ -26,7 +26,7 @@ function FirstLand() {
     const navigate = useNavigate();
     const handleEnter = () => {
         // OnEnter();
-        navigate('/login');  // Navigate to the login page
+        navigate('/auth');  // Navigate to the login page
         
       };
 

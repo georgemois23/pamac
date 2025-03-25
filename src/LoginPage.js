@@ -393,9 +393,9 @@ if(document.title!=='Log in' && document.title!=='Sign up' ){
                 />
                 
                 <label htmlFor="password">Password:</label>
-                <div className="password-container">
+                {/* <div className="password-container"> */}
                 {/* <TextField */}
-                <input
+                {/* <input
                     className="username password-input"
                     // variant="outlined"
                     // label="Password"
@@ -418,8 +418,35 @@ if(document.title!=='Log in' && document.title!=='Sign up' ){
                     //     </InputAdornment>
                     //   ),
                     // }}
-                  />
-                </div>
+                  />*/}
+                {/* </div>  */}
+                <div className="password-container" style={{ position: "relative", display: "inline-block" }}>
+      <input
+        className="username password-input"
+        type={showPassword ? "text" : "password"}
+        value={password}
+        onChange={handlePasswordChange}
+        onKeyDown={handleKeyDown}
+        maxLength={12}
+        autoComplete="current-password"
+        style={{ paddingRight: "10px" }} // Space for the icon
+      />
+      <span
+        className="password-toggle"
+        onClick={() => setShowPassword(!showPassword)}
+        style={{
+          position: "absolute",
+          right: "10px",
+          top: "40%",
+          margin: "5px",
+          transform: "translateY(-50%)",
+          cursor: "pointer",
+          fontSize: "15px",
+        }}
+      >
+            {password ? showPassword ? <Visibility fontSize='15px'/> :  <VisibilityOff  fontSize='15px'/> : null}
+      </span>
+    </div>
                 <span onClick={handleforgotpassword} style={{cursor:"pointer"}}>{forgotpassword}</span>
                 <button disabled={!(username && password) || loginbut} className="sub" type="submit" title={WhyButDisabled}>
                   Log in
@@ -455,16 +482,33 @@ if(document.title!=='Log in' && document.title!=='Sign up' ){
                   onChange={handleUsernameChange}
                 />
                 <label htmlFor="password">Password:</label>
-                <div className="password-container">
-                  <input
-                    className="username password-input"
-                    type={type}
-                    value={password}
-                    onChange={handlePasswordChange}
-                    onKeyDown={handleKeyDown}
-                    maxLength={12}
-                  />
-                </div>
+                <div className="password-container" style={{ position: "relative", display: "inline-block" }}>
+      <input
+        className="username password-input"
+        type={showPassword ? "text" : "password"}
+        value={password}
+        onChange={handlePasswordChange}
+        onKeyDown={handleKeyDown}
+        maxLength={12}
+        autoComplete="current-password"
+        style={{ paddingRight: "10px" }} // Space for the icon
+      />
+      <span
+        className="password-toggle"
+        onClick={() => setShowPassword(!showPassword)}
+        style={{
+          position: "absolute",
+          right: "10px",
+          top: "40%",
+          margin: "5px",
+          transform: "translateY(-50%)",
+          cursor: "pointer",
+          fontSize: "15px",
+        }}
+      >
+          {password ? showPassword ? <Visibility fontSize='15px'/> :  <VisibilityOff  fontSize='15px'/> : null} 
+      </span>
+    </div>
                 </>)}
                 {ShowEmailSpan &&
                 <Typography sx={{maxWidth:"26ch", cursor:"pointer"}} variant='span' onClick={handleEmailInput}  onMouseEnter={() => setVisibleFullName(true)}

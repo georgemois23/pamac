@@ -31,7 +31,7 @@ function App() {
     const location = useLocation();
     if (!user) {
       // If the user is not logged in, redirect to login
-      return <Navigate to="/login" state={{ from: location.pathname }} replace />;
+      return <Navigate to="/auth" state={{ from: location.pathname }} replace />;
     }
     return children; // Otherwise, render the protected route's children
   };
@@ -101,13 +101,15 @@ useEffect(() => {
                 // element={<FirstLand />}
               />
               <Route
-                path="/login"
+                path="/auth"
                 element={user ? <Navigate to="/chat" replace /> : <LoginPage />}
               />
+               <Route path="/login" element={<Navigate to="/auth" replace />} />
+               <Route path="/register" element={<Navigate to="/auth" replace />} />
                <Route path="/c/*" element={<Navigate to="/chat" replace />} />
             <Route
                 path="/chat"
-                element={user ? <Chat user={user} /> : <Navigate to="/login" replace />}
+                element={user ? <Chat user={user} /> : <Navigate to="/auth" replace />}
               />
              <Route
             path="/profile"
@@ -115,7 +117,7 @@ useEffect(() => {
           />
               <Route
                 path="/messages"
-                // element={user ? <PreviewMsg /> : <Navigate to="/login" />}
+                // element={user ? <PreviewMsg /> : <Navigate to="/auth" />}
                 element={<PreviewMsg />}
               />
               <Route path="*" element={<Navigate to="/404" />} />

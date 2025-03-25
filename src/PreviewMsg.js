@@ -11,9 +11,22 @@ import { Container, Typography } from '@mui/material';
 function PreviewMsg() {
   const navigate = useNavigate();
   const [messages, setMessages] = useState([]);
+  const [UserExist, setUserExist] = useState(false);
 
   document.title='Messages';
+const {user} = useContext(AuthContext);
 
+useEffect(() => {
+  if(user){
+    console.log("User exist? ", UserExist);
+    setUserExist(true);
+    console.log("User exist? ", UserExist);
+  }
+  if(!user && UserExist){
+    console.log("User redirecting");
+    navigate('/auth');
+  }
+}, [user]);
 
   useEffect(() => {
     // Function to update messages when storage changes
@@ -145,7 +158,7 @@ const scrollToTop = () => {
           <h2>No messages found.</h2>
         )}
       </div>
-      <button className="gobackk" onClick={handleGoBack}>Back to chat</button>
+      <button className="gobackk" onClick={handleGoBack}>{user ? "Back to chat" : "Join chat"}</button>
       <br />
       <div className="backg"></div>
     </div>
