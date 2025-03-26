@@ -13,6 +13,7 @@ import UnderConstruction from './components/Underconstruction';
 import Profile from './Profile';
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import { useNavigate, useLocation } from "react-router-dom";
+import ContentNotAvaiable from './ContentNotAvailable';
 import ChatIcon from '@mui/icons-material/Chat';
 function App() {
   const navigate = useNavigate();
@@ -88,7 +89,7 @@ useEffect(() => {
       {user && !incognito && location.pathname === "/profile" && (
         <ChatIcon titleAccess='Visit chat' onClick={handleChat} sx={{ position: 'fixed', top: '.8rem', left: '.8rem',cursor:'pointer' }} className='chatIcon' />
       )}
-            {user && location.pathname !== "/profile"&& location.pathname !== "/" && window.location.pathname !== "/404" &&(
+            {user && location.pathname !== "/profile"&& location.pathname !== "/" && window.location.pathname !== "/404" && window.location.pathname !== "/restricted"  &&(
               <button onClick={handleLogout} className="logout-button">
                 {LogBut}
               </button>
@@ -111,16 +112,32 @@ useEffect(() => {
                 path="/chat"
                 element={user ? <Chat user={user} /> : <Navigate to="/auth" replace />}
               />
-             <Route
+             {/* <Route
             path="/profile"
-            element={<ProtectedRoute><Profile user={user} incognito={incognito} /></ProtectedRoute>}
-          />
+            element={user ? (!incognito ? <Profile user={user} /> : <Navigate to="/restricted" replace />) : <Navigate to="/auth" replace />} 
+          /> */}
+
+<Route
+  path="/profile"
+  element={
+    user ? (
+      !incognito ? (
+        <Profile user={user} />
+      ) : (
+        <Navigate to="/restricted" replace state={{ from: "redirect" }} />
+      )
+    ) : (
+      <Navigate to="/auth" replace />
+    )
+  }
+/>
               <Route
                 path="/messages"
                 // element={user ? <PreviewMsg /> : <Navigate to="/auth" />}
                 element={<PreviewMsg />}
               />
               <Route path="*" element={<Navigate to="/404" />} />
+              <Route path="/restricted" element={incognito ? <ContentNotAvaiable/> : <Navigate to='/' replace/>} />
               <Route path="/404" element={<ErrorPage />} />
             </Routes>
           </div>

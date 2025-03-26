@@ -444,7 +444,7 @@ if(document.title!=='Log in' && document.title!=='Sign up' ){
           fontSize: "15px",
         }}
       >
-            {password ? showPassword ? <Visibility fontSize='15px'/> :  <VisibilityOff  fontSize='15px'/> : null}
+            {password ? showPassword ? <Visibility fontSize='15px' fill='none'/> :  <VisibilityOff  fontSize='15px'/> : null}
       </span>
     </div>
                 <span onClick={handleforgotpassword} style={{cursor:"pointer"}}>{forgotpassword}</span>

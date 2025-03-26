@@ -6,14 +6,56 @@ import { useState, useEffect } from 'react';
 import { Box, Button, ButtonBase, Container, Typography } from '@mui/material';
 import e from 'cors';
 import AuthContext from "./AuthContext"; // Import the context
-function Profile({user,incognito}) {
+import ContentNotAvaiable from './ContentNotAvailable';
+function Profile({user}) {
   const {logout} = useContext(AuthContext);
+  const navigate = useNavigate();
   document.title='Profile'
   const handleCreateAnAccount = () => {
     logout();
   };
 
-  if(!incognito){
+  const InfoBox = ({ label, value, fallback }) => (
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: '0.5rem'
+      }}
+    >
+      <Typography variant="p">{label}:</Typography>
+  
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          border: '2px solid',
+          borderColor: 'text.primary',
+          borderRadius: '15px',
+          padding: '1rem',
+          minHeight: '3rem'
+        }}
+      >
+        <Typography variant="span" sx={{ fontWeight: 'bold', textAlign: 'center' }}>
+          {value ?? (
+            <>
+              <Typography component="span" variant="inherit" sx={{ fontStyle: 'italic' }}>
+                {fallback}
+              </Typography>{' '}
+              has not provided any {label.toLowerCase()} yet
+            </>
+          )}
+        </Typography>
+      </Box>
+    </Box>
+  );
+
+//   if(incognito){
+//     return <ContentNotAvaiable/>;
+//   }
+// else{
     return(
     <Container sx={{
         display: 'flex',
@@ -89,7 +131,12 @@ function Profile({user,incognito}) {
     }}
   >
     <Typography variant='span' sx={{ fontWeight: 'bold', textAlign: 'center' }}>
-      {user.email ? user.email : `${user.username} has not provide any email yet`}
+      {user.email ? user.email :  <>
+      <Typography component="span" variant="inherit" sx={{ fontStyle: 'italic' }}>
+        {user.username}
+      </Typography>
+      {' has not provided any email yet'}
+    </>}
     </Typography>
   </Box>
 </Box>
@@ -119,23 +166,18 @@ function Profile({user,incognito}) {
       {user.full_name ? user.full_name : `${user.username} has not provide full name yet`}
     </Typography>
   </Box>
+  
 </Box>
+{/* <InfoBox label="Email" value={user.email} fallback={user.username} />
+<InfoBox label="Full name" value={user.full_name} fallback={user.username} /> */}
         </Container>
     </Container>
 
+
+
 );
-}
-else{
- return(
-  <Container>
-  <Typography variant='h2'>Content is only available to registered users, not anonymous users!</Typography>
-  <br/>
-  <Typography>If you want to access more features of this website, please <span style={{textDecoration:'underline', cursor:'pointer'}}onClick={handleCreateAnAccount} >create an account.</span></Typography>
-  <br/>
-  {/* <button onClick={handleCreateAnAccount} className='Enter' style={{fontSize:'35px'}} >Create an account</button> */}
-  </Container>
-);
+
 } 
-}
+// }
 
 export default Profile;
