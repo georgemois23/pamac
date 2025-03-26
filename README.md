@@ -7,4 +7,4 @@
 
 <p>The primary feature of this website is a wall where users can upload messages either with their credentials or anonymously.</p>
 
-<p>The project is still under construction; the main structure of the front end is almost complete. The backend is not yet implemented, as I am currently learning Spring Boot to manage the database and user interactions.</p>
+<p>The project is still under construction; the main structure of the front end is almost complete. The backend is not yet implemented, as I am currently learning FastApi to manage the database and user interactions.</p>
