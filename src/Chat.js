@@ -54,7 +54,7 @@ function Chat({user }) {
           placeholder={!user.username ? 'Type your anonymous message...' : 'Type your message...'}
           maxLength={350}
         />
-        <button  disabled={(!message) || message.trim().length<=0}  className='sub-but' type='submit'>Send</button>
+        <button  disabled={(!message) || message.trim().length<=0}  className='sub-but' type='submit' title={message.trim().length<=0 ? 'Message is blank' : ''}>Send</button>
       </form>
     {/* // </div> */}
     </Container>

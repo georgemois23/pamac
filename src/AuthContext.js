@@ -13,6 +13,7 @@ export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(localStorage.getItem("token") || null);
   const [isLoading, setIsLoading] = useState(false);
   const [loginMessage, setloginMessage] = useState(null);
+  const [ERRORMessage, setERRORMessage] = useState(null);
   const [LogBut, setLogBut] = useState(localStorage.getItem("Button"));
   const [incognito, setincognito] = useState(sessionStorage.getItem("incognito"));
 
@@ -56,6 +57,9 @@ export const AuthProvider = ({ children }) => {
       logout();
       return false;
     }
+    finally {
+      setIsLoading(false);
+    }
   };
   
   
@@ -63,6 +67,7 @@ export const AuthProvider = ({ children }) => {
 
   // Function to login
   const login = async (username, password) => {
+    setERRORMessage(null);
     try {
       const response = await axios.post(
         "https://pamac-backendd.onrender.com/token",
@@ -73,17 +78,19 @@ export const AuthProvider = ({ children }) => {
         }
       );
   
+      
       const accessToken = response.data.access_token;
       setToken(accessToken);
       localStorage.setItem("token", accessToken);
       console.log("Token? , ",token);
+      // setIsLoading(true);
       setloginMessage("Login was successful, redirecting to Chat...");
   
       // 🛠 Await fetchUser() and check if it fails
       const userFetchSuccess = await fetchUser(accessToken);
   
       if (!userFetchSuccess) {
-        setloginMessage("*User fetch failed, but login was successful.*");
+        setERRORMessage("*Login was not successful. Please try again.*");
       }
   
       console.log("Login succeeded");
@@ -93,18 +100,19 @@ export const AuthProvider = ({ children }) => {
   
       setTimeout(() => {
         setloginMessage(null);
+         setIsLoading(false);
       }, 2000);
     } catch (error) {
       if (error.code === "ECONNABORTED") {
-        setloginMessage("*Login request timed out. Please try again.*");
+        setERRORMessage("*Login request timed out. Please try again.*");
         setTimeout(() => {
-          setloginMessage(null);
+          setERRORMessage(null);
           window.location.reload();
         }, 2000);
       } else {
-        setloginMessage("*Please check username or password and try again.*");
+        setERRORMessage("*Please check username or password and try again.*");
       }
-  
+      setERRORMessage("*Please check username or password and try again.*");
       console.log("Login failed:s", error);
     }
   };
@@ -167,6 +175,7 @@ export const AuthProvider = ({ children }) => {
     setincognito(false);
     setUser(null);
     setToken(null);
+    
   };
 
   // useEffect(() => {
@@ -200,7 +209,7 @@ export const AuthProvider = ({ children }) => {
 
 
   return (
-    <AuthContext.Provider value={{ user, token, login, logout, register, isLoading, handleIncognitoMode, loginMessage,LogBut, incognito }}>
+    <AuthContext.Provider value={{ user, token, login, logout, register, isLoading, handleIncognitoMode, loginMessage,LogBut, incognito,ERRORMessage }}>
       {children}
     </AuthContext.Provider>
   );

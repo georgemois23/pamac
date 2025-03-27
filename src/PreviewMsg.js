@@ -18,12 +18,9 @@ const {user} = useContext(AuthContext);
 
 useEffect(() => {
   if(user){
-    console.log("User exist? ", UserExist);
     setUserExist(true);
-    console.log("User exist? ", UserExist);
   }
   if(!user && UserExist){
-    console.log("User redirecting");
     navigate('/auth');
   }
 }, [user]);

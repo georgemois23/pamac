@@ -13,12 +13,12 @@ import CircularProgress from '@mui/material/CircularProgress';
 import UnderConstruction from './components/Underconstruction';
 import { TextField, InputAdornment, IconButton } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation,useParams } from "react-router-dom";
 import ArrowCircleLeftIcon from '@mui/icons-material/ArrowCircleLeft';
 import ArrowCircleRightIcon from '@mui/icons-material/ArrowCircleRight';
 function LoginPage() {
 
-  const { login,register,handleIncognitoMode,user,isLoading,loginMessage,loginErrorMessage } = useContext(AuthContext);
+  const { login,register,handleIncognitoMode,user,isLoading,loginMessage,ERRORMessage } = useContext(AuthContext);
   // const showPopUp = usePopUp();
 
   
@@ -54,10 +54,16 @@ function LoginPage() {
   const location = useLocation();
   const navigate = useNavigate();
   // let from = location.state?.from?.pathname || "/";
+  const { mode } = useParams();
+  // const mode = location.state?.mode || "default"; 
+  console.log('Mode? ', mode);
   let from = location.state?.from?.pathname || '/chat'; 
   // console.log('From: ',from);
-
-  
+  useEffect(() => {
+  if(location.pathname==='/auth/' ||location.pathname==='/auth' ){
+    navigate("/auth/login");
+  }
+}, [location.pathname]);
   useEffect(() => {
     if (user) {
       console.log("Redirecting to:", from);
@@ -65,10 +71,25 @@ function LoginPage() {
     }
   }, [user, from, navigate]);
 
+  
 if(document.title!=='Log in' && document.title!=='Sign up' ){
   document.title='Log in'
 }
-
+  
+useEffect(() => {
+  if (mode==='login') {
+    handlelogin();
+  }
+  if(mode==='register'){
+    handlesignup();
+  }
+  if(mode==='signup'){
+    handlesignup();
+  }
+  if(mode==='incognito'){
+    handleIncognitobutton();
+  }
+}, [mode]);
 
   useEffect(() => {
     // setErrorloginmessage(loginMessage);
@@ -159,12 +180,21 @@ if(document.title!=='Log in' && document.title!=='Sign up' ){
     }
     if(email && email.length<5){
       setValidEmail(false);
+      
+    }
+    if(email && email.length<5 && username && password ){
+      setValidEmail(false);
+      setWhyButDisabled('Invalid email format')
     }
     if(email.length===0){
       setValidEmail(true);
       setErrorloginmessage("");
     }
-  },[username,password,email]);
+
+    if(username && password && !ValidEmail){
+      setWhyButDisabled('Invalid email format')
+    }
+  },[username,password,email,ValidEmail]);
   
 
   const handleFirstNameChange = (e) => {
@@ -198,9 +228,12 @@ if(document.title!=='Log in' && document.title!=='Sign up' ){
     }
   };
  
+  const handleIncognitobutton = () => {
+    handleIncognito();
+  }
 
-  const handleIncognito = async(e) => {
-    e.preventDefault();
+  const handleIncognito = async() => {
+    // e.preventDefault();
     setErrormessage("");
     setincognito(true);
     setsignup(false);
@@ -218,6 +251,8 @@ if(document.title!=='Log in' && document.title!=='Sign up' ){
     document.title='Chat';
   };
 
+
+  
   const handlelogin = () => {
     document.title='Log in';
     setErrorloginmessage("");
@@ -225,6 +260,7 @@ if(document.title!=='Log in' && document.title!=='Sign up' ){
     setsignup(false);
     setlogin(true);
     setincognito(false);
+    navigate("/auth/login");
   };
 
   const handlesignup = () => {
@@ -234,6 +270,7 @@ if(document.title!=='Log in' && document.title!=='Sign up' ){
     setsignup(true);
     setlogin(false);
     setincognito(false);
+    navigate("/auth/register");
   };
 
   useEffect(()=>{
@@ -255,9 +292,7 @@ if(document.title!=='Log in' && document.title!=='Sign up' ){
     setEmailInput(true);
     setShowEmailSpan(false);
   };
-  const handleIncognitobutton = async(e) => {
-
-  };
+  
   const handleLoginbutton = async(e) => {
     e.preventDefault();
     setErrorloginmessage("");
@@ -269,13 +304,14 @@ if(document.title!=='Log in' && document.title!=='Sign up' ){
       // Ensure user is properly updated before setting success
       if (!user) {
         throw new Error("User not found after login");
+        setErrorloginmessage("User not found after login");
       }
-      console.log("ddd",loginMessage);
+      console.log("ddd",ERRORMessage);
       setSuccess(true);
       setSuccessMessage("Login was successful, redirecting to Chat...");
       setloadingg(false);
       setTimeout(() => {
-        navigate(from, { replace: true });
+        // navigate(from, { replace: true });
       }, 3000);
     } catch (err) {
       setloginError(true);
@@ -283,8 +319,8 @@ if(document.title!=='Log in' && document.title!=='Sign up' ){
       console.error("Login failed:", err);
       setSuccess(false); // Ensure success is reset
       setSuccessMessage(""); // Clear success message
-      setErrorloginmessage(loginMessage);
-      console.log("loginMessage: ", loginMessage);
+      setErrorloginmessage(ERRORMessage);
+      console.log("loginMessage: ", ERRORMessage);
     }
   };
 
@@ -321,9 +357,6 @@ if(document.title!=='Log in' && document.title!=='Sign up' ){
       setsignupbut("");
     }
 
-    // onLogin(username); // Perform the login
-    
-    
   };
   return (
     <div>
@@ -366,60 +399,8 @@ if(document.title!=='Log in' && document.title!=='Sign up' ){
                   value={username}
                   onChange={handleUsernameChange}
                   spellCheck={false}
-                  // fullWidth
-                
-                  //   "& .MuiOutlinedInput-root": {
-                  //     borderRadius: "10px",
-                  //     textAlign: "center",
-                  //   },
-                  //   "& .MuiOutlinedInput-notchedOutline": {
-                  //     borderColor: "var(--basic-txt-blue)", 
-                  //     "& legend": {
-                  //       width: "0px !important", 
-                  //     },
-                  //   },
-                  //   "& .MuiInputLabel-root": {
-                  //     color: "var(--basic-txt-blue)", // Match theme
-                  //     left: "12px", // ✅ Moves label slightly left to avoid gap
-                  //     transformOrigin: "top left", // ✅ Ensures smooth shrinking
-                  //   },
-                  //   "& .MuiInputLabel-shrink": {
-                  //     transform: "translate(0, -6px) scale(0.75) !important", // ✅ Ensures label moves correctly
-                  //   },
-                  //   "& .MuiOutlinedInput-input": {
-                  //     padding: "10px 12px", // ✅ Ensures consistent spacing inside input
-                  //   },
-                  // }}
                 />
-                
                 <label htmlFor="password">Password:</label>
-                {/* <div className="password-container"> */}
-                {/* <TextField */}
-                {/* <input
-                    className="username password-input"
-                    // variant="outlined"
-                    // label="Password"
-                    type={type}
-                    value={password}
-                    onChange={handlePasswordChange}
-                    onKeyDown={handleKeyDown}
-                    maxLength={12}
-                    autoComplete="current-password"
-                    // InputProps={{
-                    //   endAdornment: (
-                    //     <InputAdornment position="end">
-                    //       <IconButton
-                    //         aria-label={showPassword ? 'Hide password' : 'Show password'}
-                    //         onClick={handleClickShowPassword}
-                    //         edge="end"
-                    //       >
-                    //         {showPassword ? <VisibilityOff /> : <Visibility />}
-                    //       </IconButton>
-                    //     </InputAdornment>
-                    //   ),
-                    // }}
-                  />*/}
-                {/* </div>  */}
                 <div className="password-container" style={{ position: "relative", display: "inline-block" }}>
       <input
         className="username password-input"
@@ -444,7 +425,7 @@ if(document.title!=='Log in' && document.title!=='Sign up' ){
           fontSize: "15px",
         }}
       >
-            {password ? showPassword ? <Visibility fontSize='15px' fill='none'/> :  <VisibilityOff  fontSize='15px'/> : null}
+            {password ? showPassword ? <Visibility fontSize='15px' /> :  <VisibilityOff  fontSize='15px'/> : null}
       </span>
     </div>
                 <span onClick={handleforgotpassword} style={{cursor:"pointer"}}>{forgotpassword}</span>
@@ -465,13 +446,13 @@ if(document.title!=='Log in' && document.title!=='Sign up' ){
             <div className="Login" >
               <div className='SPACE'>
               <Typography variant='h1' overflow={"visible"} sx={{fontWeight:"bold"}}>Sign up!</Typography></div>
-              {(errormessage || loginErrorMessage) && <h4 className="ERROR">{errormessage} || {loginErrorMessage}</h4>}
+              {/* {(errormessage || errorloginmessage) && <h4 className="ERROR">{errormessage} || {errorloginmessage}</h4>} */}
               
               <form onSubmit={handleSignUp}>
               {errorloginmessage && <span className="ERROR">{errorloginmessage}</span>}
               {!EmailInput && (
                 <>
-                {GoToNext && (<ArrowCircleRightIcon style={{cursor:'pointer'}} fontSize='large' onClick={handleEmailInput}  titleAccess='View email and full name'/>)}
+                {GoToNext && (<ArrowCircleRightIcon style={{cursor:'pointer'}} fontSize='medium' onClick={handleEmailInput}  titleAccess='View email and full name'/>)}
                 <label htmlFor="username">Username:</label>
                 <input
                   id="username"
@@ -519,7 +500,7 @@ if(document.title!=='Log in' && document.title!=='Sign up' ){
               }
               {EmailInput && (
                 <>
-                <ArrowCircleLeftIcon titleAccess='View username and password' fontSize='large' style={{cursor:'pointer'}} onClick={handleBackToUseranme} />
+                <ArrowCircleLeftIcon titleAccess='View username and password' fontSize='medium' style={{cursor:'pointer'}} onClick={handleBackToUseranme} />
                 <label htmlFor="email" title='Email is optional, used for password recovery'>Email:</label>
                 <input
                   id="email"

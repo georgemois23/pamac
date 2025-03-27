@@ -11,7 +11,7 @@ function ContentNotAvaiable() {
   document.title='Unauthorized'
   const handleCreateAnAccount = () => {
     logout();
-    navigate('/login');
+    navigate('/auth/register');
   };
 
   const location = useLocation();
@@ -19,7 +19,7 @@ function ContentNotAvaiable() {
   useEffect(() => {
     if (location.state?.from !== "redirect") {
       // If accessed manually, send them away
-      navigate("/", { replace: true }); // Redirect to home or any other page
+      navigate("/chat", { replace: true }); // Redirect to home or any other page
     }
   }, [location, navigate]);
 

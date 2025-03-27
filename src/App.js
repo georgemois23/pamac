@@ -11,10 +11,10 @@ import AuthContext from "./AuthContext"; // Import the context
 import CircularProgress from '@mui/material/CircularProgress';
 import UnderConstruction from './components/Underconstruction';
 import Profile from './Profile';
-import AccountBoxIcon from '@mui/icons-material/AccountBox';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { useNavigate, useLocation } from "react-router-dom";
 import ContentNotAvaiable from './ContentNotAvailable';
-import ChatIcon from '@mui/icons-material/Chat';
+import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 function App() {
   const navigate = useNavigate();
   const { user, token, login, logout, isLoading,loginMessage,LogBut,incognito  } = useContext(AuthContext); // Use the context here
@@ -83,14 +83,14 @@ useEffect(() => {
           <div className="App">
           <UnderConstruction message={"This website is currently under construction by George Moysiadis."}/>
           {user && !incognito && location.pathname !== "/profile" && location.pathname !== "/messages" && window.location.pathname !== "/404" &&(
-        <AccountBoxIcon titleAccess='Visit profile info' onClick={handleProfile} sx={{ position: 'fixed', top: '.8rem', left: '.8rem',cursor:'pointer' }} className='accountIcon' />
+        <AccountCircleIcon titleAccess='Visit profile info' onClick={handleProfile} sx={{ position: 'fixed', top: '.8rem', left: '.8rem',cursor:'pointer' }} className='accountIcon' />
       )}
 
       {user && !incognito && location.pathname === "/profile" && (
-        <ChatIcon titleAccess='Visit chat' onClick={handleChat} sx={{ position: 'fixed', top: '.8rem', left: '.8rem',cursor:'pointer' }} className='chatIcon' />
+        <ChatBubbleOutlineIcon titleAccess='Visit chat' onClick={handleChat} sx={{ position: 'fixed', top: '.8rem', left: '.8rem',cursor:'pointer' }} className='chatIcon' />
       )}
             {user && location.pathname !== "/profile"&& location.pathname !== "/" && window.location.pathname !== "/404" && window.location.pathname !== "/restricted"  &&(
-              <button onClick={handleLogout} className="logout-button">
+              <button onClick={handleLogout} className="logout-button" title={LogBut==='Logout' ? 'Logout from your account' : 'Enter chat with credentials'}>
                 {LogBut}
               </button>
             )}
@@ -101,17 +101,25 @@ useEffect(() => {
                 element={user ? <Navigate to="/chat" /> : <FirstLand />}
                 // element={<FirstLand />}
               />
+              <Route path="/auth/:mode" element={user ? <Navigate to="/chat"/> :<LoginPage />} />
               <Route
                 path="/auth"
                 element={user ? <Navigate to="/chat" replace /> : <LoginPage />}
               />
-               <Route path="/login" element={<Navigate to="/auth" replace />} />
-               <Route path="/register" element={<Navigate to="/auth" replace />} />
+               {/* <Route path="/login" element={<Navigate to="/auth" replace />} /> */}
+               {/* <Route path="/register" element={<Navigate to="/auth" replace />} /> */}
                <Route path="/c/*" element={<Navigate to="/chat" replace />} />
             <Route
                 path="/chat"
                 element={user ? <Chat user={user} /> : <Navigate to="/auth" replace />}
               />
+              <Route path="/login" element={user ? <Navigate to="/chat"/> : <Navigate to="/auth/login" />} />
+              <Route path="/register" element={user ? <Navigate to="/chat"/> : <Navigate to="/auth/register" />} />
+              <Route path="/signup" element={user ? <Navigate to="/chat"/> : <Navigate to="/auth/register" />} />
+              
+              {/* <Route path="/register" element={<Navigate to="/auth" state={{ mode: "register" }} />} /> */}
+              {/* <Route path="/signup" element={<Navigate to="/auth" state={{ mode: "register" }} />} /> */}
+              {/* <Route path="/incognito" element={<Navigate to="/auth" state={{ mode: "incognito" }} />} /> */}
              {/* <Route
             path="/profile"
             element={user ? (!incognito ? <Profile user={user} /> : <Navigate to="/restricted" replace />) : <Navigate to="/auth" replace />} 
