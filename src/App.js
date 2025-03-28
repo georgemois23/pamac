@@ -15,6 +15,7 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { useNavigate, useLocation } from "react-router-dom";
 import ContentNotAvaiable from './ContentNotAvailable';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
+import Logout from './Logout';
 function App() {
   const navigate = useNavigate();
   const { user, token, login, logout, isLoading,loginMessage,LogBut,incognito  } = useContext(AuthContext); // Use the context here
@@ -71,10 +72,16 @@ useEffect(() => {
   }
  
 
- 
   
   const handleLogout = () => {
-    logout();
+    if(!incognito){
+      logout();
+      navigate('/logout', { state: { fromLogout: true } });
+    }
+    else{
+      logout();
+    }
+    
   };
 
   return (
@@ -102,6 +109,21 @@ useEffect(() => {
                 // element={<FirstLand />}
               />
               <Route path="/auth/:mode" element={user ? <Navigate to="/chat"/> :<LoginPage />} />
+              <Route
+  path="/logout"
+  element={
+    !user ? (
+      location.state?.fromLogout ? (
+        <Logout />
+      ) : (
+        <Navigate to="/auth/login" replace />
+      )
+    ) : (
+      <Chat user={user} replace />
+    )
+  }
+/>
+
               <Route
                 path="/auth"
                 element={user ? <Navigate to="/chat" replace /> : <LoginPage />}
