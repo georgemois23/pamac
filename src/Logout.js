@@ -25,7 +25,7 @@ function Logout() {
         alignItems: 'center',
         height: '100vh',
         textAlign: 'center',
-        gap: '8vh',
+        gap: '10vh',
         justifyContent: 'center'
       }}
     >
@@ -41,6 +41,10 @@ function Logout() {
       >
        You're now logged out. See you again soon!
       </Typography>
+
+      <Box sx={{display: 'flex',
+          flexDirection: 'column',
+          gap: '1rem',}}>
       <Typography variant='h6'>Changed your mind?</Typography>
       <Box
         sx={{
@@ -84,6 +88,7 @@ function Logout() {
         >
           Go to messages
         </Typography>
+        </Box>
       </Box>
     </Container>
   );
