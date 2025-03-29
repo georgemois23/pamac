@@ -7,6 +7,7 @@ import AuthContext from "./AuthContext"; // Import the context
 import ArrowCircleUpIcon from '@mui/icons-material/ArrowCircleUp';
 import ArrowCircleRightRoundedIcon from '@mui/icons-material/ArrowCircleRightRounded';
 import { Container, Typography } from '@mui/material';
+import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 
 function PreviewMsg() {
   const navigate = useNavigate();
@@ -91,6 +92,8 @@ const scrollToTop = () => {
 
   return (
     <div className="Preview">
+      <ChatBubbleOutlineIcon titleAccess='Visit chat' onClick={handleGoBack} sx={{ position: 'fixed', bottom: '.8rem', left: '.8rem',cursor:'pointer' }} className='chatIcon' />
+  
  <div
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -127,7 +130,7 @@ const scrollToTop = () => {
     </div>
 
       <ThemeOption/>
-      <div className='nav-msg'></div>
+      {/* <div className='nav-msg'></div> */}
       <div className="header">
         <Typography variant='h2' sx={{fontWeight:'bold'}}>Messages </Typography>
       </div>

@@ -779,6 +779,11 @@ form textArea{
 }
 }
 
+@media all and (max-width:540px) {
+  .gobackk{
+    display: none;
+  }
+}
 @media all and (min-width:540px) {
 .logout-button{
   right: 15px;
@@ -815,13 +820,13 @@ form textArea{
 }
 
 @media all and (max-width:365px) {
-  .gobackk{
+  /* .gobackk{
   word-spacing: 9999px;
   width: 60px;
   height: fit-content;
   padding: .1rem;
   text-align: center;
-  }
+  } */
 }
 
 
@@ -834,30 +839,31 @@ form textArea{
     font-size: 18px;
   }
   .nav-msg{
-    height: 30px;
+    height: 45px;
     width: 100%;
     background-color: var(--basic-background-blue);
     position: fixed;
     top: 0;
     z-index: 1;
+    opacity: 0.99;
   }
-  .gobackk{
+  /* .gobackk{
     word-spacing: 0;
     width: fit-content;
     top: 5px;
     left: 5px;
     z-index: 2;
     font-size: 15px;
-  }
+  } */
 }
 
 @media all and (max-width:210px) {
-  .gobackk{
+  /* .gobackk{
     word-spacing: 0;
     width: fit-content;
     top: 5px;
     left: 5px;
-  }
+  } */
 
   .choose{
     font-size: 12px;

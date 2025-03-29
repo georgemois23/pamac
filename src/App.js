@@ -15,11 +15,21 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { useNavigate, useLocation } from "react-router-dom";
 import ContentNotAvaiable from './ContentNotAvailable';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
+import LogoutIcon from '@mui/icons-material/Logout';
+import LoginIcon from '@mui/icons-material/Login';
 import Logout from './Logout';
 function App() {
   const navigate = useNavigate();
   const { user, token, login, logout, isLoading,loginMessage,LogBut,incognito  } = useContext(AuthContext); // Use the context here
   const [themeLoaded, setThemeLoaded] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 310);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 310);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
 
   const handleProfile = () => {
     navigate('/profile');
@@ -84,6 +94,7 @@ useEffect(() => {
     
   };
 
+  
   return (
     // <ThemeOption>
       // {/* <PopUpContext.Provider value={{}}> */}
@@ -97,9 +108,11 @@ useEffect(() => {
         <ChatBubbleOutlineIcon titleAccess='Visit chat' onClick={handleChat} sx={{ position: 'fixed', top: '.8rem', left: '.8rem',cursor:'pointer' }} className='chatIcon' />
       )}
             {user && location.pathname !== "/profile"&& location.pathname !== "/" && window.location.pathname !== "/404" && window.location.pathname !== "/restricted"  &&(
+              isMobile ? (incognito ? <LoginIcon onClick={handleLogout} sx={{ position: 'fixed', top: '.8rem', right: '.8rem',cursor:'pointer' }}/> : <LogoutIcon onClick={handleLogout} sx={{ position: 'fixed', top: '.8rem', right: '.8rem',cursor:'pointer' }}/>) :
               <button onClick={handleLogout} className="logout-button" title={LogBut==='Logout' ? 'Logout from your account' : 'Enter chat with credentials'}>
-                {LogBut}
+                 {LogBut}
               </button>
+              
             )}
            
             <Routes>
