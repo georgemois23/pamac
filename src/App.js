@@ -138,15 +138,7 @@ useEffect(() => {
               <Route path="/login" element={user ? <Navigate to="/chat"/> : <Navigate to="/auth/login" />} />
               <Route path="/register" element={user ? <Navigate to="/chat"/> : <Navigate to="/auth/register" />} />
               <Route path="/signup" element={user ? <Navigate to="/chat"/> : <Navigate to="/auth/register" />} />
-              
-              {/* <Route path="/register" element={<Navigate to="/auth" state={{ mode: "register" }} />} /> */}
-              {/* <Route path="/signup" element={<Navigate to="/auth" state={{ mode: "register" }} />} /> */}
-              {/* <Route path="/incognito" element={<Navigate to="/auth" state={{ mode: "incognito" }} />} /> */}
-             {/* <Route
-            path="/profile"
-            element={user ? (!incognito ? <Profile user={user} /> : <Navigate to="/restricted" replace />) : <Navigate to="/auth" replace />} 
-          /> */}
-
+            
 <Route
   path="/profile"
   element={
@@ -163,7 +155,6 @@ useEffect(() => {
 />
               <Route
                 path="/messages"
-                // element={user ? <PreviewMsg /> : <Navigate to="/auth" />}
                 element={<PreviewMsg />}
               />
               <Route path="*" element={<Navigate to="/404" />} />
@@ -171,8 +162,6 @@ useEffect(() => {
               <Route path="/404" element={<ErrorPage />} />
             </Routes>
           </div>
-      // {/* </PopUpContext.Provider> */}
-    // {/* </ThemeOption> */}
   );
 }
 

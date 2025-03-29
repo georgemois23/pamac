@@ -390,7 +390,8 @@ html {
   }
   .logout-button{
     position: fixed;
-    top: 15px;
+    /* top: 15px; */
+    top: .8rem;
     right: 22px;
     font-size: 20px;
     height: fit-content;
@@ -465,12 +466,11 @@ form button {
 
 
 
-
 button:hover,button:focus{
   color: var(--basic-background-blue);
   /* color: #f5f5dc; */
   background-color: var(--basic-txt-blue);
-  transition: all .5s ease;
+  transition: all 0.5s ease;
   /* opacity: 0; */
   /* background-color: #00563B; */
   
@@ -699,6 +699,7 @@ button{
   height: 30px;
   width: fit-content;
   font-size: 20px;
+  transition: all 0.5s ease;
 }
 .username{
   height: 25px;
@@ -717,9 +718,9 @@ form textArea{
 
 .logout-button{
   position: fixed;
-  top: 5px;
+  top: .8rem;
   right: 5px;
-  font-size: 20px;
+  /* font-size: 20px; */
   height: fit-content;
 }
 
@@ -830,7 +831,7 @@ form textArea{
   }
   .logout-button{
     z-index: 2;
-    font-size: 15px;
+    font-size: 18px;
   }
   .nav-msg{
     height: 30px;
