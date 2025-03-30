@@ -26,7 +26,7 @@ function FirstLand() {
     const navigate = useNavigate();
     const handleEnter = () => {
         // OnEnter();
-        localStorage.setItem('vst',true);
+        localStorage.setItem('enter','true');
         navigate('/auth');  // Navigate to the login page
         
       };

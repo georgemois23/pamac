@@ -102,7 +102,7 @@ function Logout() {
             }}
             onClick={handleGoToMessages}
           >
-            Go to messages
+            View messages
           </Typography>
         </Box>
       </Box>

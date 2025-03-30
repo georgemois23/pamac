@@ -53,23 +53,13 @@ function LoginPage() {
 
   const location = useLocation();
   const navigate = useNavigate();
-  // let from = location.state?.from?.pathname || "/";
   const { mode } = useParams();
-  // const mode = location.state?.mode || "default"; 
-  console.log('Mode? ', mode);
-  let from = location.state?.from?.pathname || '/chat'; 
-  // console.log('From: ',from);
   useEffect(() => {
   if(location.pathname==='/auth/' ||location.pathname==='/auth' ){
     navigate("/auth/login");
   }
 }, [location.pathname]);
-  useEffect(() => {
-    if (user) {
-      console.log("Redirecting to:", from);
-      navigate(from, { replace: true });
-    }
-  }, [user, from, navigate]);
+  
 
   
 if(document.title!=='Log in' && document.title!=='Sign up' ){
@@ -295,6 +285,7 @@ useEffect(() => {
   
   const handleLoginbutton = async(e) => {
     e.preventDefault();
+    setShowPassword(false);
     setErrorloginmessage("");
     setloadingg(true);
     setloginbut("Trying to sign in");
@@ -327,6 +318,7 @@ useEffect(() => {
  
   const handleSignUp = async (e) => {
     e.preventDefault();
+    setShowPassword(false);
     setErrorloginmessage("");
     setloadingg(true);
     setsignupbut("Trying to sign up");

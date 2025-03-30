@@ -10,7 +10,7 @@ export default function UnderConstruction({message}) {
   const [open, setOpen] = useState(false);
 
   React.useEffect(() => {
-    if (localStorage.getItem('vst') !== 'true') {
+    if (localStorage.getItem('vst') !== 'true' && localStorage.getItem('enter') !== 'true' ) {
       setOpen(true);
     }
   }, []);
