@@ -6,6 +6,9 @@ import reportWebVitals from './reportWebVitals';
 import { AuthProvider } from "./AuthContext";
 import ThemeOption from './ThemeOption';
 import { BrowserRouter as Router } from 'react-router-dom';
+import "./i18n";
+import GreekLanguageRouter from './GreekLanguageRouter';
+import { MessagesProvider } from './context/MessagesContext';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <Router>
@@ -13,7 +16,10 @@ root.render(
   <React.StrictMode>
     <AuthProvider>
     {/* <ChakraProvider> */}
-    <App />
+    <MessagesProvider>
+    <GreekLanguageRouter />
+    </MessagesProvider>
+    {/* <App /> */}
     </AuthProvider>
     {/* </ChakraProvider> */}
   </React.StrictMode>

@@ -68,10 +68,11 @@ html {
       margin-inline: auto;
       border: 3px solid var(--basic-txt-blue);
       border-radius: 14px;
-      max-width: 50vw;
+      max-width: 70vw;
       min-width: 100px;
-      width: fit-content;
+      width: calc('fit-content' + '5rem');
       outline: none;
       outline-offset: none;
+      padding-inline: .1rem;
       /* margin-bottom: 5rem; */
     }}

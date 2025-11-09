@@ -1,13 +1,14 @@
 import React, { useEffect,useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Box, Container, Typography } from '@mui/material';
-
+import { useTranslation } from 'react-i18next';
 function Logout() {
   const navigate = useNavigate();
   const location = useLocation();
   const [allowed, setAllowed] = useState(false);
-  document.title = 'Logged out successfully!';
-
+  const { t } = useTranslation();
+  document.title = t("logged_out_successfully");
+  
   const handleCreateAnAccount = () => {
     navigate('/auth/login');
   };
@@ -27,6 +28,7 @@ function Logout() {
         textAlign: 'center',
         gap: '10vh',
         justifyContent: 'center', // Centers the first content
+        userSelect: 'none', // Prevents text selection
       }}
     >
       {/* Centered Logged-Out Message */}
@@ -40,7 +42,7 @@ function Logout() {
           marginTop: '1rem',
         }}
       >
-        You're now logged out. See you again soon!
+        {t('logged_out')}
       </Typography>
   
       {/* Box to move the "Changed your mind?" and buttons to the bottom with padding */}
@@ -57,7 +59,7 @@ function Logout() {
         }}
       >
         {/* "Changed your mind?" text */}
-        <Typography variant='h6'>Changed your mind?</Typography>
+        <Typography variant='h6'>{t("changed_mind")}</Typography>
   
         {/* Buttons Box */}
         <Box
@@ -83,7 +85,7 @@ function Logout() {
             }}
             onClick={handleCreateAnAccount}
           >
-            Go to login page
+            {t('go_to_login_page')}
           </Typography>
   
           {/* Go to messages button */}
@@ -102,7 +104,7 @@ function Logout() {
             }}
             onClick={handleGoToMessages}
           >
-            View messages
+            {t('view_messages')}
           </Typography>
         </Box>
       </Box>

@@ -1,6 +1,6 @@
 {
-  "name": "Pamac",
-  "short_name": "Pamac",
+  "name": "Polyvox",
+  "short_name": "Polyvox",
   "description": "A high-tech platform for sending messages incognito or with credentials.",
   "start_url": "/",
   "display": "standalone",

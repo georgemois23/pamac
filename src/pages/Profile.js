@@ -1,16 +1,18 @@
-import './App.css';
+import '../App.css';
 import React, { useContext} from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 // import { useState } from 'react';
 import { Box, Button, ButtonBase, Container, Typography } from '@mui/material';
 import e from 'cors';
-import AuthContext from "./AuthContext"; // Import the context
+import AuthContext from "../AuthContext"; // Import the context
 import ContentNotAvaiable from './ContentNotAvailable';
+import { useTranslation } from 'react-i18next';
 function Profile({user}) {
   const {logout} = useContext(AuthContext);
   const navigate = useNavigate();
-  document.title='Profile'
+  const { t } = useTranslation();
+  document.title=t("profile");
   const handleCreateAnAccount = () => {
     logout();
   };
@@ -63,6 +65,7 @@ function Profile({user}) {
         alignItems: 'center',      // Center items horizontally
         height: '100vh',           // Full height of the viewport
         textAlign: 'center',       // Center text alignment
+        userSelect: 'none', // Prevents text selection
     }}>
            <Typography
                         variant='h3'
@@ -76,7 +79,7 @@ function Profile({user}) {
                         }}
                     // >
                     >
-            Hello{user.username ? ' '+user.username+'!' : '!'}
+           {user.username ? `${user.username} `+t("profile") : t("profile")}
             </Typography>
 
 
@@ -89,7 +92,7 @@ function Profile({user}) {
     gap: '0.5rem' // Adjusts spacing between "Email:" and the box
   }}
 >
-  <Typography variant='p'>Username:</Typography>
+  <Typography variant='p'>{t("username")}:</Typography>
   
   <Box
     sx={{
@@ -135,7 +138,7 @@ function Profile({user}) {
       <Typography component="span" variant="inherit" sx={{ fontStyle: 'italic' }}>
         {user.username}
       </Typography>
-      {' has not provided any email yet'}
+      {t("no_email")}
     </>}
     </Typography>
   </Box>
@@ -148,7 +151,7 @@ function Profile({user}) {
     gap: '0.5rem' // Adjusts spacing between "Email:" and the box
   }}
 >
-  <Typography variant='p'>Full name:</Typography>
+  <Typography variant='p'>{t("fullname")}:</Typography>
   
   <Box
     sx={{
@@ -163,7 +166,12 @@ function Profile({user}) {
     }}
   >
     <Typography variant='span' sx={{ fontWeight: 'bold', textAlign: 'center' }}>
-      {user.full_name ? user.full_name : `${user.username} has not provide full name yet`}
+      {user.full_name ? user.full_name :  <>
+      <Typography component="span" variant="inherit" sx={{ fontStyle: 'italic' }}>
+        {user.username}
+      </Typography>
+      {t("no_fullname")}
+    </>}
     </Typography>
   </Box>
   

@@ -1,21 +1,23 @@
-import './App.css';
+import '../App.css';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { Container, Typography } from '@mui/material';
+import {useTranslation } from 'react-i18next';
 function ErrorPage(){
-    document.title='Page not found';
+    const { t } = useTranslation();
+    document.title=t("not_found");
     localStorage.setItem('enter', 'false');
     const navigate = useNavigate(); 
     const goBack = () => {
         navigate('/');
-        document.title='Pamac';
+        document.title='Polyvox';
     };
     return(
         // <div className='Error'>
         <Container 
-        sx={{display:'flex',flexDirection:'column', justifyContent:'center',alignItems:'center'}}>
+        sx={{display:'flex',flexDirection:'column', justifyContent:'center',alignItems:'center', userSelect: 'none'}}>
             
         {/* <Typography variant='h2'>Error 404!</Typography>  */}
-        <Typography  variant='h2'>Page not found :(</Typography>
+        <Typography  variant='h2'>{t("not_found")} :(</Typography>
         <br/>
         {/* <img 
         style={{display:'block',width:'200px'}}
@@ -28,7 +30,7 @@ function ErrorPage(){
         <Typography variant='h1'>404</Typography>
         <br/>
         {/* <Typography variant='h6'style={{textDecoration:'underline', cursor:'pointer'}} onClick={goBack}>Go to home page</Typography> */}
-  <button style={{border:'none'}} onClick={goBack}>Go to home page</button>
+  <button style={{border:'none'}} onClick={goBack}>{t("visit_home_page")}</button>
 
         </Container>
         

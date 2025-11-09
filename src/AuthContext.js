@@ -1,215 +1,208 @@
 import React, { createContext, useState, useEffect } from "react";
-import axios from "./api/axios"; // Assuming you have axios instance configured
+import api, { useAxiosInterceptor } from "./api/axios"; // Axios instance
+import { useTranslation } from "react-i18next";
 
 const AuthContext = createContext();
-// https://pamac-backendd.onrender.com/
-
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(() => {
-        const storedUser = localStorage.getItem("user");
-        return storedUser ? JSON.parse(storedUser) : null;
-      });
-  const [token, setToken] = useState(localStorage.getItem("token") || null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [loginMessage, setloginMessage] = useState(null);
-  const [ERRORMessage, setERRORMessage] = useState(null);
-  const [LogBut, setLogBut] = useState(localStorage.getItem("Button"));
-  const [incognito, setincognito] = useState(sessionStorage.getItem("incognito"));
+  const { t } = useTranslation();
 
-  // Function to fetch user data
-  const fetchUser = async (token) => {
-    console.log("Fetching user...");
-  
-    if (sessionStorage.getItem("incognito") === "true") {
-      console.log("Incognito mode detected.");
-      setUser({ username: "", role: "guest" });
-      localStorage.setItem("user", JSON.stringify({ username: "", role: "guest" }));
-      setincognito(true);
-      setLogBut("Login");
-      setIsLoading(false);
-      return true; // Incognito login is considered successful
-    }
-  
-    if (!token) {
-      console.log("No token found, setting user to null.");
-      setUser(null);
-      setIsLoading(false);
-      return false;
-    }
-  
+  const [user, setUser] = useState(() => {
+    const storedUser = localStorage.getItem("user");
+    return storedUser ? JSON.parse(storedUser) : null;
+  });
+  const [accessToken, setAccessToken] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [loginMessage, setLoginMessage] = useState(null);
+  const [ERRORMessage, setERRORMessage] = useState(null);
+  const [LogBut, setLogBut] = useState(localStorage.getItem("Button") || t("login"));
+  const [incognito, setIncognito] = useState(sessionStorage.getItem("incognito") === "true");
+
+  // Keep Axios interceptors updated
+  useAxiosInterceptor(accessToken, setAccessToken);
+
+  // Fetch user from backend
+  const fetchUser = async (token, isGuest = false) => {
+    setIsLoading(true);
     try {
-      console.log("Sending request to /users/me...");
-      const response = await axios.get("https://pamac-backendd.onrender.com/users/me", {
-        headers: { Authorization: `Bearer ${token}` },
+      const response = await api.get("/auth/me", {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
-      
-      
-      console.log("User fetched successfully:", response.data);
       setUser(response.data);
-      localStorage.setItem("user", JSON.stringify(response.data));
-      setincognito(false);
       setIsLoading(false);
-  
-      return true; // Success!
+
+      if (!isGuest) localStorage.setItem("user", JSON.stringify(response.data));
+      setIncognito(false);
+      return true;
     } catch (error) {
-      console.log("Error fetching user, logging out:", error);
       logout();
       return false;
     }
-    finally {
-      setIsLoading(false);
-    }
   };
-  
-  
-  
 
-  // Function to login
   const login = async (username, password) => {
     setERRORMessage(null);
-    try {
-      const response = await axios.post(
-        "https://pamac-backendd.onrender.com/token",
-        new URLSearchParams({ username, password }),
-        {
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          timeout: 15000,
-        }
-      );
-  
-      
-      const accessToken = response.data.access_token;
-      setToken(accessToken);
-      localStorage.setItem("token", accessToken);
-      console.log("Token? , ",token);
-      // setIsLoading(true);
-      setloginMessage("Login was successful, redirecting to Chat...");
-  
-      // 🛠 Await fetchUser() and check if it fails
-      const userFetchSuccess = await fetchUser(accessToken);
-  
-      if (!userFetchSuccess) {
-        setERRORMessage("*Login was not successful. Please try again.*");
-      }
-  
-      console.log("Login succeeded");
-      localStorage.setItem("vst", true);
-      setLogBut("Logout");
-      localStorage.setItem("Button", "Logout");
-  
-      setTimeout(() => {
-        setloginMessage(null);
-         setIsLoading(false);
-      }, 2000);
-    } catch (error) {
-      if (error.code === "ECONNABORTED") {
-        setERRORMessage("*Login request timed out. Please try again.*");
-        setTimeout(() => {
-          setERRORMessage(null);
-          window.location.reload();
-        }, 2000);
-      } else {
-        setERRORMessage("*Please check username or password and try again.*");
-      }
-      setERRORMessage("*Please check username or password and try again.*");
-      console.log("Login failed:s", error);
-    }
-  };
-  
-  
-  
+    sessionStorage.removeItem("guestId");
+    sessionStorage.removeItem("guestToken");
+    sessionStorage.removeItem("incognito");
+    setIncognito(false);
 
-  // Function to register a new user
-  const register = async (username, password, email = "", full_name = "") => {
     try {
-      const response = await axios.post(
-        "https://pamac-backendd.onrender.com/register", 
-        {
-          username: username,
-          password: password,
-          email: email,
-          full_name: full_name
-        },
-        { headers: { "Content-Type": "application/json" } }
-      );
-      console.log("Registration successful:", response.data);
-      // login(username, password);
+      const response = await api.post("/auth/login", { username, password });
+      const { accessToken: newToken } = response.data;
+      setAccessToken(newToken);
+      await fetchUser(newToken);
+
+      setLoginMessage(t("login_success"));
+      setLogBut(t("logout"));
+      localStorage.setItem("Button", t("logout"));
     } catch (error) {
-      console.log("Error during registration:", error.response?.data);
-      throw error; // Rethrow the error so you can handle it in your catch block in the UI
+      if (error.response?.status === 401) setERRORMessage(t("check_username_password"));
+      else setERRORMessage(t("login_failed"));
     }
   };
 
-  // Function to handle incognito mode
-  const handleIncognitoMode = async () => {
-    // try {
-      // Set incognito mode in sessionStorage to track it for the session
-      sessionStorage.setItem('incognito', 'true');
-      setUser({ username: '', role: 'guest' }); // Set dummy user
-      setToken(null); // No token required for incognito
-      setLogBut("Login");
-      setincognito(true);
-      // Optionally call a backend endpoint for incognito mode
-    //   const response = await fetch('https://pamac-backendd.onrender.com/incognito', {
-    //     method: 'GET',
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //     },
-    //   });
-
-    //   if (response.ok) {
-    //     // Handle the incognito user content here
-    //     console.log('You are now in incognito mode!');
-    //   }
-    // } catch (error) {
-    //   console.error('Error in incognito mode:', error);
-    // }
-  };
-
-  // Function to logout
-  const logout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    sessionStorage.removeItem('incognito'); // Clear incognito mode on logout
-    setincognito(false);
-    setUser(null);
-    setToken(null);
-    
-  };
-
-  // useEffect(() => {
-  //       const storedUser = localStorage.getItem("user");
-      
-  //       if (storedUser) {
-  //         setUser(JSON.parse(storedUser)); // Use stored user data
-  //         setIsLoading(false);
-  //       } else if (token && sessionStorage.getItem('incognito') !== 'true') {
-  //         setIsLoading(true);
-  //         fetchUser(); // Only fetch if user data is missing
-  //       }
-  //     }, []);
- 
- 
-  // Check token validity on app load or token update
-  useEffect(() => {
-    setIsLoading(false);
-    if(!user){
-    if (token) {
-      setIsLoading(true);
-      fetchUser();
-    } else if (sessionStorage.getItem('incognito') === 'true') {
-      setIsLoading(true);
-      fetchUser();
+ const register = async (username, password, email = "", full_name = "") => {
+  try {
+    await api.post("/auth/signup", { username, password, email, full_name });
+    // Only show success if no error
+    setLoginMessage(t("register_success"));
+    setERRORMessage(null);
+    return true;
+  } catch (error) {
+    if (error.response?.status === 409) {
+      // Username already exists
+      setERRORMessage(error.response.data?.message || t("username_taken"));
     } else {
-      setIsLoading(false); // If no token or incognito, end the loading state
-      logout();
-    }}
-  }, [token]);
+      setERRORMessage(t("registration_error"));
+    }
+    setLoginMessage(null); // clear any previous success
+    return false;
+  }
+};
 
+
+  const handleIncognitoMode = async () => {
+    setERRORMessage(null);
+    setIsLoading(true);
+    const existingGuestId = sessionStorage.getItem("guestId");
+    const existingGuestToken = sessionStorage.getItem("guestToken");
+
+    if (existingGuestId) {
+      // Restore existing guest token from backend
+      try {
+        const response = await api.get("/auth/guest", {
+          params: { guestId: existingGuestId },
+        });
+        const { accessToken: refreshedToken, username } = response.data;
+        setIsLoading(false);
+        setAccessToken(refreshedToken);
+        sessionStorage.setItem("guestToken", refreshedToken);
+        setUser({ username, role: "guest", id: existingGuestId });
+        setIncognito(true);
+        setLogBut(t("login"));
+        return;
+      } catch (err) {
+        console.error("Error refreshing guest token", err);
+        sessionStorage.removeItem("guestId");
+        sessionStorage.removeItem("guestToken");
+      }
+    }
+
+    // Create new guest if none exists
+    try {
+      localStorage.removeItem("user");
+      setUser(null);
+      setAccessToken(null);
+
+      const response = await api.post("/auth/guest");
+      const { accessToken: guestToken, guestId } = response.data;
+
+      setAccessToken(guestToken);
+      sessionStorage.setItem("guestId", guestId);
+      sessionStorage.setItem("guestToken", guestToken);
+      sessionStorage.setItem("incognito", "true");
+      setIncognito(true);
+
+      const payload = JSON.parse(atob(guestToken.split(".")[1]));
+      const timeout = payload.exp * 1000 - Date.now();
+      if (timeout > 0) setTimeout(() => logout(), timeout);
+
+      setUser({ username: `Guest_${guestId.slice(0, 8)}`, role: "guest", id: guestId });
+      setIsLoading(false);
+      setLogBut(t("login"));
+      console.log("Guest logged in", guestId);
+    } catch (error) {
+      console.error("Error logging in as guest", error);
+      setERRORMessage(t("guest_login_failed"));
+    }
+  };
+
+  const logout = () => {
+    if (!incognito) {
+      localStorage.removeItem("user");
+    } else {
+      sessionStorage.removeItem("guestToken");
+      sessionStorage.removeItem("incognito");
+    }
+    setUser(null);
+    setAccessToken(null);
+    setIncognito(false);
+    setLogBut(t("login"));
+  };
+
+  // Initialize auth on page load
+useEffect(() => {
+  const initializeAuth = () => {
+    setIsLoading(true);
+
+    const storedUser = localStorage.getItem("user");
+    const guestId = sessionStorage.getItem("guestId");
+    const guestToken = sessionStorage.getItem("guestToken");
+
+    if (storedUser) {
+      // Real logged-in user exists
+      setUser(JSON.parse(storedUser));
+      setIncognito(false);
+      setAccessToken(null);
+    } else if (guestId && guestToken) {
+      // Restore existing incognito user without creating a new guest
+      setUser({ username: `Guest_${guestId.slice(0, 8)}`, role: "guest", id: guestId });
+      setAccessToken(guestToken);
+      setIncognito(true);
+      setLogBut(t("login"));
+    } else {
+      // No user, no guest → do nothing until button click
+      setUser(null);
+      setAccessToken(null);
+      setIncognito(false);
+      sessionStorage.removeItem("guestId");
+      sessionStorage.removeItem("guestToken");
+      sessionStorage.removeItem("incognito");
+    }
+
+    setIsLoading(false);
+  };
+
+  initializeAuth();
+}, []);
 
   return (
-    <AuthContext.Provider value={{ user, token, login, logout, register, isLoading, handleIncognitoMode, loginMessage,LogBut, incognito,ERRORMessage }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        accessToken,
+        login,
+        logout,
+        register,
+        isLoading,
+        handleIncognitoMode,
+        loginMessage,
+        LogBut,
+        incognito,
+        ERRORMessage,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

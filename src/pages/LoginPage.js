@@ -1,23 +1,23 @@
 // Import necessary modules
-import './App.css';
+import '../App.css';
 // import { usePopUp } from './App'; 
 import React, { useEffect, useState } from 'react';
 import { Alert, Typography } from "@mui/material";
-import { CheckCircle as CheckIcon } from "@mui/icons-material"; // Correct import
-import supabase from './config/supabaseClient';
-import ThemeOption from './ThemeOption';
-import axios from './api/axios';
-import AuthContext from "./AuthContext";
+import { CheckCircle as CheckIcon } from "@mui/icons-material";
+import ThemeOption from '../ThemeOption';
+import axios from '../api/axios'
+import AuthContext from "../AuthContext";
 import { useContext } from 'react';
 import CircularProgress from '@mui/material/CircularProgress';
-import UnderConstruction from './components/Underconstruction';
 import { TextField, InputAdornment, IconButton } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useNavigate, useLocation,useParams } from "react-router-dom";
 import ArrowCircleLeftIcon from '@mui/icons-material/ArrowCircleLeft';
 import ArrowCircleRightIcon from '@mui/icons-material/ArrowCircleRight';
+import { useTranslation } from 'react-i18next';
+import LoadingSpinner from '../components/LoadingSpinner';
 function LoginPage() {
-
+  const { t } = useTranslation();
   const { login,register,handleIncognitoMode,user,isLoading,loginMessage,ERRORMessage } = useContext(AuthContext);
   // const showPopUp = usePopUp();
 
@@ -49,7 +49,7 @@ function LoginPage() {
   const [last_name, setLast_name] = useState('');
   const [first_name, setFirst_name] = useState('');
   const [ValidEmail, setValidEmail] = useState(true);
-  const [WhyButDisabled, setWhyButDisabled] = useState('Fill username and password');
+  const [WhyButDisabled, setWhyButDisabled] = useState(t("fill_username_password"));
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -60,6 +60,10 @@ function LoginPage() {
   }
 }, [location.pathname]);
   
+
+useEffect(() => {
+  setErrorloginmessage(ERRORMessage); // This will show when the error message is updated
+}, [ERRORMessage]);
 
   
 if(document.title!=='Log in' && document.title!=='Sign up' ){
@@ -88,7 +92,7 @@ useEffect(() => {
 
   useEffect(() => {
     if(loginError){
-      setforgotpassword("Forgot password?")
+      setforgotpassword(t("forgot_password"))
     }
     else {
       setforgotpassword(null);
@@ -112,9 +116,9 @@ useEffect(() => {
     setErrormessage("");
     setErrorloginmessage("");
     if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(e.target.value)) {
-      setErrorloginmessage('*Invalid email format*');
+      setErrorloginmessage('*'+t('invalid_email')+'*');
       setValidEmail(false);
-      setWhyButDisabled('Invalid Email Format')
+      setWhyButDisabled(t('invalid_email'))
     }
     else
     {
@@ -137,11 +141,11 @@ useEffect(() => {
     setErrorloginmessage("");
     // input.value = input.value.replace(/[^a-zA-Z0-9]/g, '');
     if (/[^a-zA-Z0-9]/.test(e.target.value)) {
-      setWhyButDisabled('Username is blank');
-      setErrorloginmessage('*Only letters and numbers are allowed in username*')
+      setWhyButDisabled(t("fill_username"));
+      setErrorloginmessage('*'+t("only_letters_numbers")+'*')
     }  
     setUsername(e.target.value.replace(/[^a-zA-Z0-9]/g, ''));
-    if(username===''){ setWhyButDisabled('Username is blank');}
+    if(username===''){ setWhyButDisabled(t("fill_username"));}
   };
   const handlePasswordChange = (e) => {
     // Prevent whitespace by replacing spaces with an empty string
@@ -157,13 +161,13 @@ useEffect(() => {
 
   useEffect(()=>{
     if(username==='' && password!==''){
-      setWhyButDisabled('Fill username')
+      setWhyButDisabled(t("fill_username"));
     }
     if(username!=='' && password===''){
-      setWhyButDisabled('Fill password')
+      setWhyButDisabled(t("fill_password"));
     }
     if(username==='' && password===''){
-      setWhyButDisabled('Fill username and password')
+      setWhyButDisabled(t("fill_username_password"));
     }
     if(username!=='' && password!==''){
       setWhyButDisabled('')
@@ -174,7 +178,7 @@ useEffect(() => {
     }
     if(email && email.length<5 && username && password ){
       setValidEmail(false);
-      setWhyButDisabled('Invalid email format')
+      setWhyButDisabled(t('invalid_email'))
     }
     if(email.length===0){
       setValidEmail(true);
@@ -182,7 +186,7 @@ useEffect(() => {
     }
 
     if(username && password && !ValidEmail){
-      setWhyButDisabled('Invalid email format')
+      setWhyButDisabled(t('invalid_email'))
     }
   },[username,password,email,ValidEmail]);
   
@@ -193,7 +197,7 @@ useEffect(() => {
     setErrorloginmessage("");
     // input.value = input.value.replace(/[^a-zA-Z0-9]/g, '');
     if (/[^A-Za-z]/.test(e.target.value)) {
-      setErrorloginmessage('*Only letters are allowed in last name*');
+      setErrorloginmessage('*'+t('only_letters_in_last_name')+'*');
     }
     setFirst_name(e.target.value.replace(/[^A-Za-z]/g, ''));
     
@@ -204,7 +208,7 @@ useEffect(() => {
     setErrorloginmessage("");
     // input.value = input.value.replace(/[^a-zA-Z0-9]/g, '');
     if (/[^A-Za-z]/.test(e.target.value)) {
-      setErrorloginmessage('*Only letters are allowed in last name*');
+      setErrorloginmessage('*'+t('only_letters_in_last_name')+'*');
     }
     
     setLast_name(e.target.value.replace(/[^A-Za-z]/g, ''));
@@ -272,10 +276,10 @@ useEffect(() => {
 
 
   const handleforgotpassword = () => {
-    if(forgotpassword==='Forgot password?'){
-    setforgotpassword("Sorry I am still working on that :(")
+    if(forgotpassword=== (t("forgot_password"))){
+    setforgotpassword(t("sorry_still_working"));
   }
-  else {setforgotpassword("Forgot password?")}
+  else {setforgotpassword(t("forgot_password"))}
 
   };
   const handleEmailInput = () => {
@@ -288,7 +292,7 @@ useEffect(() => {
     setShowPassword(false);
     setErrorloginmessage("");
     setloadingg(true);
-    setloginbut("Trying to sign in");
+    setloginbut(t("tryingtosignin"));
     setloginError(false);
     try {
       await login(username.toLowerCase(), password);
@@ -309,64 +313,69 @@ useEffect(() => {
       setloginbut("")
       console.error("Login failed:", err);
       setSuccess(false); // Ensure success is reset
-      setSuccessMessage(""); // Clear success message
-      setErrorloginmessage(ERRORMessage);
-      console.log("loginMessage: ", ERRORMessage);
+      setTimeout(() => {
+        setSuccessMessage(""); // Clear success message
+        setErrorloginmessage(ERRORMessage);
+        console.log("ERRORMessage: ", ERRORMessage);
+      }, 2000);
+      
     }
   };
 
  
   const handleSignUp = async (e) => {
-    e.preventDefault();
-    setShowPassword(false);
-    setErrorloginmessage("");
-    setloadingg(true);
-    setsignupbut("Trying to sign up");
-    console.log('Sign up?');
-    // try {
-      // await axios.post('http://localhost:8000/register', {username,password})
-    // } catch (error) {
-      // console.log(error);
-    // }
-    try {
-      console.log('Sign up? sure?');
-      await register(username.toLowerCase(), password, email,first_name !== '' ? first_name + ' ' + last_name : '');
-      console.log('Sign up? sure?');
-      console.log("User registered");
-      setSuccess(true);
-      setSuccessMessage("Register was successful, you can now login..."); // Set success message on successful registration
-      setloadingg(false);
-      setsignupbut("");
-      handlelogin();
-      console.log(successMessage);
-      setTimeout(() => {
-        setSuccess(false) // Redirect after showing success message
-      }, 2000);
-    } catch (err) {
-      
-      setloadingg(false);
-      setErrorloginmessage("*User already exists*");
-      setsignupbut("");
-    }
+  e.preventDefault();
+  setShowPassword(false);
+  setErrorloginmessage("");
+  setloadingg(true);
+  setsignupbut(t("tryingtosignup"));
 
-  };
+  console.log('Sign up?');
+
+  const success = await register(
+    username.toLowerCase(),
+    password,
+    email,
+    first_name !== '' ? first_name + ' ' + last_name : ''
+  );
+
+  if (success) {
+    // Only proceed if registration succeeded
+    console.log("User registered");
+    setSuccess(true);
+    setSuccessMessage("Register was successful, you can now login...");
+    setloadingg(false);
+    setsignupbut("");
+
+    handlelogin(); // Call login only if registration succeeded
+
+    setTimeout(() => {
+      setSuccess(false); // Hide success message after 2s
+    }, 2000);
+  } else {
+    // Registration failed
+    setloadingg(false);
+    setsignupbut("");
+    setErrorloginmessage("*User already exists*"); // Or use error from register
+  }
+};
   return (
-    <div>
+    <div style={{userSelect: 'none'}}>
       <ThemeOption />
       {(Success) ? (
-        <div>{successMessage}</div>
+        <div><LoadingSpinner /></div>
       ) : (
         <>
           <div className="choose">
             {login_check ? (
               <>
-                <h2 onClick={handleIncognito} style={{cursor:'pointer'}} title='You can enter the app as anonymous user'>Go incognito</h2>
-                <h2 onClick={handlesignup} style={{cursor:'pointer'}} title='Create an account'>Sign up</h2>
+                <h2 onClick={handleIncognito} style={{cursor:'pointer'}} title={t('go_incognito_title')}>{t("go_incognito")}</h2>
+                <h2 onClick={handlesignup} style={{cursor:'pointer'}} title={t('sign_up_title')}>{t("signup")}</h2>
               </>
             ) : signup ? (
               <>
-                <h2 onClick={handleIncognito} style={{cursor:'pointer'}} title='You can enter the app as anonymous user'>Go incognito</h2>
-                <h2 onClick={handlelogin} style={{cursor:'pointer'}} title='Log in into your account'>Log in</h2>
+                <h2 onClick={handleIncognito} style={{cursor:'pointer'}} title={t('go_incognito_title')}>{t("go_incognito")}</h2>
+                <h2 onClick={handlelogin} style={{cursor:'pointer'}} title={t('sign_in_title')}>{t("Login")}</h2>
               </>
             ) : null}
           </div>
@@ -374,12 +383,12 @@ useEffect(() => {
           {login_check && (
             <div className="Login">
               <div className='SPACE'>
-              <Typography variant='h1' sx={{fontWeight:"bold"}}>Log in!</Typography>
+              <Typography variant='h1' sx={{fontWeight:"bold"}}>{t("Login")}!</Typography>
               </div>
               
               <form onSubmit={handleLoginbutton}>
               {errorloginmessage && <Typography  sx={{fontWeight:"bold"}} variant='span' >{errorloginmessage}</Typography>}
-                <label htmlFor="username">Username:</label>
+                <label htmlFor="username">{t("username")}:</label>
                 <input 
                 
                   id="username"
@@ -392,7 +401,7 @@ useEffect(() => {
                   onChange={handleUsernameChange}
                   spellCheck={false}
                 />
-                <label htmlFor="password">Password:</label>
+                <label htmlFor="password">{t("password")}:</label>
                 <div className="password-container" style={{ position: "relative", display: "inline-block" }}>
       <input
         className="username password-input"
@@ -421,8 +430,8 @@ useEffect(() => {
       </span>
     </div>
                 <span onClick={handleforgotpassword} style={{cursor:"pointer"}}>{forgotpassword}</span>
-                <button disabled={!(username && password) || loginbut} className="sub" type="submit" title={WhyButDisabled}>
-                  Log in
+                <button disabled={!(username && password) || loginbut} className="sub" type="submit" title={WhyButDisabled ? WhyButDisabled : t("click_here_login")}>
+                  {t("log_in")}
                 </button>
                 {loginbut && (
   <span style={{ display: "flex", alignItems: "center", gap: "5px", fontSize: "15px"}}>
@@ -437,15 +446,15 @@ useEffect(() => {
           {signup && (
             <div className="Login" >
               <div className='SPACE'>
-              <Typography variant='h1' overflow={"visible"} sx={{fontWeight:"bold"}}>Sign up!</Typography></div>
+              <Typography variant='h1' overflow={"visible"} sx={{fontWeight:"bold"}}>{t("signup")}!</Typography></div>
               {/* {(errormessage || errorloginmessage) && <h4 className="ERROR">{errormessage} || {errorloginmessage}</h4>} */}
               
               <form onSubmit={handleSignUp}>
               {errorloginmessage && <span className="ERROR">{errorloginmessage}</span>}
               {!EmailInput && (
                 <>
-                {GoToNext && (<ArrowCircleRightIcon style={{cursor:'pointer'}} fontSize='medium' onClick={handleEmailInput}  titleAccess='View email and full name'/>)}
-                <label htmlFor="username">Username:</label>
+                {GoToNext && (<ArrowCircleRightIcon style={{cursor:'pointer'}} fontSize='medium' onClick={handleEmailInput}  titleAccess={t("view_email_fullname")} />)}
+                <label htmlFor="username">{t("username")}:</label>
                 <input
                   id="username"
                   className="username"
@@ -454,7 +463,7 @@ useEffect(() => {
                   value={username}
                   onChange={handleUsernameChange}
                 />
-                <label htmlFor="password">Password:</label>
+                <label htmlFor="password">{t("password")}:</label>
                 <div className="password-container" style={{ position: "relative", display: "inline-block" }}>
       <input
         className="username password-input"
@@ -479,21 +488,21 @@ useEffect(() => {
           fontSize: "15px",
         }}
       >
-          {password ? showPassword ? <Visibility fontSize='15px'/> :  <VisibilityOff  fontSize='15px'/> : null} 
+          {password ? showPassword ? <isibility fontSize='15px'/> :  <VisibilityOff  fontSize='15px'/> : null} 
       </span>
     </div>
                 </>)}
                 {ShowEmailSpan &&
                 <Typography sx={{maxWidth:"26ch", cursor:"pointer"}} variant='span' onClick={handleEmailInput}  onMouseEnter={() => setVisibleFullName(true)}
-                onMouseLeave={() => setVisibleFullName(false)}  >Add email and full name (optional) <span className='fullName' 
+                onMouseLeave={() => setVisibleFullName(false)}  >{t('add_email_fullname')} <span className='fullName' 
                 // style={{display: VisibleFullName ? "block" : "none",}}
-                  > for password recovery </span></Typography>
+                  >{t("password_recovery")} </span></Typography>
                 
               }
               {EmailInput && (
                 <>
-                <ArrowCircleLeftIcon titleAccess='View username and password' fontSize='medium' style={{cursor:'pointer'}} onClick={handleBackToUseranme} />
-                <label htmlFor="email" title='Email is optional, used for password recovery'>Email:</label>
+                <ArrowCircleLeftIcon titleAccess={t("view_useranme_password")} fontSize='medium' style={{cursor:'pointer'}} onClick={handleBackToUseranme} />
+                <label htmlFor="email" title={t("email_optional")}>Email:</label>
                 <input
                   id="email"
                   className="username"
@@ -525,8 +534,8 @@ useEffect(() => {
                 />
                 </>
               )}
-                <button disabled={!(username && password && ValidEmail) || signupbut} className="sub" type="submit" title={WhyButDisabled}  >
-                Sign Up
+                <button disabled={!(username && password && ValidEmail) || signupbut} className="sub" type="submit" title={WhyButDisabled ? WhyButDisabled : t("click_here_singup")}  >
+                {t("sign_up")}
                 </button>
                 {signupbut && (
   <span style={{ display: "flex", alignItems: "center", gap: "5px", fontSize: "15px"}}>

@@ -134,14 +134,16 @@ html {
   display: flex;
   flex-direction: column;
   gap: 0;
-  user-select: none;
+  
 }
 
 .Enter{
   height: fit-content;
 }
 
-
+button{
+  user-select: none;
+}
 
 
 @media all and (min-width:540px) {
@@ -555,7 +557,7 @@ form{
 *{
   /* background-color:#f5f5dc;
   color: #00563B; */
-  user-select: none;
+  /* user-select: none; */
   background-color: var(--basic-background-blue);
   /* background-color: #300d4f;  */
   /* background-color: #190c25;  */

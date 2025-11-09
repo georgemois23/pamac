@@ -1,21 +1,34 @@
-import './App.css';
-import './Msg.css';
+import '../App.css';
+import '../Msg.css';
 import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import ThemeOption from './ThemeOption';
-import AuthContext from "./AuthContext"; // Import the context
+import ThemeOption from '../ThemeOption';
+import AuthContext from "../AuthContext"; // Import the context
 import ArrowCircleUpIcon from '@mui/icons-material/ArrowCircleUp';
 import ArrowCircleRightRoundedIcon from '@mui/icons-material/ArrowCircleRightRounded';
 import { Container, Typography } from '@mui/material';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
+import { useTranslation } from 'react-i18next';
+import { useMessages } from '../context/MessagesContext';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 function PreviewMsg() {
   const navigate = useNavigate();
-  const [messages, setMessages] = useState([]);
+  // const [messages, setMessages] = useState([]);
   const [UserExist, setUserExist] = useState(false);
-
-  document.title='Messages';
+   const [isMobile, setIsMobile] = useState(window.innerWidth < 910);
+   const {messages, loading } = useMessages();
+  const { t,i18n } = useTranslation();
+  document.title=t("messages");
 const {user} = useContext(AuthContext);
+
+useEffect(() => {
+    console.log("App: ",i18n.language)
+    const handleResize = () => setIsMobile(window.innerWidth < 910);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
 
 useEffect(() => {
   if(user){
@@ -30,12 +43,12 @@ useEffect(() => {
     // Function to update messages when storage changes
     const handleStorageChange = (event) => {
       if (event.key === 'messages') {
-        setMessages(JSON.parse(event.newValue) || []);
+        // setMessages(JSON.parse(event.newValue) || []);
       }
     };
   
     // Retrieve messages from localStorage when component mounts
-    setMessages(JSON.parse(localStorage.getItem('messages')) || []);
+    // setMessages(JSON.parse(localStorage.getItem('messages')) || []);
   
     // Listen for changes in localStorage
     window.addEventListener('storage', handleStorageChange);
@@ -50,7 +63,7 @@ useEffect(() => {
     navigate('/chat');
     document.title='Chat';
   };
-
+  console.log("Messages in PreviewMsg:", messages);
   const [visible, setVisible] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
@@ -77,6 +90,18 @@ useEffect(() => {
     };
 }, []);
 
+  const showDate = (dateString) => {
+  const options = { 
+    day: '2-digit', 
+    month: '2-digit', 
+    year: 'numeric', 
+    hour: '2-digit', 
+    minute: '2-digit',
+    hour12: false // 24-hour format
+  };
+  return new Date(dateString).toLocaleString(undefined, options);
+};
+
 
 
 
@@ -87,12 +112,13 @@ const scrollToTop = () => {
   });
 };
 
-
-
+  if (loading) {
+    return <LoadingSpinner />;
+  }
 
   return (
     <div className="Preview">
-      <ChatBubbleOutlineIcon titleAccess='Visit chat' onClick={handleGoBack} sx={{ position: 'fixed', bottom: '.8rem', left: '.8rem',cursor:'pointer' }} className='chatIcon' />
+      <ChatBubbleOutlineIcon titleAccess={user ? t("back_to_chat") : t("join_chat")} onClick={handleGoBack} sx={{ position: 'fixed', bottom: '.8rem', left: '.8rem',cursor:'pointer' }} className='chatIcon' />
   
  <div
       onMouseEnter={() => setIsHovered(true)}
@@ -132,33 +158,36 @@ const scrollToTop = () => {
       <ThemeOption/>
       {/* <div className='nav-msg'></div> */}
       <div className="header">
-        <Typography variant='h2' sx={{fontWeight:'bold'}}>Messages </Typography>
+        <Typography variant='h2' sx={{fontWeight:'bold',userSelect:'none'}}>{t('messages')} </Typography>
       </div>
       <div className="message-list">
         {messages.length > 0 ? (
           messages.toReversed().map((msg, index) => (
             <div key={index} className="message-item">
               {/* <div className='name-msg'> {(msg.name!=='') ? (msg.name+' wrote:') : 'anonymous user'}</div> */}
-              <div className='name-msg'> 
+              <div className='name-msg' style={{userSelect:'none'}}> 
   {(msg.name !== '') ? (
     <span>
-      <span className='wrote-italic'>{msg.name}</span> wrote:
+      {i18n.language === 'el' ? 'Ο χρήστης ' : ''}
+      <span className='wrote-italic'>{msg.user.username}</span> {t("wrote")}:
     </span>
-  ) : 'anonymous user'}
+  ) : t("anonymous")}
   
 </div>
               <h2>
-                {/* {msg.name} */}
-                {msg.text}
+                
+                {msg.content}
               </h2>
-              <span className='msg-time'>{msg.time}</span>
+              <span className='msg-time' style={{userSelect:'none'}}>{showDate(msg.createdAt)}</span>
             </div>
           ))
-        ) : (
-          <h2>No messages found.</h2>
-        )}
+        ) : 
+        !loading ?(
+          <h2>{t("no_messages_found")}</h2>
+        )
+         : null}
       </div>
-      <button className="gobackk" onClick={handleGoBack}>{user ? "Back to chat" : "Join chat"}</button>
+      {!isMobile && <button className="gobackk" onClick={handleGoBack}>{user ? t("back_to_chat") : t("join_chat")}</button>}
       <br />
       <div className="backg"></div>
     </div>

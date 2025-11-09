@@ -21,21 +21,73 @@ const baseTheme = {
         },
       },
     },
-    MuiButton: {
-      defaultProps: {
-        disableRipple: true, // Remove button ripple effect
+   MuiButton: {
+  defaultProps: {
+    disableRipple: true, // Remove button ripple effect
+  },
+  styleOverrides: {
+    // Apply styles to ALL variants here
+    root: {
+      transition: "all 0.3s ease",
+      "&:focus": {
+        outline: "none", // Remove default focus outline
       },
-      styleOverrides: {
-        root: {
-          color: "#a4c2f4",
-          backgroundColor: "#001f3f",
-          transition: "all 0.3s ease",
-          "&:hover": { backgroundColor: "#a4c2f4", color: "#001f3f" },
-          "&:focus": { outline: "none" },
-          "&:disabled": { backgroundColor: "#6d8ba7", color: "#4f4f4f" },
-        },
+      // ✅ ADD THIS: Show a visible outline only for keyboard navigation
+      "&:focus-visible": {
+        outline: "2px solid #a4c2f4",
+        outlineOffset: "2px",
       },
     },
+    
+    // ✅ FIX: Styles for "contained" (solid) buttons
+    contained: {
+      // backgroundColor: "#a4c2f4",
+      color: "#a4c2f4",
+      backgroundColor: "#001f3f",
+      // color: "#a4c2f4",
+      borderColor: "#a4c2f4",
+      border: "2px solid",
+      borderRadius: "8px", // Rounded borders
+      height:'fit-content',
+      "&:hover": {
+        backgroundColor: "#a4c2f4",
+        color: "#001f3f",
+      },
+      "&:disabled": {
+        backgroundColor: "#6d8ba7",
+        color: "#4f4f4f",
+      },
+    },
+    
+    // ✅ ADDED: Styles for "outlined" buttons
+    outlined: {
+      color: "#a4c2f4",
+      borderColor: "#a4c2f4",
+      border: "2px solid",
+      borderRadius: "8px", // Rounded borders
+      height:'fit-content',
+      "&:hover": {
+        backgroundColor: "rgba(164, 194, 244, 0.1)", // Light hover background
+        borderColor: "#a4c2f4",
+      },
+      "&:disabled": {
+        borderColor: "#6d8ba7",
+        color: "#6d8ba7",
+      },
+    },
+
+    // ✅ ADDED: Styles for "text" buttons
+    text: {
+      color: "#a4c2f4",
+      "&:hover": {
+        backgroundColor: "rgba(164, 194, 244, 0.1)", // Light hover background
+      },
+      "&:disabled": {
+        color: "#6d8ba7",
+      },
+    },
+  },
+},
     MuiTextField: {
       styleOverrides: {
         root: {
