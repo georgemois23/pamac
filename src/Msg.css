@@ -68,11 +68,12 @@ html {
       margin-inline: auto;
       border: 3px solid var(--basic-txt-blue);
       border-radius: 14px;
-      max-width: 70vw;
+      max-width: 90vw; 
       min-width: 100px;
-      width: calc(100% + 5rem);
+      width: 100%; 
       outline: none;
       outline-offset: none;
+      box-sizing: border-box;
       padding-inline: .1rem;
       /* margin-bottom: 5rem; */
     }}
