@@ -26,7 +26,11 @@ useEffect(() => {
     if (!deleteThisMessage) return; 
 
     try {
-      if (!user) throw new Error('User not authenticated');
+     if (!user) {
+      showSnackbar({ message: 'User not authenticated', severity: 'error' });
+      setDeleteThisMessage(null);
+      return;
+    }
 
       let res;
       if (user.role?.toLowerCase() === 'admin') {
@@ -52,10 +56,11 @@ useEffect(() => {
       setMessages((prev) =>
         prev.filter((msg) => msg.id !== deleteThisMessage)
       );
+      showSnackbar({message: 'Message deleted successfully!', severity: 'success' });
     } catch (err) {
       console.error(err);
+      showSnackbar({message: 'Message deleted failed!', severity: 'error' });
     } finally {
-      showSnackbar({message: 'Message deleted successfully!', severity: 'success' });
       setDeleteThisMessage(null);
     }
   };
@@ -107,13 +112,13 @@ useEffect(() => {
 const sendMessage = (content) => {
   if (!content.trim()) return;
 
-  const tempId = Date.now(); // temporary unique id for the message
+  const tempId = Date.now(); 
   const newMsg = {
     id: tempId,
     content,
     user: { ...user },
     createdAt: new Date().toISOString(),
-    pending: true, // mark as pending
+    pending: true, 
   };
 
   // Show message immediately

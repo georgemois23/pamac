@@ -15,6 +15,7 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { useNavigate, useLocation } from "react-router-dom";
 import ContentNotAvaiable from './pages/ContentNotAvailable';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
+import ForumIcon from '@mui/icons-material/Forum';
 import LogoutIcon from '@mui/icons-material/Logout';
 import LoginIcon from '@mui/icons-material/Login';
 import Logout from './pages/Logout';
@@ -63,6 +64,9 @@ function App() {
   const location = useLocation();
   const handleChat = () => {
     navigate('/chat');
+  };
+  const handleMessages = () => {
+    navigate('/messages');
   };
 
   const ProtectedRoute = ({ children }) => {
@@ -161,6 +165,8 @@ useEffect(() => {
           </button>
           
         )}
+
+        {location.pathname === "/chat" &&  <ForumIcon titleAccess={t('view_messages')} onClick={handleMessages} sx={{ position: 'fixed', bottom: '.8rem', right: '.8rem',cursor:'pointer', backgroundColor:'transparent' }} className='chatIcon' />} 
            
         {/* {location.pathname === "/" && !user && (!isMobile ? <div style={{fontSize:'20px',height:'fit-content', cursor: 'pointer', position:'fixed', left: '50%', transform: 'translateX(-50%)',bottom:'0.8rem',userSelect:'none'}} onClick={changeToGreek}>{t(i18n.language==='en' ? 'switch_language_el' : 'switch_language_en')}</div> : <div style={{fontSize:'20px',height:'fit-content', position: 'fixed', top: '.8rem', right: '.8rem' , cursor: 'pointer' }}><LanguageSwitcher/></div> )} */}
         {/* {location.pathname === "/profile" && <div style={{fontSize:'20px',height:'fit-content', position: 'fixed', top: '.8rem', right: '.8rem' , cursor: 'pointer' }}><LanguageSwitcher/></div>} */}
