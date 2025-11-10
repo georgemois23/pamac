@@ -2,6 +2,8 @@ import React, { createContext, useContext, useEffect, useState, useRef } from 'r
 import { io } from 'socket.io-client';
 import AuthContext from '../AuthContext';
 import { set } from 'mongoose';
+import { useSnackbar } from './SnackbarContext';
+
 
 const MessagesContext = createContext();
 
@@ -12,8 +14,53 @@ export const MessagesProvider = ({ children }) => {
   const [messages, setMessages] = useState([]);
   const [connected, setConnected] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [deleteThisMessage, setDeleteThisMessage] = useState(null);
   const { user } = useContext(AuthContext);
   const messagesEndRef = useRef(null);
+
+const { showSnackbar } = useSnackbar();
+  useEffect(() => {
+  const deleteMessage = async () => {
+    if (!deleteThisMessage) return; 
+
+    try {
+      if (!user) throw new Error('User not authenticated');
+
+      let res;
+      if (user.role?.toLowerCase() === 'admin') {
+  res = await fetch(`${API_URL}/messages/admin/${deleteThisMessage}`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${user.accessToken}`,
+    },
+  });
+} else {
+  res = await fetch(`${API_URL}/messages/${deleteThisMessage}`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${user.accessToken}`,
+    },
+  });
+}
+
+      if (!res.ok) throw new Error('Failed to delete message');
+
+      setMessages((prev) =>
+        prev.filter((msg) => msg.id !== deleteThisMessage)
+      );
+    } catch (err) {
+      console.error(err);
+    } finally {
+      showSnackbar({message: 'Message deleted successfully!', severity: 'success' });
+      setDeleteThisMessage(null);
+    }
+  };
+
+  deleteMessage();
+}, [deleteThisMessage, user]);
+
 
   useEffect(() => {
     if (!user) return; 
@@ -90,6 +137,7 @@ const sendMessage = (content) => {
     connected,
     messagesEndRef,
     loading,
+    setDeleteThisMessage,
   };
 
   return (

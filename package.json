@@ -22,6 +22,7 @@
     "i18next-browser-languagedetector": "^8.0.5",
     "jwt-decode": "^4.0.0",
     "mongoose": "^8.6.2",
+    "notistack": "^3.0.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-i18next": "^15.4.1",

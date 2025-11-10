@@ -9,11 +9,13 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import "./i18n";
 import GreekLanguageRouter from './GreekLanguageRouter';
 import { MessagesProvider } from './context/MessagesContext';
+import { SnackbarProvider } from './context/SnackbarContext';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <Router>
   <ThemeOption>
   <React.StrictMode>
+    <SnackbarProvider>
     <AuthProvider>
     {/* <ChakraProvider> */}
     <MessagesProvider>
@@ -21,6 +23,7 @@ root.render(
     </MessagesProvider>
     {/* <App /> */}
     </AuthProvider>
+    </SnackbarProvider>
     {/* </ChakraProvider> */}
   </React.StrictMode>
   </ThemeOption>

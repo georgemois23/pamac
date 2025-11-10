@@ -28,9 +28,11 @@ export const AuthProvider = ({ children }) => {
       const response = await api.get("/auth/me", {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
-      setUser(response.data);
+      setUser({...response.data, accessToken: token});
 
-      if (!isGuest) localStorage.setItem("user", JSON.stringify(response.data));
+      if (!isGuest) {
+  localStorage.setItem("user", JSON.stringify({...response.data, accessToken: token}));
+}
       setIncognito(false);
       return true;
     } catch (error) {

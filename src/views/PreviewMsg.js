@@ -8,6 +8,8 @@ import ArrowCircleUpIcon from '@mui/icons-material/ArrowCircleUp';
 import ArrowCircleRightRoundedIcon from '@mui/icons-material/ArrowCircleRightRounded';
 import { Container, Typography } from '@mui/material';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
+import DeleteIcon from '@mui/icons-material/Delete';
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import { useTranslation } from 'react-i18next';
 import { useMessages } from '../context/MessagesContext';
 import LoadingSpinner from '../components/LoadingSpinner';
@@ -17,10 +19,14 @@ function PreviewMsg() {
   // const [messages, setMessages] = useState([]);
   const [UserExist, setUserExist] = useState(false);
    const [isMobile, setIsMobile] = useState(window.innerWidth < 910);
-   const {messages, loading } = useMessages();
+   const {messages, loading, setDeleteThisMessage } = useMessages();
   const { t,i18n } = useTranslation();
   document.title=t("messages");
 const {user} = useContext(AuthContext);
+
+  const handleDelete = () => {
+    console.log("Delete function called");
+  };
 
 useEffect(() => {
     console.log("App: ",i18n.language)
@@ -167,15 +173,36 @@ const scrollToTop = () => {
           messages.toReversed().map((msg, index) => (
             <div key={index} className="message-item">
               {/* <div className='name-msg'> {(msg.name!=='') ? (msg.name+' wrote:') : 'anonymous user'}</div> */}
-              <div className='name-msg' style={{userSelect:'none'}}> 
-  {(msg.name !== '') ? (
-    <span>
-      {i18n.language === 'el' ? 'Ο χρήστης ' : ''}
-      <span className='wrote-italic'>{msg.user.username}</span> {t("wrote")}:
-    </span>
-  ) : t("anonymous")}
-  
+              <div className='name-msg' style={{ userSelect: 'none', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+  <span style={{ flex: 1, textAlign: 'center' }}>
+    {(msg.name !== '') ? (
+      <>
+        {i18n.language === 'el' ? 'Ο χρήστης ' : ''}
+        <span className='wrote-italic'>{msg.user.username}</span> {t("wrote")}:
+      </>
+    ) : t("anonymous")}
+  </span>
+
+  {(user?.id === msg.user.id || user?.role=== 'admin') && (
+    user.role === 'admin' ? (
+    <DeleteForeverIcon
+    onClick={() => {
+        handleDelete(msg.id);
+        setDeleteThisMessage(msg.id);
+      }}
+      sx={{ cursor: 'pointer', fontSize: { xs: '1rem', sm: '1.5rem' } }}
+    />)
+    :
+    <DeleteIcon
+      onClick={() => {
+        handleDelete(msg.id);
+        setDeleteThisMessage(msg.id);
+      }}
+      sx={{ cursor: 'pointer', fontSize: { xs: '1rem', sm: '1.5rem' } }}
+    />
+  )}
 </div>
+
               <h2>
                 
                 {msg.content}
