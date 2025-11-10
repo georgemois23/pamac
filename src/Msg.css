@@ -69,7 +69,7 @@ html {
       border: 3px solid var(--basic-txt-blue);
       border-radius: 14px;
       max-width: 90vw; 
-      min-width: 100px;
+      min-width: 150px;
       width: 100%; 
       outline: none;
       outline-offset: none;
