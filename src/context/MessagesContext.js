@@ -15,6 +15,7 @@ export const MessagesProvider = ({ children }) => {
   const [connected, setConnected] = useState(false);
   const [loading, setLoading] = useState(false);
   const [deleteThisMessage, setDeleteThisMessage] = useState(null);
+  const [goToProfile, setGoToProfile] = useState(null);
   const { user } = useContext(AuthContext);
   const messagesEndRef = useRef(null);
 
@@ -65,9 +66,12 @@ useEffect(() => {
     }
   };
 
+  
   deleteMessage();
 }, [deleteThisMessage, user]);
 
+
+ 
 
   useEffect(() => {
     
@@ -147,6 +151,7 @@ const sendMessage = (content) => {
     messagesEndRef,
     loading,
     setDeleteThisMessage,
+    setGoToProfile,
   };
 
   return (

@@ -19,7 +19,7 @@ function PreviewMsg() {
   // const [messages, setMessages] = useState([]);
   const [UserExist, setUserExist] = useState(false);
    const [isMobile, setIsMobile] = useState(window.innerWidth < 910);
-   const {messages, loading, setDeleteThisMessage } = useMessages();
+   const {messages, loading, setDeleteThisMessage} = useMessages();
   const { t,i18n } = useTranslation();
   document.title=t("messages");
 const {user, incognito} = useContext(AuthContext);
@@ -178,7 +178,13 @@ const scrollToTop = () => {
     {(msg.name !== '') ? (
       <>
         {i18n.language === 'el' ? 'Ο χρήστης ' : ''}
-        <span className='wrote-italic'>{msg.user.username}</span> {t("wrote")}:
+        <span className='wrote-italic' onClick={() => {
+        // handleGoToProfile(msg.user.id);
+        // setGoToProfile(msg.user.id);
+        navigate(`/profile/${msg.user.id}`);
+      }}
+        
+        >{msg.user.username}</span> {t("wrote")}:
       </>
     ) : t("anonymous")}
   </span>

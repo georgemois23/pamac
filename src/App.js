@@ -10,7 +10,8 @@ import ErrorPage from './pages/ErrorPage';
 import AuthContext from "./AuthContext"; // Import the context
 import CircularProgress from '@mui/material/CircularProgress';
 import UnderConstruction from './components/Underconstruction';
-import Profile from './pages/Profile';
+import Profile from './pages/profile/Profile';
+import UserProfile from './pages/profile/slug';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { useNavigate, useLocation } from "react-router-dom";
 import ContentNotAvaiable from './pages/ContentNotAvailable';
@@ -147,7 +148,7 @@ useEffect(() => {
       // {/* <PopUpContext.Provider value={{}}> */}
           <div className="App">
           {location.pathname === "/" && <UnderConstruction message={t("this_website_under_construction")}/>}
-          {user && !incognito && location.pathname !== "/profile" && location.pathname !== "/messages" && window.location.pathname !== "/404" &&(
+          {user && !incognito && !location.pathname.startsWith("/profile") &&  location.pathname !== "/messages" && window.location.pathname !== "/404" &&(
         // <AccountCircleIcon titleAccess={t('visit_profile_info')} onClick={handleProfile} sx={{ position: 'fixed', top: '.8rem', left: '.8rem',cursor:'pointer' }} className='accountIcon' />
         <Tooltip title={t('visit_profile_info')}>
         <Avatar title={t('visit_profile_info')}  onClick={handleProfile} sx={{ position: 'fixed', top: '.8rem', left: '.8rem',cursor:'pointer', backgroundColor:"text.primary", }}  >{(user.first_name && user.last_name) ? user.first_name[0].toUpperCase() + user.last_name[0].toUpperCase() : user.username[0].toUpperCase()}</Avatar>
@@ -224,6 +225,10 @@ useEffect(() => {
     )
   }
 />
+      <Route
+  path="/profile/:id"
+  element={<UserProfile />}
+    />
               <Route
                 path="/messages"
                 element={<PreviewMsg />}

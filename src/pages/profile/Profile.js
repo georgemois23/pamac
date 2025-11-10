@@ -1,12 +1,12 @@
-import '../App.css';
+import '../../App.css';
 import React, { useContext} from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 // import { useState } from 'react';
 import { Box, Button, ButtonBase, Container, Typography } from '@mui/material';
 import e from 'cors';
-import AuthContext from "../AuthContext"; // Import the context
-import ContentNotAvaiable from './ContentNotAvailable';
+import AuthContext from "../../AuthContext"; // Import the context
+import ContentNotAvaiable from '../ContentNotAvailable';
 import { useTranslation } from 'react-i18next';
 function Profile({user}) {
   const {logout} = useContext(AuthContext);
