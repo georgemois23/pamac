@@ -142,7 +142,7 @@ useEffect(() => {
     // <ThemeOption>
       // {/* <PopUpContext.Provider value={{}}> */}
           <div className="App">
-          <UnderConstruction message={t("this_website_under_construction")}/>
+          {location.pathname === "/" && <UnderConstruction message={t("this_website_under_construction")}/>}
           {user && !incognito && location.pathname !== "/profile" && location.pathname !== "/messages" && window.location.pathname !== "/404" &&(
         // <AccountCircleIcon titleAccess={t('visit_profile_info')} onClick={handleProfile} sx={{ position: 'fixed', top: '.8rem', left: '.8rem',cursor:'pointer' }} className='accountIcon' />
         <Tooltip title={t('visit_profile_info')}>
@@ -152,10 +152,10 @@ useEffect(() => {
       )}
 
       {user && !incognito && location.pathname === "/profile" && (
-        <ChatBubbleOutlineIcon titleAccess={t('back_to_chat')} onClick={handleChat} sx={{ position: 'fixed', top: '.8rem', left: '.8rem',cursor:'pointer' }} className='chatIcon' />
+        <ChatBubbleOutlineIcon titleAccess={t('back_to_chat')} onClick={handleChat} sx={{ position: 'fixed', top: '.8rem', left: '.8rem',cursor:'pointer', backgroundColor:'transparent' }} className='chatIcon' />
       )}
         {user && location.pathname !== "/profile"&& location.pathname !== "/" && window.location.pathname !== "/404" && window.location.pathname !== "/restricted"  &&(
-          isMobile ? (incognito ? <LoginIcon onClick={handleLogout} sx={{ position: 'fixed', top: '.8rem', right: '.8rem',cursor:'pointer' }}/> : <LogoutIcon onClick={handleLogout} sx={{ position: 'fixed', top: '.8rem', right: '.8rem',cursor:'pointer' }}/>) :
+          isMobile ? (incognito ? <LoginIcon onClick={handleLogout} sx={{ position: 'fixed', top: '.8rem', right: '.8rem',cursor:'pointer', backgroundColor:'transparent' }}/> : <LogoutIcon onClick={handleLogout} sx={{ position: 'fixed', top: '.8rem', right: '.8rem',cursor:'pointer', backgroundColor:'transparent' }}/>) :
           <button onClick={handleLogout} className="logout-button" title={LogBut===t('Logout') ? t("logout_title") : t("enter_chat_with_credentials")}>
              {LogBut}
           </button>

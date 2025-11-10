@@ -90,16 +90,16 @@ useEffect(() => {
     };
 }, []);
 
-  const showDate = (dateString) => {
+ const showDate = (dateString) => {
   const options = { 
     day: '2-digit', 
     month: '2-digit', 
     year: 'numeric', 
     hour: '2-digit', 
     minute: '2-digit',
-    hour12: false // 24-hour format
+    hour12: false
   };
-  return new Date(dateString).toLocaleString(undefined, options);
+  return new Date(dateString).toLocaleString('en-GB', options);
 };
 
 
@@ -118,7 +118,7 @@ const scrollToTop = () => {
 
   return (
     <div className="Preview">
-      <ChatBubbleOutlineIcon titleAccess={user ? t("back_to_chat") : t("join_chat")} onClick={handleGoBack} sx={{ position: 'fixed', bottom: '.8rem', left: '.8rem',cursor:'pointer' }} className='chatIcon' />
+      <ChatBubbleOutlineIcon titleAccess={user ? t("back_to_chat") : t("join_chat")} onClick={handleGoBack} sx={{ position: 'fixed', bottom: '.8rem', left: '.8rem',cursor:'pointer', backgroundColor:'transparent' }} className='chatIcon' />
   
  <div
       onMouseEnter={() => setIsHovered(true)}
@@ -133,6 +133,7 @@ const scrollToTop = () => {
         opacity: visible ? 1 : 0,
         pointerEvents: visible ? 'auto' : 'none',
         transition: 'opacity 0.4s ease-in-out',
+        backgroundColor: 'transparent',
       }}
     >
       {isHovered ? (
@@ -142,6 +143,7 @@ const scrollToTop = () => {
             transition: 'transform 0.3s ease-in-out',
             fontSize: 30,
             color: '#1976d2',
+
           }}
         />
       ) : (

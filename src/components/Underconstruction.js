@@ -18,6 +18,7 @@ export default function UnderConstruction({message}) {
 
   const handleClose = () => {
     setOpen(false);
+    localStorage.setItem('enter', 'true');
   };
 
   return (
@@ -26,7 +27,8 @@ export default function UnderConstruction({message}) {
       sx={{
         border: "2px solid",
         borderRadius: "10px",
-        marginBottom: "0.3rem"
+        marginBottom: "0.3rem",
+        backgroundColor: "transparent",
       }}
       onClose={handleClose}
       TransitionComponent={GrowTransition}

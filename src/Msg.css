@@ -68,8 +68,8 @@ html {
       margin-inline: auto;
       border: 3px solid var(--basic-txt-blue);
       border-radius: 14px;
-      max-width: 90vw; 
-      min-width: 150px;
+      max-width: 80vw; 
+      min-width: 120px;
       width: 100%; 
       outline: none;
       outline-offset: none;

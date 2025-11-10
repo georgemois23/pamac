@@ -29,7 +29,6 @@ export const AuthProvider = ({ children }) => {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
       setUser(response.data);
-      setIsLoading(false);
 
       if (!isGuest) localStorage.setItem("user", JSON.stringify(response.data));
       setIncognito(false);
@@ -38,6 +37,9 @@ export const AuthProvider = ({ children }) => {
       logout();
       return false;
     }
+    finally {
+    setIsLoading(false); // always reset
+  }
   };
 
   const login = async (username, password) => {
@@ -59,7 +61,10 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       if (error.response?.status === 401) setERRORMessage(t("check_username_password"));
       else setERRORMessage(t("login_failed"));
-    }
+      setIsLoading(false);
+    } finally {
+    setIsLoading(false); // always reset
+  }
   };
 
  const register = async (username, password, email = "", full_name = "") => {
@@ -77,7 +82,10 @@ export const AuthProvider = ({ children }) => {
       setERRORMessage(t("registration_error"));
     }
     setLoginMessage(null); // clear any previous success
+    setIsLoading(false);
     return false;
+  } finally {
+    setIsLoading(false); 
   }
 };
 
@@ -106,7 +114,10 @@ export const AuthProvider = ({ children }) => {
         console.error("Error refreshing guest token", err);
         sessionStorage.removeItem("guestId");
         sessionStorage.removeItem("guestToken");
-      }
+        setIsLoading(false);
+      } finally {
+    setIsLoading(false); // always reset
+  }
     }
 
     // Create new guest if none exists
@@ -135,7 +146,10 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       console.error("Error logging in as guest", error);
       setERRORMessage(t("guest_login_failed"));
-    }
+      setIsLoading(false);
+    } finally {
+    setIsLoading(false); // always reset
+  }
   };
 
   const logout = () => {
