@@ -19,7 +19,9 @@ export const MessagesProvider = ({ children }) => {
   const messagesEndRef = useRef(null);
 
 const { showSnackbar } = useSnackbar();
-  useEffect(() => {
+  
+
+useEffect(() => {
   const deleteMessage = async () => {
     if (!deleteThisMessage) return; 
 
@@ -63,7 +65,7 @@ const { showSnackbar } = useSnackbar();
 
 
   useEffect(() => {
-    if (!user) return; 
+    
 
     setLoading(true);
     socket.connect();
@@ -90,7 +92,7 @@ const { showSnackbar } = useSnackbar();
     });
 
     socket.on('newMessage', (msg) => {
-  if (msg.user.id === user.id) return; // don’t duplicate your own
+  if (msg.user.id === user.id) return; 
   setMessages((prev) => [...prev, msg]);
 });
 
@@ -99,6 +101,8 @@ const { showSnackbar } = useSnackbar();
       socket.disconnect();
     };
   }, [user]);
+
+
 
 const sendMessage = (content) => {
   if (!content.trim()) return;

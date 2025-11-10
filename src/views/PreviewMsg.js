@@ -22,7 +22,7 @@ function PreviewMsg() {
    const {messages, loading, setDeleteThisMessage } = useMessages();
   const { t,i18n } = useTranslation();
   document.title=t("messages");
-const {user} = useContext(AuthContext);
+const {user, incognito} = useContext(AuthContext);
 
   const handleDelete = () => {
     console.log("Delete function called");
@@ -183,7 +183,7 @@ const scrollToTop = () => {
     ) : t("anonymous")}
   </span>
 
-  {(user?.id === msg.user.id || user?.role=== 'admin') && (
+  {((user?.id === msg.user.id || user?.role=== 'admin') && !incognito ) && (
     user.role === 'admin' ? (
     <DeleteForeverIcon
     onClick={() => {
