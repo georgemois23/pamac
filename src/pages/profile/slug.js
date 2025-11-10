@@ -10,6 +10,7 @@ import ArrowCircleUpIcon from '@mui/icons-material/ArrowCircleUp';
 import ArrowCircleRightRoundedIcon from '@mui/icons-material/ArrowCircleRightRounded';
 import '../../App.css';
 import '../../Msg.css';
+import { set } from 'mongoose';
 
 const UserProfile = () => {
     const { id } = useParams(); // or rename to { slug } depending on your route
@@ -22,6 +23,7 @@ const UserProfile = () => {
     const navigate = useNavigate();
     const [visible, setVisible] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
+    
 
   const handleMessages = () => {
     navigate('/messages');
@@ -100,9 +102,12 @@ const UserProfile = () => {
       top: 0,
       behavior: "smooth"
   });
+  setIsHovered(false);
 };
 
   const username = messages[0]?.user?.username || id;
+  const formattedUsername = username.charAt(0).toUpperCase() + username.slice(1).toLowerCase();
+  document.title = t("messages") + (messages && messages.length > 0 ? ' - ' + formattedUsername : '');
 
   if (loading) return <LoadingSpinner />;
 
@@ -147,7 +152,7 @@ const UserProfile = () => {
          <ForumIcon titleAccess={t('view_messages')} onClick={handleMessages} sx={{ position: 'fixed',top:'1rem', left: '.6rem',cursor:'pointer', backgroundColor:'transparent' }} className='chatIcon' /> 
          <div style={{marginTop:'2rem'}}>
       <div className="header" >
-        <Typography variant='h2' sx={{fontWeight:'bold',userSelect:'none'}}>{t('messages')} of {username} </Typography>
+        <Typography variant='h2' sx={{fontWeight:'bold',userSelect:'none'}}>{t('messages')} of {formattedUsername} </Typography>
       </div>
       <div className="message-list">
         {messages.length > 0 ? (
