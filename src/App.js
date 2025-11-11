@@ -24,6 +24,7 @@ import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from './languageSwitcher';
 import { Avatar, Tooltip } from '@mui/material';
 import LoadingSpinner from './components/LoadingSpinner';
+import OutOfService from './pages/OutOfService';
 
 function App() {
   const navigate = useNavigate();
@@ -38,6 +39,8 @@ function App() {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  
 
 
   useEffect(() => {
@@ -134,6 +137,8 @@ useEffect(() => {
   // };
  
 
+  
+
 
   const changeToGreek = () => {
     const newLang = i18n.language === 'el' ? 'en' : 'el';
@@ -192,18 +197,21 @@ useEffect(() => {
     )
   }
 />
+          <Route path="/out-of-service" element={<OutOfService />} />  
           <Route path="/el" element={<Navigate to="/" replace />} />  
           <Route path="/en" element={<Navigate to="/" replace />} />  
               <Route
                 path="/auth"
-                element={user ? <Navigate to="/chat" replace /> : <LoginPage />}
+                // element={user ? <Navigate to="/chat" replace /> : <LoginPage />}
+                element={<Navigate to="/out-of-service" replace /> }
               />
                {/* <Route path="/login" element={<Navigate to="/auth" replace />} /> */}
                {/* <Route path="/register" element={<Navigate to="/auth" replace />} /> */}
                <Route path="/c/*" element={<Navigate to="/chat" replace />} />
             <Route
                 path="/chat"
-                element={user ? <Chat user={user} /> : <Navigate to="/auth" replace />}
+                // element={user ? <Chat user={user} /> : <Navigate to="/auth" replace />}
+                 element={<Navigate to="/out-of-service" replace /> }
               />
               <Route path="/login" element={user ? <Navigate to="/chat"/> : <Navigate to="/auth/login" />} />
               <Route path="/register" element={user ? <Navigate to="/chat"/> : <Navigate to="/auth/register" />} />
