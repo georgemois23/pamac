@@ -123,7 +123,6 @@ useEffect(() => {
 }, [messages, formattedUsername, t]);
 
   if (loading) return <LoadingSpinner />;
-  if (!user) { return null; }
   
   return (
     <div className="Preview">
