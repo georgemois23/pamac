@@ -18,10 +18,10 @@ const { messages, sendMessage } = useMessages();
      const input = event.target.value;
 
   // Allow English, Greek, numbers, and spaces
-  const allowedPattern = /^[a-zA-Z\u0370-\u03FF0-9\s.,!?;:'"()\-–—_«»…]*$/;
+  const allowedPattern = /^[\p{Script=Greek}\p{Script=Latin}\P{Letter}]*$/u;
 
   if (allowedPattern.test(input)) {
-    setMessage(input); // update only when valid
+    setMessage(input); 
   }
 
   // Enable button if input has text, disable if empty
