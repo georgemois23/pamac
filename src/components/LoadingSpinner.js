@@ -1,8 +1,11 @@
 import React from 'react';
-import { CircularProgress, Box } from '@mui/material';
+import { CircularProgress, Box, Typography } from '@mui/material';
 import { ReactComponent as Logo } from '../Polyvox.svg';
 
-const LoadingSpinner = ({ size = 200, color = 'primary' }) => {
+const isMobile = window.innerWidth < 910;
+const size1 = isMobile ? 190 : 200;
+
+const LoadingSpinner = ({ size = size1, color = 'primary', message  }) => {
   return (
     <Box
       sx={{
@@ -11,14 +14,15 @@ const LoadingSpinner = ({ size = 200, color = 'primary' }) => {
         left: '50%',
         transform: 'translate(-50%, -50%)',
         display: 'flex',
+        flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
         zIndex: 2000,
         opacity: 0,
-    animation: 'fadeIn 0.3s forwards',
-    '@keyframes fadeIn': {
-      to: { opacity: 1 },
-    },
+        animation: 'fadeIn 0.3s forwards',
+        '@keyframes fadeIn': {
+          to: { opacity: 1 },
+        },
       }}
     >
       <Box
@@ -36,8 +40,8 @@ const LoadingSpinner = ({ size = 200, color = 'primary' }) => {
         />
         <Logo
           style={{
-            width: size * 0.6,   
-            height: size * 0.6,  
+            width: size * 0.6,
+            height: size * 0.6,
             position: 'absolute',
             top: '50%',
             left: '50%',
@@ -45,6 +49,28 @@ const LoadingSpinner = ({ size = 200, color = 'primary' }) => {
           }}
         />
       </Box>
+      {message && (
+        <Box
+          sx={{
+            marginTop: 4, 
+            fontSize: isMobile ? '1rem' : '1.2rem',
+            textAlign: 'center',
+            color: 'text.primary',
+          }}
+        >
+          {message}
+           <Box
+            component="span"
+            sx={{
+              opacity: 0,
+              animation: 'slowFade 2.5s forwards infinite',
+              '@keyframes slowFade': {
+                to: { opacity: 1 },
+              },
+            }}
+          >...</Box>
+        </Box>
+      )}
     </Box>
   );
 };

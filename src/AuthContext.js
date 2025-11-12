@@ -18,10 +18,8 @@ export const AuthProvider = ({ children }) => {
   const [LogBut, setLogBut] = useState(localStorage.getItem("Button") || t("login"));
   const [incognito, setIncognito] = useState(sessionStorage.getItem("incognito") === "true");
 
-  // Keep Axios interceptors updated
   useAxiosInterceptor(accessToken, setAccessToken);
 
-  // Fetch user from backend
   const fetchUser = async (token, isGuest = false) => {
     setIsLoading(true);
     try {
@@ -40,7 +38,7 @@ export const AuthProvider = ({ children }) => {
       return false;
     }
     finally {
-    setIsLoading(false); // always reset
+    setIsLoading(false); 
   }
   };
 
@@ -181,12 +179,14 @@ useEffect(() => {
       setUser(JSON.parse(storedUser));
       setIncognito(false);
       setAccessToken(null);
+      localStorage.setItem("vst", "true");
     } else if (guestId && guestToken) {
       // Restore existing incognito user without creating a new guest
       setUser({ username: `Guest_${guestId.slice(0, 8)}`, role: "guest", id: guestId });
       setAccessToken(guestToken);
       setIncognito(true);
       setLogBut(t("login"));
+      localStorage.setItem("vst", "true");
     } else {
       // No user, no guest → do nothing until button click
       setUser(null);

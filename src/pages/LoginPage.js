@@ -363,7 +363,7 @@ useEffect(() => {
     <div style={{userSelect: 'none'}}>
       <ThemeOption />
       {(Success) ? (
-        <div><LoadingSpinner /></div>
+        <div><LoadingSpinner message={successMessage} /></div>
       ) : (
         <>
           <div className="choose">
