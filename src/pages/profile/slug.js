@@ -10,7 +10,6 @@ import ArrowCircleUpIcon from '@mui/icons-material/ArrowCircleUp';
 import ArrowCircleRightRoundedIcon from '@mui/icons-material/ArrowCircleRightRounded';
 import '../../App.css';
 import '../../Msg.css';
-import { set } from 'mongoose';
 import ContentNotAvaiable from '../ContentNotAvailable';
 
 const UserProfile = () => {
@@ -67,7 +66,7 @@ useEffect(() => {
           navigatedRef.current = true;
           setMessages([]);
           setLoading(false);
-          navigate(-1);
+          // navigate(-1);
         }
         return;
       }
@@ -83,7 +82,7 @@ useEffect(() => {
         navigatedRef.current = true;
         setMessages([]);
         setLoading(false);
-        navigate(-1);
+        // navigate(-1);
       }
     }
   };
@@ -119,7 +118,9 @@ useEffect(() => {
 };
 
   const formattedUsername = username.charAt(0).toUpperCase() + username.slice(1).toLowerCase();
+  useEffect(() => {
   document.title = t("messages") + (messages && messages.length > 0 ? ' - ' + formattedUsername : '');
+}, [messages, formattedUsername, t]);
 
   if (loading) return <LoadingSpinner />;
   if (!user) { return null; }
@@ -169,7 +170,7 @@ useEffect(() => {
       </div>
       <div className="message-list">
         {messages.length > 0 ? (
-          messages.toReversed().map((msg, index) => (
+          [...messages].reverse().map((msg, index) => (
             <div key={index} className="message-item">
               {/* <div className='name-msg'> {(msg.name!=='') ? (msg.name+' wrote:') : 'anonymous user'}</div> */}
               <div className='name-msg' style={{ userSelect: 'none', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
