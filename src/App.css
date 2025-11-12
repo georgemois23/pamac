@@ -104,6 +104,7 @@ html {
 #text::placeholder{
   color: var(--basic-txt-blue);
   opacity: 0.8;
+  font-size: medium;
 }
 .box-for-hid-msg button:hover{
   background-color: var(--basic-background-blue);
@@ -468,15 +469,11 @@ form button {
 
 
 
-button:hover,button:focus{
-  color: var(--basic-background-blue);
-  /* color: #f5f5dc; */
-  background-color: var(--basic-txt-blue);
+/* button:hover,button:focus{
+  scale: 1.05;
   transition: all 0.5s ease;
-  /* opacity: 0; */
-  /* background-color: #00563B; */
   
-}
+} */
 
 .sub:focus{
   color: var(--basic-background-blue);
@@ -616,6 +613,12 @@ form{
 }
 
 @media all and (max-width:840px) {
+
+  #text{
+  padding: 1rem;
+  font-size: 18px;
+}
+
   .password-toggle {
     margin: 15px;
     right: 5px !important;
@@ -729,6 +732,7 @@ form textArea{
 .message-item{
   display: flex;
   flex-direction: column;
+  padding: 5px;
 
   border-bottom: 1px solid var(--basic-txt-blue);
   /* border-bottom: 1px solid #00563B; */
@@ -742,7 +746,6 @@ form textArea{
   border: 3px solid var(--basic-txt-blue);
   /* border: 3px solid #00563B; */
   border-radius: 14px;
-  
   min-width: 150px;
   width: 50vw;
   outline: none;

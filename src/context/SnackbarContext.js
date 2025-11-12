@@ -30,7 +30,7 @@ const Provider = ({ children }) => {
 
       <Snackbar
         open={snackbarOpen}
-        autoHideDuration={2000}
+        autoHideDuration={2500}
         onClose={handleSnackbarClose}
         anchorOrigin={{ horizontal: 'center', vertical: 'bottom' }}
         sx={{
@@ -40,12 +40,12 @@ const Provider = ({ children }) => {
       }}
       >
         <Alert
-          variant="outlined" // filled variant
-          // onClose={handleSnackbarClose}
-          severity={snackbarMessage.severity} // still affects icon
+          variant="outlined"
+          severity={snackbarMessage.severity}
           sx={{
           backgroundColor: 'background.default',
           color: 'text.primary',
+          borderColor: 'text.primary',
           minHeight: '0 !important',         
           padding: '2px 8px',           
           lineHeight: 1,             

@@ -19,9 +19,7 @@ html {
     overflow: auto; /* Enable scrolling on the body */
   }
   
-  Preview {
-    min-height: 300vh; /* Forces the page to be taller */
-  }
+  
   .Preview {
     display: flex;
     flex-direction: column; /* Stack elements vertically */
@@ -46,6 +44,8 @@ html {
     overflow-wrap:anywhere;
     padding: 5px;
   }
+
+  
 
   @media all and (min-width:840px) {
   .message-list{
@@ -76,4 +76,5 @@ html {
       box-sizing: border-box;
       padding-inline: .1rem;
       /* margin-bottom: 5rem; */
-    }}
+    }
+  }

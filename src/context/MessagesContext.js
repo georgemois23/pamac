@@ -1,9 +1,7 @@
 import React, { createContext, useContext, useEffect, useState, useRef } from 'react';
 import { io } from 'socket.io-client';
 import AuthContext from '../AuthContext';
-import { set } from 'mongoose';
 import { useSnackbar } from './SnackbarContext';
-
 
 const MessagesContext = createContext();
 
@@ -18,12 +16,10 @@ export const MessagesProvider = ({ children }) => {
   const [goToProfile, setGoToProfile] = useState(null);
   const { user } = useContext(AuthContext);
   const messagesEndRef = useRef(null);
-
-const { showSnackbar } = useSnackbar();
+  const { showSnackbar } = useSnackbar();
   
-
-useEffect(() => {
-  const deleteMessage = async () => {
+    useEffect(() => {
+    const deleteMessage = async () => {
     if (!deleteThisMessage) return; 
 
     try {
@@ -35,22 +31,22 @@ useEffect(() => {
 
       let res;
       if (user.role?.toLowerCase() === 'admin') {
-  res = await fetch(`${API_URL}/messages/admin/${deleteThisMessage}`, {
+      res = await fetch(`${API_URL}/messages/admin/${deleteThisMessage}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${user.accessToken}`,
+      },
+    });
+  } else {
+    res = await fetch(`${API_URL}/messages/${deleteThisMessage}`, {
     method: 'DELETE',
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${user.accessToken}`,
     },
   });
-} else {
-  res = await fetch(`${API_URL}/messages/${deleteThisMessage}`, {
-    method: 'DELETE',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${user.accessToken}`,
-    },
-  });
-}
+  }
 
       if (!res.ok) throw new Error('Failed to delete message');
 
@@ -59,7 +55,6 @@ useEffect(() => {
       );
       showSnackbar({message: 'Message deleted successfully!', severity: 'success' });
     } catch (err) {
-      console.error(err);
       showSnackbar({message: 'Message deleted failed!', severity: 'error' });
     } finally {
       setDeleteThisMessage(null);
@@ -67,15 +62,12 @@ useEffect(() => {
   };
 
   
-  deleteMessage();
-}, [deleteThisMessage, user]);
+    deleteMessage();
+  }, [deleteThisMessage, user]);
 
-
- 
 
   useEffect(() => {
-    
-
+    if (socket.connected) return;
     setLoading(true);
     socket.connect();
 
@@ -86,7 +78,7 @@ useEffect(() => {
         setLoading(false);
       })
       .catch((err) => {
-        console.error('Failed to load messages', err);
+        showSnackbar({ message: 'Failed to load messages', severity: 'error' });
         setLoading(false);
       });
 
@@ -101,8 +93,7 @@ useEffect(() => {
     });
 
     socket.on('newMessage', (msg) => {
-  if (msg.user.id === user.id) return; 
-  setMessages((prev) => [...prev, msg]);
+    setMessages((prev) => [...prev, msg]);
 });
 
     return () => {
@@ -111,38 +102,17 @@ useEffect(() => {
     };
   }, [user]);
 
-
-
-const sendMessage = (content) => {
+  const sendMessage = (content) => {
   if (!content.trim()) return;
 
-  const tempId = Date.now(); 
-  const newMsg = {
-    id: tempId,
-    content,
-    user: { ...user },
-    createdAt: new Date().toISOString(),
-    pending: true, 
-  };
-
-  // Show message immediately
-  setMessages((prev) => [...prev, newMsg]);
-
-  // Send to server
   socket.emit('sendMessage', { message: content, userId: user.id }, (response) => {
-    // Callback from server with success/failure
     if (response.success) {
-      // Replace temp message with server message (if server adds id or timestamp)
-      setMessages((prev) =>
-        prev.map((msg) => (msg.id === tempId ? { ...msg, ...response.message, pending: false } : msg))
-      );
+      return;
     } else {
-      // Remove the message if server rejects
-      setMessages((prev) => prev.filter((msg) => msg.id !== tempId));
-      console.error('Message failed to send:', response.error);
+      showSnackbar({ message: 'Message failed to send', severity: 'error' });
     }
-  });
-};
+    });
+  };
 
   const value = {
     messages,

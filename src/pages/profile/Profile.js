@@ -9,7 +9,7 @@ import AuthContext from "../../AuthContext"; // Import the context
 import ContentNotAvaiable from '../ContentNotAvailable';
 import { useTranslation } from 'react-i18next';
 function Profile({user}) {
-  const {logout} = useContext(AuthContext);
+  const {logout,incognito} = useContext(AuthContext);
   const navigate = useNavigate();
   const { t } = useTranslation();
   document.title=t("profile");
@@ -54,10 +54,9 @@ function Profile({user}) {
     </Box>
   );
 
-//   if(incognito){
-//     return <ContentNotAvaiable/>;
-//   }
-// else{
+  if(incognito){
+    return <ContentNotAvaiable/>;
+  }
     return(
     <Container sx={{
         display: 'flex',

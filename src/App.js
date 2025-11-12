@@ -28,7 +28,7 @@ import OutOfService from './pages/OutOfService';
 
 function App() {
   const navigate = useNavigate();
-  const { user, token, login, logout, isLoading,loginMessage,LogBut,incognito  } = useContext(AuthContext); // Use the context here
+  const { user, token, login, logout, isLoading,loginMessage,LogBut,incognito  } = useContext(AuthContext); 
   const [themeLoaded, setThemeLoaded] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 310);
   const { t,i18n } = useTranslation();
@@ -41,8 +41,6 @@ function App() {
   }, []);
 
   
-
-
   useEffect(() => {
     const message = "You found the console. Nice."; 
     const style = `
@@ -73,14 +71,13 @@ function App() {
     navigate('/messages');
   };
 
-  const ProtectedRoute = ({ children }) => {
-    const location = useLocation();
-    if (!user) {
-      // If the user is not logged in, redirect to login
-      return <Navigate to="/auth" state={{ from: location.pathname }} replace />;
-    }
-    return children; // Otherwise, render the protected route's children
-  };
+  function ProtectedProfile({ user, incognito }) {
+    console.log("ProtectedProfile - user:", user);
+    console.log("ProtectedProfile - incognito:", incognito);
+  if (!user) return <Navigate to="/auth" replace />;
+  if (incognito) return <Navigate to="/restricted" replace state={{ from: "redirect" }} />;
+  return <Profile user={user} />;
+}
   
 useEffect(() => {
   localStorage.setItem("Button",LogBut);
@@ -115,10 +112,6 @@ useEffect(() => {
     );
   }
  
-
-  
-
-  
   const handleLogout = () => {
     if(!incognito){
       logout();
@@ -130,16 +123,6 @@ useEffect(() => {
     
   };
 
-  // const changeToGreek = () => {
-  //   console.log('Manually switching to Greek');
-  //   {i18n.language==='el' ? i18n.changeLanguage('en') : i18n.changeLanguage('el');} 
-  //   // i18n.changeLanguage('el'); // Change language to Greek
-  // };
- 
-
-  
-
-
   const changeToGreek = () => {
     const newLang = i18n.language === 'el' ? 'en' : 'el';
     i18n.changeLanguage(newLang);
@@ -147,6 +130,7 @@ useEffect(() => {
     const newPath = newLang === 'el' ? `/el${location.pathname.replace(/^\/el/, '')}` : location.pathname.replace(/^\/el/, '');
     navigate(newPath);
   };
+
   
   return (
     // <ThemeOption>
@@ -184,19 +168,19 @@ useEffect(() => {
               />
               <Route path="/auth/:mode" element={user ? <Navigate to="/chat"/> :<LoginPage />} />
               <Route
-  path="/logout"
-  element={
-    !user ? (
-      location.state?.fromLogout ? (
-        <Logout />
-      ) : (
-        <Navigate to="/auth/login" replace />
-      )
-    ) : (
-      <Chat user={user} replace />
-    )
-  }
-/>
+              path="/logout"
+              element={
+                !user ? (
+                  location.state?.fromLogout ? (
+                    <Logout />
+                  ) : (
+                    <Navigate to="/auth/login" replace />
+                  )
+                ) : (
+                  <Chat user={user} replace />
+                )
+              }
+            />
           <Route path="/out-of-service" element={<OutOfService />} />  
           <Route path="/el" element={<Navigate to="/" replace />} />  
           <Route path="/en" element={<Navigate to="/" replace />} />  
@@ -216,30 +200,18 @@ useEffect(() => {
 
              
 
-<Route
-  path="/profile"
-  element={
-    user ? (
-      !incognito ? (
-        <Profile user={user} />
-      ) : (
-        <Navigate to="/restricted" replace state={{ from: "redirect" }} />
-      )
-    ) : (
-      <Navigate to="/auth" replace />
-    )
-  }
-/>
+  <Route path="/profile" element={<ProtectedProfile user={user} incognito={incognito} />} />
+
       <Route
   path="/profile/:id"
-  element={<UserProfile />}
+  element={user ? <UserProfile /> : <Navigate to="/auth" replace />}
     />
               <Route
                 path="/messages"
                 element={<PreviewMsg />}
               />
               <Route path="*" element={<Navigate to="/404" />} /> 
-              <Route path="/restricted" element={incognito ? <ContentNotAvaiable/> : <Navigate to='/' replace/>} /> 
+              <Route path="/restricted" element={incognito  ? <ContentNotAvaiable/> : <Navigate to='/' replace/>} /> 
               <Route path="/404" element={<ErrorPage />} />
             </Routes>
           </div>

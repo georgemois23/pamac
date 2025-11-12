@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import AuthContext from '../../AuthContext';
 import { useSnackbar } from '../../context/SnackbarContext';
@@ -11,10 +11,12 @@ import ArrowCircleRightRoundedIcon from '@mui/icons-material/ArrowCircleRightRou
 import '../../App.css';
 import '../../Msg.css';
 import { set } from 'mongoose';
+import ContentNotAvaiable from '../ContentNotAvailable';
 
 const UserProfile = () => {
     const { id } = useParams(); // or rename to { slug } depending on your route
     const [messages, setMessages] = useState([]);
+    const [username, setUsername] = useState('');
     const { user } = useContext(AuthContext);
     const API_URL = process.env.REACT_APP_API_URL;
     const { showSnackbar } = useSnackbar();
@@ -23,6 +25,7 @@ const UserProfile = () => {
     const navigate = useNavigate();
     const [visible, setVisible] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
+    
     
 
   const handleMessages = () => {
@@ -42,41 +45,51 @@ const UserProfile = () => {
   return new Date(dateString).toLocaleString('en-GB', options);
 };
 
+const navigatedRef = useRef(false);
 
-  useEffect(() => {
-    const fetchUserMessages = async () => {
-      if (!user) return;
+useEffect(() => {
+  const fetchUserMessages = async () => {
+    if (!user) return;
 
-      setLoading(true);
-      try {
-        const res = await fetch(`${API_URL}/messages/user/${id}`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${user.accessToken}`,
-          },
-        });
+    setLoading(true);
+    try {
+      const res = await fetch(`${API_URL}/messages/user/${id}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${user.accessToken}`,
+        },
+      });
 
-        if (!res.ok) {
+      if (!res.ok) {
+        if (!navigatedRef.current) {
           showSnackbar({ message: 'Failed to fetch user messages', severity: 'error' });
+          navigatedRef.current = true;
           setMessages([]);
           setLoading(false);
-          return;
+          navigate(-1);
         }
+        return;
+      }
 
-        const data = await res.json();
-        setMessages(data); 
-        setLoading(false);
-      } catch (error) {
-        console.error('Error fetching user messages:', error);
+      const data = await res.json();
+      setMessages(data.messages); 
+      setUsername(data.user?.username || id);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching user messages:', error);
+      if (!navigatedRef.current) {
         showSnackbar({ message: 'An error occurred', severity: 'error' });
+        navigatedRef.current = true;
         setMessages([]);
         setLoading(false);
+        navigate(-1);
       }
-    };
+    }
+  };
 
-    fetchUserMessages();
-  }, [id, user, API_URL, showSnackbar]);
+  fetchUserMessages();
+}, [id, user, API_URL, showSnackbar, navigate]);
 
     useEffect(() => {
   
@@ -105,12 +118,12 @@ const UserProfile = () => {
   setIsHovered(false);
 };
 
-  const username = messages[0]?.user?.username || id;
   const formattedUsername = username.charAt(0).toUpperCase() + username.slice(1).toLowerCase();
   document.title = t("messages") + (messages && messages.length > 0 ? ' - ' + formattedUsername : '');
 
   if (loading) return <LoadingSpinner />;
-
+  if (!user) { return null; }
+  
   return (
     <div className="Preview">
         <div

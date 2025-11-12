@@ -14,6 +14,7 @@ import { useTranslation } from 'react-i18next';
 import { useMessages } from '../context/MessagesContext';
 import LoadingSpinner from '../components/LoadingSpinner';
 import CodeIcon from '@mui/icons-material/Code';
+import { useSnackbar } from '../context/SnackbarContext';
 
 function PreviewMsg() {
   const navigate = useNavigate();
@@ -23,7 +24,8 @@ function PreviewMsg() {
    const {messages, loading, setDeleteThisMessage} = useMessages();
   const { t,i18n } = useTranslation();
   document.title=t("messages");
-const {user, incognito} = useContext(AuthContext);
+  const {user, incognito} = useContext(AuthContext);
+  const { showSnackbar } = useSnackbar();
 
   const handleDelete = () => {
     console.log("Delete function called");
@@ -180,8 +182,7 @@ const scrollToTop = () => {
       <>
         {i18n.language === 'el' ? 'Ο χρήστης ' : ''}
         <span className='wrote-italic' onClick={() => {
-        // handleGoToProfile(msg.user.id);
-        // setGoToProfile(msg.user.id);
+        // navigate(`/profile/${msg.user.id}`);
         navigate(`/profile/${msg.user.id}`);
       }}
         

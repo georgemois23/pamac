@@ -14,6 +14,7 @@ const { messages, sendMessage } = useMessages();
   // localStorage.setItem("name",name);
   window.history.pushState(null, "", "/chat");
   document.title='Chat';
+  
   const handleMessageChange = (event) => {
      const input = event.target.value;
 
@@ -44,14 +45,6 @@ const { messages, sendMessage } = useMessages();
       }).format(new Date());
       sendMessage(message);
       setMessage('');
-      // Add the new message with name to the array
-      // const newMessage = { name: !user.username ? '' : user.username, text: message, time:currentTime  };
-      // const updatedMessages = [...storedMessages, newMessage];
-      // Save the updated messages to sessionStorage
-      // localStorage.setItem('messages', JSON.stringify(updatedMessages));
-      // Notify the parent component of the new message
-      // onMessage(newMessage);
-      // Navigate to the preview messages page
       navigate('/messages');
       document.title = t("messages");
       setMessage('');
@@ -61,6 +54,7 @@ const { messages, sendMessage } = useMessages();
   return (
     // <div className='Chat'>
     <Container sx={{display:'flex', gap:'2rem',flexDirection:'column',userSelect:'none',}}>
+      
        {/* <Logout handleLogout={handleLogout} logmsg={!name ? 'Login' : 'Logout'}/> */}
       <ThemeOption/>
       <Typography variant='h3' sx={{fontWeight:"bold"}}>{t('welcome')} {!user.username ? t("anonymous_user") : (user.full_name ? user.full_name.split(' ')[0] : user.username)}!</Typography>
