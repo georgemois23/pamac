@@ -179,11 +179,10 @@ useEffect(() => {
         <Routes>
           <Route
             path="/"
-            // element={user ? <Navigate to="/chat" /> : <FirstLand />}
-            element={<Navigate to="/out-of-service" />}
+            element={user ? <Navigate to="/chat" /> : <FirstLand />}
                 // element={<FirstLand />}
               />
-              {/* <Route path="/auth/:mode" element={user ? <Navigate to="/chat"/> :<LoginPage />} />
+              <Route path="/auth/:mode" element={user ? <Navigate to="/chat"/> :<LoginPage />} />
               <Route
   path="/logout"
   element={
@@ -197,20 +196,19 @@ useEffect(() => {
       <Chat user={user} replace />
     )
   }
-/> */}
+/>
           <Route path="/out-of-service" element={<OutOfService />} />  
-          {/* <Route path="/el" element={<Navigate to="/" replace />} />  
+          <Route path="/el" element={<Navigate to="/" replace />} />  
           <Route path="/en" element={<Navigate to="/" replace />} />  
               <Route
                 path="/auth"
-                // element={user ? <Navigate to="/chat" replace /> : <LoginPage />}
-                element={<Navigate to="/out-of-service" replace /> }
-              /> */}
-               {/* <Route path="/c/*" element={<Navigate to="/chat" replace />} />
+                element={user ? <Navigate to="/chat" replace /> : <LoginPage />}
+              /> 
+               <Route path="/c/*" element={<Navigate to="/chat" replace />} />
             <Route
                 path="/chat"
-                // element={user ? <Chat user={user} /> : <Navigate to="/auth" replace />}
-                 element={<Navigate to="/out-of-service" replace /> }
+                element={user ? <Chat user={user} /> : <Navigate to="/auth" replace />}
+                //  element={<Navigate to="/out-of-service" replace /> }
               />
               <Route path="/login" element={user ? <Navigate to="/chat"/> : <Navigate to="/auth/login" />} />
               <Route path="/register" element={user ? <Navigate to="/chat"/> : <Navigate to="/auth/register" />} />
@@ -239,11 +237,10 @@ useEffect(() => {
               <Route
                 path="/messages"
                 element={<PreviewMsg />}
-              /> */}
-              <Route path="*" element={<Navigate to="/out-of-service" />} />
-              {/* <Route path="*" element={<Navigate to="/404" />} /> */}
-              {/* <Route path="/restricted" element={incognito ? <ContentNotAvaiable/> : <Navigate to='/' replace/>} /> */}
-              {/* <Route path="/404" element={<ErrorPage />} /> */}
+              />
+              <Route path="*" element={<Navigate to="/404" />} /> 
+              <Route path="/restricted" element={incognito ? <ContentNotAvaiable/> : <Navigate to='/' replace/>} /> 
+              <Route path="/404" element={<ErrorPage />} />
             </Routes>
           </div>
   );

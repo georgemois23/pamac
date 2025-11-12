@@ -13,6 +13,7 @@ import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import { useTranslation } from 'react-i18next';
 import { useMessages } from '../context/MessagesContext';
 import LoadingSpinner from '../components/LoadingSpinner';
+import CodeIcon from '@mui/icons-material/Code';
 
 function PreviewMsg() {
   const navigate = useNavigate();
@@ -184,6 +185,7 @@ const scrollToTop = () => {
         navigate(`/profile/${msg.user.id}`);
       }}
         
+        // >{msg.user.role === 'admin' && <CodeIcon style={{ verticalAlign: "-6px", paddingRight:'4px' }} aria-label="Profile icon" />}
         >{msg.user.username}</span> {t("wrote")}:
       </>
     ) : t("anonymous")}

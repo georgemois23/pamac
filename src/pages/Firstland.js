@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, Button, Container, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import PolyvoxLogo from '../Polyvox.svg';
+import { ReactComponent as PolyvoxLogo } from '../Polyvox.svg';
 import '../App.css';
 
 function FirstLand() {
@@ -61,8 +61,7 @@ function FirstLand() {
         >
           <span>Welcome to </span>
           <Box
-            component="img"
-            src={PolyvoxLogo}
+            component={PolyvoxLogo}
             alt="Polyvox Logo"
             draggable="false"
             sx={{
