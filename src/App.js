@@ -156,7 +156,7 @@ useEffect(() => {
           
         )}
 
-        {location.pathname === "/chat" &&  <ForumIcon titleAccess={t('view_messages')} onClick={handleMessages} sx={{ position: 'fixed', bottom: '.8rem', right: '.8rem',cursor:'pointer', backgroundColor:'transparent' }} className='chatIcon' />} 
+        {(location.pathname === "/chat" || location.pathname === '/auth/login' || location.pathname === '/auth/register')  &&  <ForumIcon titleAccess={t('view_messages')} onClick={handleMessages} sx={{ position: 'fixed', bottom: '.8rem', right: '.8rem',cursor:'pointer', backgroundColor:'transparent' }} className='chatIcon' />} 
            
         {/* {location.pathname === "/" && !user && (!isMobile ? <div style={{fontSize:'20px',height:'fit-content', cursor: 'pointer', position:'fixed', left: '50%', transform: 'translateX(-50%)',bottom:'0.8rem',userSelect:'none'}} onClick={changeToGreek}>{t(i18n.language==='en' ? 'switch_language_el' : 'switch_language_en')}</div> : <div style={{fontSize:'20px',height:'fit-content', position: 'fixed', top: '.8rem', right: '.8rem' , cursor: 'pointer' }}><LanguageSwitcher/></div> )} */}
         {/* {location.pathname === "/profile" && <div style={{fontSize:'20px',height:'fit-content', position: 'fixed', top: '.8rem', right: '.8rem' , cursor: 'pointer' }}><LanguageSwitcher/></div>} */}

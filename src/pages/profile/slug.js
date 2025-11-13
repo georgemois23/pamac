@@ -26,7 +26,6 @@ const UserProfile = () => {
     const [isHovered, setIsHovered] = useState(false);
     
     
-
   const handleMessages = () => {
     navigate('/messages');
   };
@@ -61,12 +60,17 @@ useEffect(() => {
       });
 
       if (!res.ok) {
+        if(!user){
+          setLoading(false);
+          showSnackbar({ message: 'You need to be logged in to view user profile', severity: 'error' });
+          return;
+        }
         if (!navigatedRef.current) {
           showSnackbar({ message: 'Failed to fetch user messages', severity: 'error' });
           navigatedRef.current = true;
           setMessages([]);
           setLoading(false);
-          // navigate(-1);
+          navigate('/messages');
         }
         return;
       }
@@ -82,13 +86,13 @@ useEffect(() => {
         navigatedRef.current = true;
         setMessages([]);
         setLoading(false);
-        // navigate(-1);
+        navigate('/messages');
       }
     }
   };
 
   fetchUserMessages();
-}, [id, user, API_URL, showSnackbar, navigate]);
+}, [user?.accessToken]);
 
     useEffect(() => {
   
@@ -165,7 +169,7 @@ useEffect(() => {
          <ForumIcon titleAccess={t('view_messages')} onClick={handleMessages} sx={{ position: 'fixed',top:'1rem', left: '.6rem',cursor:'pointer', backgroundColor:'transparent' }} className='chatIcon' /> 
          <div style={{marginTop:'2rem'}}>
       <div className="header" >
-        <Typography variant='h2' sx={{fontWeight:'bold',userSelect:'none'}}>{t('messages')} of {formattedUsername} </Typography>
+        {messages.length && <Typography variant='h2' sx={{fontWeight:'bold',userSelect:'none'}}>{t('messages')} of {formattedUsername} </Typography>}
       </div>
       <div className="message-list">
         {messages.length > 0 ? (
