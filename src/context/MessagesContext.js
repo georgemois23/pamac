@@ -19,11 +19,14 @@ export const MessagesProvider = ({ children }) => {
   const messagesEndRef = useRef(null);
   const socketRef = useRef(null);
 
-  // --- Initialize Socket.IO once ---
+ // --- Initialize Socket.IO ---
   useEffect(() => {
-    // Create socket
+    // 1. Prevent connection if there is no token (stop the loop before it starts)
+    if (!user?.accessToken) return;
+
+    // 2. Initialize Socket with the CURRENT token
     socketRef.current = io(API_URL, {
-      auth: { token: user?.accessToken || '' },
+      auth: { token: user.accessToken },
       autoConnect: true,
       transports: ['websocket'],
     });
@@ -35,23 +38,33 @@ export const MessagesProvider = ({ children }) => {
       setConnected(true);
     });
 
-    socket.on('disconnect', () => {
-      console.log('Disconnected from server');
+    socket.on('disconnect', (reason) => {
+      console.log('Disconnected from server:', reason);
       setConnected(false);
+    });
+
+    socket.on('connect_error', (err) => {
+      console.log('Connection Error:', err.message);
+      // Optional: stop retrying if auth fails
+      if (err.message.includes("Unauthorized")) {
+         socket.disconnect();
+      }
     });
 
     socket.on('newMessage', (msg) => {
       setMessages((prev) => [...prev, msg]);
     });
 
-    // Cleanup on unmount
+    // 3. Cleanup: Disconnect the old socket before creating a new one
     return () => {
       socket.off('connect');
       socket.off('disconnect');
       socket.off('newMessage');
-      socket.disconnect();
+      socket.disconnect(); // <--- Crucial!
     };
-  }, []); // Run once
+    
+  // 4. Add the token to the dependency array
+  }, [user?.accessToken]);
 
   // --- Fetch initial messages ---
   useEffect(() => {
