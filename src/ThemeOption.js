@@ -1,8 +1,6 @@
 import { createTheme, responsiveFontSizes, ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import React, { useState, useEffect } from "react";
-import toggle1st from "./assets/toggle_off_1st.svg";
-import toggle2nd from "./assets/toggle_on_1st.svg";
 
 // Base theme configuration
 const baseTheme = {
@@ -21,135 +19,122 @@ const baseTheme = {
         },
       },
     },
-   MuiButton: {
-  defaultProps: {
-    disableRipple: true, // Remove button ripple effect
-  },
-  styleOverrides: {
-    // Apply styles to ALL variants here
-    root: {
-      transition: "all 0.3s ease",
-      "&:focus": {
-        outline: "none", // Remove default focus outline
-      },
-      // ✅ ADD THIS: Show a visible outline only for keyboard navigation
-      "&:focus-visible": {
-        outline: "2px solid #a4c2f4",
-        outlineOffset: "2px",
-      },
-    },
-    
-    // ✅ FIX: Styles for "contained" (solid) buttons
-    contained: {
-      // backgroundColor: "#a4c2f4",
-      color: "#a4c2f4",
-      backgroundColor: "#001f3f",
-      // color: "#a4c2f4",
-      borderColor: "#a4c2f4",
-      border: "2px solid",
-      borderRadius: "8px", // Rounded borders
-      height:'fit-content',
-      "&:hover": {
-        backgroundColor: "#a4c2f4",
-        color: "#001f3f",
-      },
-      "&:disabled": {
-        backgroundColor: "#6d8ba7",
-        color: "#4f4f4f",
-      },
-    },
-    
-    // ✅ ADDED: Styles for "outlined" buttons
-    outlined: {
-      color: "#a4c2f4",
-      borderColor: "#a4c2f4",
-      border: "2px solid",
-      borderRadius: "8px", // Rounded borders
-      height:'fit-content',
-      "&:hover": {
-        backgroundColor: "rgba(164, 194, 244, 0.1)", // Light hover background
-        borderColor: "#a4c2f4",
-      },
-      "&:disabled": {
-        borderColor: "#6d8ba7",
-        color: "#6d8ba7",
-      },
-    },
 
-    // ✅ ADDED: Styles for "text" buttons
-    text: {
-      color: "#a4c2f4",
-      "&:hover": {
-        backgroundColor: "rgba(164, 194, 244, 0.1)", // Light hover background
+    // -------------------------------------------------------
+    // ✅ BUTTON OVERRIDES (Your original custom button theme)
+    // -------------------------------------------------------
+    MuiButton: {
+      defaultProps: {
+        disableRipple: true,
       },
-      "&:disabled": {
-        color: "#6d8ba7",
-      },
-    },
-  },
-},
-    MuiTextField: {
       styleOverrides: {
         root: {
+          transition: "background-color 0.3s ease, color 0.3s ease",
+          "&:focus": {
+            outline: "none",
+          },
+          "&:focus-visible": {
+            outline: "2px solid #a4c2f4",
+            outlineOffset: "2px",
+          },
+        },
+
+        contained: {
           color: "#a4c2f4",
-          "& .MuiOutlinedInput-root": {
-            borderRadius: "10px", // Rounded border
-            textAlign: "center",
-            "& .MuiOutlinedInput-notchedOutline": {
-              borderColor: "#a4c2f4", // Set border color
-              "& legend": {
-                width: "0px !important", // Hide the default legend
-              },
-            },
-            "&:hover .MuiOutlinedInput-notchedOutline": {
-              borderColor: "#a4c2f4", // Set border color on hover
-            },
-            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-              borderColor: "#a4c2f4", // Set border color on focus
-              borderWidth: "2px", // Increase border width on focus to prevent gap
-            },
+          backgroundColor: "#001f3f",
+          borderColor: "#a4c2f4",
+          border: "2px solid",
+          borderRadius: "8px",
+          height: "fit-content",
+          "&:hover": {
+            backgroundColor: "#a4c2f4",
+            color: "#001f3f",
           },
-          "& .MuiInputLabel-root": {
-            color: "#a4c2f4", // Label color
-            left: "12px", // Moves label slightly left to avoid gap
-            transformOrigin: "top left", // Ensures smooth shrinking
+          "&:disabled": {
+            backgroundColor: "#6d8ba7",
+            color: "#4f4f4f",
           },
-          "& .MuiInputLabel-shrink": {
-            transform: "translate(0, -6px) scale(0.75) !important", // Ensures label moves correctly
+        },
+
+        outlined: {
+          color: "#a4c2f4",
+          borderColor: "#a4c2f4",
+          border: "2px solid",
+          borderRadius: "8px",
+          height: "fit-content",
+          "&:hover": {
+            backgroundColor: "rgba(164, 194, 244, 0.1)",
+            borderColor: "#a4c2f4",
           },
-          "& .MuiOutlinedInput-input": {
-            padding: "10px 12px", // Ensures consistent spacing inside input
+          "&:disabled": {
+            borderColor: "#6d8ba7",
+            color: "#6d8ba7",
+          },
+        },
+
+        text: {
+          color: "#a4c2f4",
+          "&:hover": {
+            backgroundColor: "rgba(164, 194, 244, 0.1)",
+          },
+          "&:disabled": {
+            color: "#6d8ba7",
           },
         },
       },
     },
+
+    // -------------------------------------------------------
+    // ❌ TEXTFIELD — RESET TO DEFAULT (no custom styles)
+    // -------------------------------------------------------
+    MuiTextField: {
+      styleOverrides: {
+        root: {},
+      },
+    },
+    MuiOutlinedInput: {
+      styleOverrides: {
+        root: {},
+        input: {},
+        notchedOutline: {},
+      },
+    },
+    MuiInputLabel: {
+      styleOverrides: {
+        root: {},
+      },
+    },
+
+    // -------------------------------------------------------
+    // Other components already safe
+    // -------------------------------------------------------
     MuiPaper: {
       styleOverrides: {
         root: {
-          backgroundColor: "#1e1e1e", // Paper background color
-          color: "#a4c2f4", // Paper text color
+          backgroundColor: "#1e1e1e",
+          color: "#a4c2f4",
         },
       },
     },
     MuiSnackbar: {
       styleOverrides: {
         root: {
-          backgroundColor: "transparent", // Transparent Snackbar background
+          backgroundColor: "transparent",
         },
       },
     },
     MuiSnackbarContent: {
       styleOverrides: {
         root: {
-          backgroundColor: "#1e1e1e", // Snackbar content background color
-          color: "#a4c2f4", // Snackbar text color
+          backgroundColor: "#1e1e1e",
+          color: "#a4c2f4",
         },
       },
     },
   },
 };
 
-// Original theme setup
+// FINAL THEME
 export const originalTheme = responsiveFontSizes(
   createTheme({
     ...baseTheme,
@@ -161,64 +146,19 @@ export const originalTheme = responsiveFontSizes(
   })
 );
 
-// Commented out purple theme setup
-/* export const purpleTheme = responsiveFontSizes(
-  createTheme({
-    ...baseTheme,
-    palette: {
-      ...baseTheme.palette,
-      background: { default: "#190c25", paper: "#1e1e1e" },
-      text: { primary: "#D3D3D3", disabled: "#6d8ba7" },
-    },
-    components: {
-      ...baseTheme.components,
-      MuiButton: {
-        ...baseTheme.components.MuiButton,
-        styleOverrides: {
-          root: {
-            color: "#D3D3D3",
-            backgroundColor: "#190c25",
-            transition: "all 0.3s ease",
-            "&:hover": { backgroundColor: "#D3D3D3", color: "#190c25" },
-            "&:focus": { outline: "none" },
-            "&:disabled": { backgroundColor: "#6d8ba7", color: "#4f4f4f" },
-          },
-        },
-      },
-    },
-  })
-); */
-
-// ThemeOption component to toggle themes
+// Wrapper with theme provider
 export const ThemeOption = ({ children }) => {
-  const [theme, setTheme] = useState(() => localStorage.getItem("theme") || "original");
+  const [theme, setTheme] = useState(
+    () => localStorage.getItem("theme") || "original"
+  );
 
   useEffect(() => {
     document.body.setAttribute("data-theme", theme);
   }, [theme]);
 
-  const handleThemeToggle = () => {
-    setTheme((prevTheme) => {
-      const newTheme = prevTheme === "original" ? "original" : "original"; // Only "original" theme
-      localStorage.setItem("theme", newTheme);
-      document.body.setAttribute("data-theme", newTheme);
-      return newTheme;
-    });
-  };
-
-  const appliedTheme = originalTheme; // Only applying the original theme
-
   return (
-    <ThemeProvider theme={appliedTheme}>
+    <ThemeProvider theme={originalTheme}>
       <CssBaseline />
-      {/* <img
-        src={toggle1st}
-        className="theme-option"
-        id={`theme-original`}
-        onClick={handleThemeToggle}
-        title="Change theme color"
-        alt="Toggle Theme"
-      /> */}
       {children}
     </ThemeProvider>
   );

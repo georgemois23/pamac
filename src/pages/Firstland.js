@@ -72,7 +72,7 @@ function FirstLand() {
               transform: 'translateY(-2px)', 
             }}
           />
-          <span> an open chat wall designed for freedom. Join instantly and anonymously, or sign up to build your identity.</span>
+          <span> an open chat wall designed for freedom. Join instantly, sign up to build your identity.</span>
         </Typography>
 
       

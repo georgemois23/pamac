@@ -71,7 +71,11 @@ export const MessagesProvider = ({ children }) => {
     setLoading(true);
     socket.connect();
 
-     fetch(`${API_URL}/messages`)
+     fetch(`${API_URL}/messages`, { 
+      headers: {
+        'x-frontend-key': process.env.REACT_APP_FRONTEND_KEY || '',
+      },
+    })
       .then((res) => res.json())
       .then((data) => {
         setMessages(data);

@@ -25,6 +25,8 @@ import LanguageSwitcher from './languageSwitcher';
 import { Avatar, Tooltip } from '@mui/material';
 import LoadingSpinner from './components/LoadingSpinner';
 import OutOfService from './pages/OutOfService';
+import ChangePassword from './components/ChangePassword';
+import ForgotPassword from './components/ForgotPassword';
 
 function App() {
   const navigate = useNavigate();
@@ -197,6 +199,16 @@ useEffect(() => {
               <Route path="/login" element={user ? <Navigate to="/chat"/> : <Navigate to="/auth/login" />} />
               <Route path="/register" element={user ? <Navigate to="/chat"/> : <Navigate to="/auth/register" />} />
               <Route path="/signup" element={user ? <Navigate to="/chat"/> : <Navigate to="/auth/register" />} />
+              
+              <Route path="/forgot-password" element={location.state?.username ? <ForgotPassword /> : <Navigate to='/auth' /> }/>
+              <Route
+              path="/reset-password"
+              element={new URLSearchParams(location.search).get("token")
+                ? <ChangePassword />
+                : <Navigate to="/auth" />
+              }
+            />
+
 
              
 

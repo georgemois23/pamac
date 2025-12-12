@@ -7,10 +7,11 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const { t } = useTranslation();
 
-  const [user, setUser] = useState(() => {
-    const storedUser = localStorage.getItem("user");
-    return storedUser ? JSON.parse(storedUser) : null;
-  });
+  const [user, setUser] = useState(null);
+  // const [user, setUser] = useState(() => {
+  //   const storedUser = localStorage.getItem("user");
+  //   return storedUser ? JSON.parse(storedUser) : null;
+  // });
   const [accessToken, setAccessToken] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [loginMessage, setLoginMessage] = useState(null);
@@ -29,7 +30,7 @@ export const AuthProvider = ({ children }) => {
       setUser({...response.data, accessToken: token});
 
       if (!isGuest) {
-  localStorage.setItem("user", JSON.stringify({...response.data, accessToken: token}));
+  // localStorage.setItem("user", JSON.stringify({...response.data, accessToken: token}));
 }
       setIncognito(false);
       return true;
@@ -42,6 +43,11 @@ export const AuthProvider = ({ children }) => {
   }
   };
 
+  const refetchUser = React.useCallback(async () => {
+    if (!user) return false;
+    await fetchUser(user.accessToken, incognito);
+}, [user, incognito]);
+
   const login = async (username, password) => {
     setERRORMessage(null);
     sessionStorage.removeItem("guestId");
@@ -52,15 +58,19 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await api.post("/auth/login", { username, password });
       const { accessToken: newToken } = response.data;
+      console.log("Login successful:", response.data);
       setAccessToken(newToken);
+      localStorage.setItem("accessToken", newToken);
       await fetchUser(newToken);
 
       setLoginMessage(t("login_success"));
       setLogBut(t("logout"));
       localStorage.setItem("Button", t("logout"));
     } catch (error) {
-      if (error.response?.status === 401) setERRORMessage(t("check_username_password"));
-      else setERRORMessage(t("login_failed"));
+      if (error.response?.status === 401) {setERRORMessage(t("check_username_password"));}
+      else if (error.response?.data?.code === 'USER_DISABLED') setERRORMessage(<>User account is disabled.<br />Contact support.</>);
+      else if (error.response?.data?.code === 'USER_TEMP_DISABLED') setERRORMessage(<>User account is temporarily disabled.<br />Contact support.</>);
+      else  setERRORMessage(t("login_failed"));
       setIsLoading(false);
     } finally {
     setIsLoading(false); // always reset
@@ -154,7 +164,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     if (!incognito) {
-      localStorage.removeItem("user");
+      localStorage.removeItem("accessToken");
     } else {
       sessionStorage.removeItem("guestToken");
       sessionStorage.removeItem("incognito");
@@ -166,35 +176,72 @@ export const AuthProvider = ({ children }) => {
   };
 
   // Initialize auth on page load
+// useEffect(() => {
+//   const initializeAuth = () => {
+//     setIsLoading(true);
+
+//     const storedUser = localStorage.getItem("user");
+//     const guestId = sessionStorage.getItem("guestId");
+//     const guestToken = sessionStorage.getItem("guestToken");
+
+//     if (storedUser) {
+//       // Real logged-in user exists
+//       setUser(JSON.parse(storedUser));
+//       setIncognito(false);
+//       setAccessToken(null);
+//       localStorage.setItem("vst", "true");
+//     } else if (guestId && guestToken) {
+//       // Restore existing incognito user without creating a new guest
+//       setUser({ username: `Guest_${guestId.slice(0, 8)}`, role: "guest", id: guestId });
+//       setAccessToken(guestToken);
+//       setIncognito(true);
+//       setLogBut(t("login"));
+//       localStorage.setItem("vst", "true");
+//     } else {
+//       // No user, no guest → do nothing until button click
+//       setUser(null);
+//       setAccessToken(null);
+//       setIncognito(false);
+//       sessionStorage.removeItem("guestId");
+//       sessionStorage.removeItem("guestToken");
+//       sessionStorage.removeItem("incognito");
+//     }
+
+//     setIsLoading(false);
+//   };
+
+//   initializeAuth();
+// }, []);
+
 useEffect(() => {
-  const initializeAuth = () => {
+  const initializeAuth = async () => {
     setIsLoading(true);
-
-    const storedUser = localStorage.getItem("user");
-    const guestId = sessionStorage.getItem("guestId");
+    const token = localStorage.getItem("accessToken");
     const guestToken = sessionStorage.getItem("guestToken");
+    const guestId = sessionStorage.getItem("guestId");
 
-    if (storedUser) {
-      // Real logged-in user exists
-      setUser(JSON.parse(storedUser));
-      setIncognito(false);
-      setAccessToken(null);
-      localStorage.setItem("vst", "true");
-    } else if (guestId && guestToken) {
-      // Restore existing incognito user without creating a new guest
+    if (token) {
+      setAccessToken(token);
+      try {
+        // Fetch user from backend
+        const response = await api.get("/auth/me", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setUser(response.data); // set user from backend
+        setIncognito(false);
+      } catch (error) {
+        console.error("Failed to fetch user on refresh", error);
+        setUser(null);
+        setAccessToken(null);
+      }
+    } else if (guestToken && guestId) {
       setUser({ username: `Guest_${guestId.slice(0, 8)}`, role: "guest", id: guestId });
       setAccessToken(guestToken);
       setIncognito(true);
-      setLogBut(t("login"));
-      localStorage.setItem("vst", "true");
     } else {
-      // No user, no guest → do nothing until button click
       setUser(null);
       setAccessToken(null);
       setIncognito(false);
-      sessionStorage.removeItem("guestId");
-      sessionStorage.removeItem("guestToken");
-      sessionStorage.removeItem("incognito");
     }
 
     setIsLoading(false);
@@ -202,6 +249,8 @@ useEffect(() => {
 
   initializeAuth();
 }, []);
+
+
 
   return (
     <AuthContext.Provider
@@ -217,6 +266,7 @@ useEffect(() => {
         LogBut,
         incognito,
         ERRORMessage,
+        refetchUser
       }}
     >
       {children}

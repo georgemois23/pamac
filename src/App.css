@@ -81,7 +81,7 @@ html {
 .wrote-italic{
   /* text-decoration: underline; */
   /* color: black; */
-  font-weight: 500;
+  font-weight: 600;
   /* font-style:oblique; */
 }
 
@@ -185,9 +185,9 @@ button{
 
 @media all and (min-width:840px) {
 
-  #email,#first_name,#last_name{
+  /* #email,#first_name,#last_name{
     width: 30ch;
-  }
+  } */
 
   .Pop-up{
     position: fixed;
@@ -423,7 +423,7 @@ button{
     height: 50px;
   }
 label {
-  font-size: 30px;
+  font-size: 22px;
 }
 button{
   outline-style: none;
@@ -454,7 +454,9 @@ form{
 .username{
   height: 30px;
   font-size: 20px;
-  width: fit-content;
+  /* width: fit-content; */
+  width: 250px;
+  padding: 10px;
 }
 h1{
   font-size: 80px;
@@ -708,8 +710,11 @@ button{
 }
 .username{
   height: 25px;
-  width: 130px;
+  /* width: 230px; */
+  min-width: fit-content;
+  max-width: 140px;
   font-size: 16px;
+  padding: 10px;
 }
 
 form textArea{
@@ -759,9 +764,9 @@ form textArea{
   gap: 1rem;
 }
 
-#email,#first_name,#last_name{
+/* #email,#first_name,#last_name{
   width: 20ch;
-}
+} */
 .gobackk{
   position: fixed;
   bottom: 10px;

@@ -15,6 +15,7 @@ import { useMessages } from '../context/MessagesContext';
 import LoadingSpinner from '../components/LoadingSpinner';
 import CodeIcon from '@mui/icons-material/Code';
 import { useSnackbar } from '../context/SnackbarContext';
+import { formatDistanceToNow,formatDistanceToNowStrict  } from 'date-fns';
 
 function PreviewMsg() {
   const navigate = useNavigate();
@@ -99,17 +100,28 @@ useEffect(() => {
     };
 }, []);
 
- const showDate = (dateString) => {
-  const options = { 
-    day: '2-digit', 
-    month: '2-digit', 
-    year: 'numeric', 
-    hour: '2-digit', 
+ const showDate = (dateStr) => {
+  const date = new Date(dateStr); // UTC → JS converts to local automatically
+  const now = new Date();
+
+  const diffMs = now - date;
+  const hours = Math.floor(diffMs / (1000 * 60 * 60));
+  console.log("DEVICE TIME:", new Date().toString());
+
+  if (hours < 24) {
+    return formatDistanceToNowStrict(date, { addSuffix: true });
+  }
+
+  return date.toLocaleString('el-GR', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
     minute: '2-digit',
     hour12: false
-  };
-  return new Date(dateString).toLocaleString('en-GB', options);
+  });
 };
+
 
 
 
@@ -119,6 +131,7 @@ const scrollToTop = () => {
       top: 0,
       behavior: "smooth"
   });
+  setIsHovered(false)
 };
 
   if (loading) {
@@ -152,7 +165,7 @@ const scrollToTop = () => {
             transition: 'transform 0.3s ease-in-out',
             fontSize: 30,
             color: '#1976d2',
-
+            backgroundColor: 'transparent',
           }}
         />
       ) : (
@@ -161,6 +174,7 @@ const scrollToTop = () => {
             transition: 'transform 0.3s ease-in-out',
             fontSize: 30,
             color: '#1976d2',
+            backgroundColor: 'transparent',
           }}
         />
       )}
@@ -181,7 +195,7 @@ const scrollToTop = () => {
     {(msg.name !== '') ? (
       <>
         {i18n.language === 'el' ? 'Ο χρήστης ' : ''}
-        <span className='wrote-italic' onClick={() => {
+        <span className='wrote-italic' style={{cursor:'pointer'}} onClick={() => {
         // navigate(`/profile/${msg.user.id}`);
         navigate(`/profile/${msg.user.id}`);
       }}

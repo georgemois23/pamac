@@ -113,28 +113,29 @@ useEffect(() => {
   };
   
   const handleEmailChange = (e) => {
-    setErrormessage("");
-    setErrorloginmessage("");
-    if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(e.target.value)) {
-      setErrorloginmessage('*'+t('invalid_email')+'*');
-      setValidEmail(false);
-      setWhyButDisabled(t('invalid_email'))
-    }
-    else
-    {
-      setWhyButDisabled('')
-      setValidEmail(true);
-      setErrorloginmessage(""); 
-    }
-    
-    if(username && password && email=== ''){
-      setValidEmail(true);
-      setWhyButDisabled('');
-    }
+  const value = e.target.value.replace(/[^a-zA-Z0-9._%+-@.-]/g, '');
+  setEmail(value);
+  setErrormessage("");
+  setErrorloginmessage("");
 
-    setEmail(e.target.value.replace(/[^a-zA-Z0-9._%+-@.-]/g, ''));
+  if (value === "") {
+    setValidEmail(false);
+    setWhyButDisabled(t("email_required"));
+    return;
+  }
 
-  };
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+  if (!emailRegex.test(value)) {
+    setValidEmail(false);
+    setWhyButDisabled(t("invalid_email"));
+    return;
+  }
+
+  setValidEmail(true);
+  setWhyButDisabled(""); // email OK
+};
+
   const handleUsernameChange = (e) => {
     // setUsername(e.target.value.replace(/\s/g, ''));
     setErrormessage("");
@@ -159,36 +160,23 @@ useEffect(() => {
   };
 
 
-  useEffect(()=>{
-    if(username==='' && password!==''){
-      setWhyButDisabled(t("fill_username"));
-    }
-    if(username!=='' && password===''){
-      setWhyButDisabled(t("fill_password"));
-    }
-    if(username==='' && password===''){
-      setWhyButDisabled(t("fill_username_password"));
-    }
-    if(username!=='' && password!==''){
-      setWhyButDisabled('')
-    }
-    if(email && email.length<5){
-      setValidEmail(false);
-      
-    }
-    if(email && email.length<5 && username && password ){
-      setValidEmail(false);
-      setWhyButDisabled(t('invalid_email'))
-    }
-    if(email.length===0){
-      setValidEmail(true);
-      setErrorloginmessage("");
-    }
+ useEffect(() => {
+  if (login_check) {
+    if (!username) return setWhyButDisabled(t("fill_username"));
+    if (!password) return setWhyButDisabled(t("fill_password"));
+    return setWhyButDisabled("");
+  }
 
-    if(username && password && !ValidEmail){
-      setWhyButDisabled(t('invalid_email'))
-    }
-  },[username,password,email,ValidEmail]);
+  if (signup) {
+    if (!username) return setWhyButDisabled(t("fill_username"));
+    if (!email) return setWhyButDisabled(t("email_required"));
+    if (!ValidEmail) return setWhyButDisabled(t("invalid_email"));
+    if (!password) return setWhyButDisabled(t("fill_password"));
+    return setWhyButDisabled("");
+  }
+}, [username, email, ValidEmail, password, login_check, signup]);
+
+
   
 
   const handleFirstNameChange = (e) => {
@@ -254,7 +242,6 @@ useEffect(() => {
     setsignup(false);
     setlogin(true);
     setincognito(false);
-    navigate("/auth/login");
   };
 
   const handlesignup = () => {
@@ -276,10 +263,11 @@ useEffect(() => {
 
 
   const handleforgotpassword = () => {
-    if(forgotpassword=== (t("forgot_password"))){
-    setforgotpassword(t("sorry_still_working"));
-  }
-  else {setforgotpassword(t("forgot_password"))}
+  //   if(forgotpassword=== (t("forgot_password"))){
+  //   setforgotpassword(t("sorry_still_working"));
+  // }
+  // else {setforgotpassword(t("forgot_password"))}
+  navigate('/forgot-password', { state: { username } });
 
   };
   const handleEmailInput = () => {
@@ -313,11 +301,11 @@ useEffect(() => {
       setloginbut("")
       console.error("Login failed:", err);
       setSuccess(false); // Ensure success is reset
-      setTimeout(() => {
+      // setTimeout(() => {
         setSuccessMessage(""); // Clear success message
         setErrorloginmessage(ERRORMessage);
         console.log("ERRORMessage: ", ERRORMessage);
-      }, 2000);
+      // }, 2000);
       
     }
   };
@@ -343,14 +331,15 @@ useEffect(() => {
     // Only proceed if registration succeeded
     console.log("User registered");
     setSuccess(true);
-    setSuccessMessage("Register was successful, you can now login...");
+    setSuccessMessage("Registration was successful, you are now logging in...");
     setloadingg(false);
     setsignupbut("");
 
-    handlelogin(); // Call login only if registration succeeded
+    
 
-    setTimeout(() => {
-      setSuccess(false); // Hide success message after 2s
+    setTimeout(async () => {
+      setSuccess(false);
+      await login(username,password); // Hide success message after 2s
     }, 2000);
   } else {
     // Registration failed
@@ -369,12 +358,12 @@ useEffect(() => {
           <div className="choose">
             {login_check ? (
               <>
-                <h2 onClick={handleIncognito} style={{cursor:'pointer'}} title={t('go_incognito_title')}>{t("go_incognito")}</h2>
+                {/* <h2 onClick={handleIncognito} style={{cursor:'pointer'}} title={t('go_incognito_title')}>{t("go_incognito")}</h2> */}
                 <h2 onClick={handlesignup} style={{cursor:'pointer'}} title={t('sign_up_title')}>{t("signup")}</h2>
               </>
             ) : signup ? (
               <>
-                <h2 onClick={handleIncognito} style={{cursor:'pointer'}} title={t('go_incognito_title')}>{t("go_incognito")}</h2>
+                {/* <h2 onClick={handleIncognito} style={{cursor:'pointer'}} title={t('go_incognito_title')}>{t("go_incognito")}</h2> */}
                 <h2 onClick={handlelogin} style={{cursor:'pointer'}} title={t('sign_in_title')}>{t("Login")}</h2>
               </>
             ) : null}
@@ -453,7 +442,7 @@ useEffect(() => {
               {errorloginmessage && <span className="ERROR">{errorloginmessage}</span>}
               {!EmailInput && (
                 <>
-                {GoToNext && (<ArrowCircleRightIcon style={{cursor:'pointer'}} fontSize='medium' onClick={handleEmailInput}  titleAccess={t("view_email_fullname")} />)}
+                {/* {GoToNext && (<ArrowCircleRightIcon style={{cursor:'pointer'}} fontSize='medium' onClick={handleEmailInput}  titleAccess={t("view_email_fullname")} />)} */}
                 <label htmlFor="username">{t("username")}:</label>
                 <input
                   id="username"
@@ -462,6 +451,15 @@ useEffect(() => {
                   maxLength={12}
                   value={username}
                   onChange={handleUsernameChange}
+                />
+                <label htmlFor="email" title={t("email_optional")}>Email:</label>
+                <input
+                  id="email"
+                  className="username"
+                  type="text"
+                  maxLength={254}
+                  value={email}
+                  onChange={handleEmailChange}
                 />
                 <label htmlFor="password">{t("password")}:</label>
                 <div className="password-container" style={{ position: "relative", display: "inline-block" }}>
@@ -492,13 +490,13 @@ useEffect(() => {
       </span>
     </div>
                 </>)}
-                {ShowEmailSpan &&
+                {/* {ShowEmailSpan &&
                 <Typography sx={{maxWidth:"26ch", cursor:"pointer"}} variant='span' onClick={handleEmailInput}  onMouseEnter={() => setVisibleFullName(true)}
                 onMouseLeave={() => setVisibleFullName(false)}  >{t('add_email_fullname')} <span className='fullName' 
                 // style={{display: VisibleFullName ? "block" : "none",}}
                   >{t("password_recovery")} </span></Typography>
                 
-              }
+              } */}
               {EmailInput && (
                 <>
                 <ArrowCircleLeftIcon titleAccess={t("view_useranme_password")} fontSize='medium' style={{cursor:'pointer'}} onClick={handleBackToUseranme} />
@@ -534,9 +532,14 @@ useEffect(() => {
                 />
                 </>
               )}
-                <button disabled={!(username && password && ValidEmail) || signupbut} className="sub" type="submit" title={WhyButDisabled ? WhyButDisabled : t("click_here_singup")}  >
-                {t("sign_up")}
-                </button>
+                <button
+  disabled={WhyButDisabled !== "" || signupbut}
+  className="sub"
+  type="submit"
+  title={WhyButDisabled || t("click_here_signup")}
+>
+  {t("signup")}
+</button>
                 {signupbut && (
   <span style={{ display: "flex", alignItems: "center", gap: "5px", fontSize: "15px"}}>
     <CircularProgress size={14} />
