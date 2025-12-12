@@ -83,7 +83,10 @@ export const MessagesProvider = ({ children }) => {
   // --- 2. Fetch initial messages (FIXED) ---
   useEffect(() => {
     // Wait for user token before fetching
-    if (!user?.accessToken) return;
+    if (!user?.accessToken) {
+        setLoading(false); // <--- ADD THIS LINE to fix infinite loading
+        return;
+    }
 
     const fetchMessages = async () => {
       try {
