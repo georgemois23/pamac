@@ -120,7 +120,7 @@ useEffect(() => {
 
   if (value === "") {
     setValidEmail(false);
-    setWhyButDisabled(t("email_required"));
+    setWhyButDisabled("Email is required");
     return;
   }
 
@@ -128,7 +128,7 @@ useEffect(() => {
 
   if (!emailRegex.test(value)) {
     setValidEmail(false);
-    setWhyButDisabled(t("invalid_email"));
+    setWhyButDisabled("Invalid email format");
     return;
   }
 
@@ -170,7 +170,7 @@ useEffect(() => {
   if (signup) {
     if (!username) return setWhyButDisabled(t("fill_username"));
     if (!email) return setWhyButDisabled(t("email_required"));
-    if (!ValidEmail) return setWhyButDisabled(t("invalid_email"));
+    if (!ValidEmail) return setWhyButDisabled("Invalid email format");
     if (!password) return setWhyButDisabled(t("fill_password"));
     return setWhyButDisabled("");
   }

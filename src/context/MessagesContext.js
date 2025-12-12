@@ -4,90 +4,34 @@ import AuthContext from '../AuthContext';
 import { useSnackbar } from './SnackbarContext';
 
 const MessagesContext = createContext();
-
 const API_URL = process.env.REACT_APP_API_URL;
-const socket = io(API_URL, { autoConnect: false });
 
 export const MessagesProvider = ({ children }) => {
+  const { user } = useContext(AuthContext);
+  const { showSnackbar } = useSnackbar();
+
   const [messages, setMessages] = useState([]);
   const [connected, setConnected] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [deleteThisMessage, setDeleteThisMessage] = useState(null);
   const [goToProfile, setGoToProfile] = useState(null);
-  const { user } = useContext(AuthContext);
+
   const messagesEndRef = useRef(null);
-  const { showSnackbar } = useSnackbar();
-  
-    useEffect(() => {
-    const deleteMessage = async () => {
-    if (!deleteThisMessage) return; 
+  const socketRef = useRef(null);
 
-    try {
-     if (!user) {
-      showSnackbar({ message: 'User not authenticated', severity: 'error' });
-      setDeleteThisMessage(null);
-      return;
-    }
-
-      let res;
-      if (user.role?.toLowerCase() === 'admin') {
-      res = await fetch(`${API_URL}/messages/admin/${deleteThisMessage}`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${user.accessToken}`,
-      },
-    });
-  } else {
-    res = await fetch(`${API_URL}/messages/${deleteThisMessage}`, {
-    method: 'DELETE',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${user.accessToken}`,
-    },
-  });
-  }
-
-      if (!res.ok) throw new Error('Failed to delete message');
-
-      setMessages((prev) =>
-        prev.filter((msg) => msg.id !== deleteThisMessage)
-      );
-      showSnackbar({message: 'Message deleted successfully!', severity: 'success' });
-    } catch (err) {
-      showSnackbar({message: 'Message deleted failed!', severity: 'error' });
-    } finally {
-      setDeleteThisMessage(null);
-    }
-  };
-
-  
-    deleteMessage();
-  }, [deleteThisMessage, user]);
-
-
+  // --- Initialize Socket.IO once ---
   useEffect(() => {
-    if (socket.connected) return;
-    setLoading(true);
-    socket.connect();
+    // Create socket
+    socketRef.current = io(API_URL, {
+      auth: { token: user?.accessToken || '' },
+      autoConnect: true,
+      transports: ['websocket'],
+    });
 
-     fetch(`${API_URL}/messages`, { 
-      headers: {
-        'x-frontend-key': process.env.REACT_APP_FRONTEND_KEY || '',
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        setMessages(data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        showSnackbar({ message: 'Failed to load messages', severity: 'error' });
-        setLoading(false);
-      });
+    const socket = socketRef.current;
 
     socket.on('connect', () => {
-      console.log('Connected to server');
+      console.log('Connected to server', socket.id);
       setConnected(true);
     });
 
@@ -97,26 +41,89 @@ export const MessagesProvider = ({ children }) => {
     });
 
     socket.on('newMessage', (msg) => {
-    setMessages((prev) => [...prev, msg]);
-});
+      setMessages((prev) => [...prev, msg]);
+    });
 
+    // Cleanup on unmount
     return () => {
+      socket.off('connect');
+      socket.off('disconnect');
       socket.off('newMessage');
       socket.disconnect();
     };
-  }, [user]);
+  }, []); // Run once
 
+  // --- Fetch initial messages ---
+  useEffect(() => {
+    const fetchMessages = async () => {
+      try {
+        const res = await fetch(`${API_URL}/messages`, {
+          headers: {
+            'x-frontend-key': process.env.REACT_APP_FRONTEND_KEY || '',
+          },
+        });
+
+        if (!res.ok) throw new Error('Failed to load messages');
+        const data = await res.json();
+        setMessages(data);
+      } catch (err) {
+        showSnackbar({ message: 'Failed to load messages', severity: 'error' });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMessages();
+  }, []);
+
+  // --- Send a message ---
   const sendMessage = (content) => {
-  if (!content.trim()) return;
+    if (!content.trim() || !user?.id) return;
 
-  socket.emit('sendMessage', { message: content, userId: user.id }, (response) => {
-    if (response.success) {
-      return;
-    } else {
-      showSnackbar({ message: 'Message failed to send', severity: 'error' });
-    }
+    socketRef.current.emit('sendMessage', {
+      message: content,
+      userId: user.id,
     });
   };
+
+  // --- Delete a message ---
+  useEffect(() => {
+    if (!deleteThisMessage) return;
+
+    const deleteMessage = async () => {
+      if (!user) {
+        showSnackbar({ message: 'User not authenticated', severity: 'error' });
+        setDeleteThisMessage(null);
+        return;
+      }
+
+      try {
+        const endpoint =
+          user.role?.toLowerCase() === 'admin'
+            ? `${API_URL}/messages/admin/${deleteThisMessage}`
+            : `${API_URL}/messages/${deleteThisMessage}`;
+
+        const res = await fetch(endpoint, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${user.accessToken}`,
+          },
+        });
+
+        if (!res.ok) throw new Error('Failed to delete message');
+
+        setMessages((prev) => prev.filter((msg) => msg.id !== deleteThisMessage));
+        showSnackbar({ message: 'Message deleted successfully!', severity: 'success' });
+      } catch (err) {
+        showSnackbar({ message: 'Message deletion failed!', severity: 'error' });
+      } finally {
+        setDeleteThisMessage(null);
+      }
+    };
+
+    deleteMessage();
+  }, [deleteThisMessage, user]);
 
   const value = {
     messages,
@@ -128,11 +135,7 @@ export const MessagesProvider = ({ children }) => {
     setGoToProfile,
   };
 
-  return (
-    <MessagesContext.Provider value={value}>
-      {children}
-    </MessagesContext.Provider>
-  );
+  return <MessagesContext.Provider value={value}>{children}</MessagesContext.Provider>;
 };
 
 export const useMessages = () => useContext(MessagesContext);
