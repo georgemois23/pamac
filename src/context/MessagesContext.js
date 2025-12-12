@@ -27,10 +27,12 @@ export const MessagesProvider = ({ children }) => {
 
     // Disconnect old socket if it exists to prevent duplicates
     if (socketRef.current) {
+      console.log("♻️ Disconnecting old socket...");
       socketRef.current.disconnect();
     }
 
     console.log("🔌 Initializing Socket Connection...");
+    console.log(`🔑 Token prefix: ${user.accessToken.substring(0, 10)}...`);
 
     // Initialize new socket
     const socket = io(API_URL, {
@@ -65,8 +67,17 @@ export const MessagesProvider = ({ children }) => {
 
     // 👇 VITAL: Listen for the message and update state
     socket.on('newMessage', (msg) => {
-      console.log('📩 New Message Received on Client:', msg); // <--- CHECK CONSOLE FOR THIS
-      setMessages((prev) => [...prev, msg]);
+      console.log('📩 Packet Received via Socket:', msg); 
+      
+      setMessages((prev) => {
+        // Prevent duplicates
+        if (prev.find(m => m.id === msg.id)) {
+           console.warn("⚠️ Duplicate message detected from socket, ignoring.");
+           return prev;
+        }
+        console.log(`📝 Updating State. Old Count: ${prev.length} -> New Count: ${prev.length + 1}`);
+        return [...prev, msg];
+      });
     });
 
     return () => {
@@ -77,24 +88,25 @@ export const MessagesProvider = ({ children }) => {
       socket.off('newMessage');
       socket.disconnect();
     };
-    // ⚠️ removed showSnackbar from dependencies to prevent connection loops
   }, [user?.accessToken]); 
 
-  // --- 2. Fetch initial messages (FIXED) ---
+  // --- 2. Fetch initial messages ---
   useEffect(() => {
-    // Wait for user token before fetching
+    // 1. If no user, STOP loading and exit.
     if (!user?.accessToken) {
-        setLoading(false); // <--- ADD THIS LINE to fix infinite loading
+        setLoading(false); // <--- Fixes infinite loading
         return;
     }
 
     const fetchMessages = async () => {
       try {
         setLoading(true);
+        console.log("📥 Fetching message history via REST API...");
+        
         const res = await fetch(`${API_URL}/messages`, {
           headers: {
             'x-frontend-key': process.env.REACT_APP_FRONTEND_KEY || '',
-            // 👇 THIS WAS MISSING IN YOUR CODE
+            // 👇 Fixes 403 Forbidden
             'Authorization': `Bearer ${user.accessToken}`, 
           },
         });
@@ -113,20 +125,24 @@ export const MessagesProvider = ({ children }) => {
     };
 
     fetchMessages();
-  }, [user?.accessToken, showSnackbar]); // Added user.accessToken dependency
+  }, [user?.accessToken, showSnackbar]);
 
   // --- Send a message ---
   const sendMessage = useCallback((content) => {
     if (!content.trim() || !user?.id) return;
 
-    if (socketRef.current && socketRef.current.connected) {
-      console.log("📤 Sending message via Socket");
-      socketRef.current.emit('sendMessage', {
+    const currentSocket = socketRef.current;
+
+    // 👇 Debug: Check exactly which socket ID is trying to send
+    console.log(`📤 Attempting send. Socket ID: ${currentSocket?.id} | Connected: ${currentSocket?.connected}`);
+
+    if (currentSocket && currentSocket.connected) {
+      currentSocket.emit('sendMessage', {
         message: content,
         userId: user.id,
       });
     } else {
-      console.warn("⏳ Socket not connected. Queueing message.");
+      console.warn("⏳ Socket disconnected. Queueing message...");
       messageQueue.current.push(content);
       showSnackbar({ message: 'Reconnecting...', severity: 'info' });
     }
