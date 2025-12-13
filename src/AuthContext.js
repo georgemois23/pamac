@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect } from "react";
+import React, { createContext, useState, useEffect, useCallback } from "react";
 import api, { useAxiosInterceptor } from "./api/axios"; // Axios instance
 import { useTranslation } from "react-i18next";
 
@@ -8,10 +8,6 @@ export const AuthProvider = ({ children }) => {
   const { t } = useTranslation();
 
   const [user, setUser] = useState(null);
-  // const [user, setUser] = useState(() => {
-  //   const storedUser = localStorage.getItem("user");
-  //   return storedUser ? JSON.parse(storedUser) : null;
-  // });
   const [accessToken, setAccessToken] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [loginMessage, setLoginMessage] = useState(null);
@@ -19,104 +15,120 @@ export const AuthProvider = ({ children }) => {
   const [LogBut, setLogBut] = useState(localStorage.getItem("Button") || t("login"));
   const [incognito, setIncognito] = useState(sessionStorage.getItem("incognito") === "true");
 
+  // Keep axios headers in sync with state
   useAxiosInterceptor(accessToken, setAccessToken);
 
+  // --- Helper: Fetch user profile and merge token ---
   const fetchUser = async (token, isGuest = false) => {
     setIsLoading(true);
     try {
       const response = await api.get("/auth/me", {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
-      setUser({...response.data, accessToken: token});
+      
+      // ✅ Vital Fix: Ensure accessToken is part of the user object
+      setUser({ ...response.data, accessToken: token });
 
-      if (!isGuest) {
-  // localStorage.setItem("user", JSON.stringify({...response.data, accessToken: token}));
-}
       setIncognito(false);
       return true;
     } catch (error) {
-      logout();
+      console.error("Fetch user failed:", error);
+      logout(); // If token is invalid, log out
       return false;
+    } finally {
+      setIsLoading(false);
     }
-    finally {
-    setIsLoading(false); 
-  }
   };
 
-  const refetchUser = React.useCallback(async () => {
-    if (!user) return false;
+  const refetchUser = useCallback(async () => {
+    if (!user?.accessToken) return false;
     await fetchUser(user.accessToken, incognito);
-}, [user, incognito]);
+  }, [user, incognito]);
 
+  // --- Login ---
   const login = async (username, password) => {
     setERRORMessage(null);
     sessionStorage.removeItem("guestId");
     sessionStorage.removeItem("guestToken");
     sessionStorage.removeItem("incognito");
     setIncognito(false);
+    setIsLoading(true);
 
     try {
       const response = await api.post("/auth/login", { username, password });
       const { accessToken: newToken } = response.data;
+      
       console.log("Login successful:", response.data);
+      
       setAccessToken(newToken);
-      localStorage.setItem("accessToken", newToken);
+      localStorage.setItem("accessToken", newToken); // Save only the token
+      
       await fetchUser(newToken);
 
       setLoginMessage(t("login_success"));
       setLogBut(t("logout"));
       localStorage.setItem("Button", t("logout"));
     } catch (error) {
-      if (error.response?.status === 401) {setERRORMessage(t("check_username_password"));}
-      else if (error.response?.data?.code === 'USER_DISABLED') setERRORMessage(<>User account is disabled.<br />Contact support.</>);
-      else if (error.response?.data?.code === 'USER_TEMP_DISABLED') setERRORMessage(<>User account is temporarily disabled.<br />Contact support.</>);
-      else  setERRORMessage(t("login_failed"));
-      setIsLoading(false);
+      if (error.response?.status === 401) {
+        setERRORMessage(t("check_username_password"));
+      } else if (error.response?.data?.code === 'USER_DISABLED') {
+        setERRORMessage(<>User account is disabled.<br />Contact support.</>);
+      } else if (error.response?.data?.code === 'USER_TEMP_DISABLED') {
+        setERRORMessage(<>User account is temporarily disabled.<br />Contact support.</>);
+      } else {
+        setERRORMessage(t("login_failed"));
+      }
     } finally {
-    setIsLoading(false); // always reset
-  }
+      setIsLoading(false);
+    }
   };
 
- const register = async (username, password, email = "", full_name = "") => {
-  try {
-    await api.post("/auth/signup", { username, password, email, full_name });
-    // Only show success if no error
-    setLoginMessage(t("register_success"));
-    setERRORMessage(null);
-    return true;
-  } catch (error) {
-    if (error.response?.status === 409) {
-      // Username already exists
-      setERRORMessage(error.response.data?.message || t("username_taken"));
-    } else {
-      setERRORMessage(t("registration_error"));
+  // --- Register ---
+  const register = async (username, password, email = "", full_name = "") => {
+    setIsLoading(true);
+    try {
+      await api.post("/auth/signup", { username, password, email, full_name });
+      setLoginMessage(t("register_success"));
+      setERRORMessage(null);
+      return true;
+    } catch (error) {
+      if (error.response?.status === 409) {
+        setERRORMessage(error.response.data?.message || t("username_taken"));
+      } else {
+        setERRORMessage(t("registration_error"));
+      }
+      setLoginMessage(null);
+      return false;
+    } finally {
+      setIsLoading(false);
     }
-    setLoginMessage(null); // clear any previous success
-    setIsLoading(false);
-    return false;
-  } finally {
-    setIsLoading(false); 
-  }
-};
+  };
 
-
+  // --- Guest / Incognito Mode ---
   const handleIncognitoMode = async () => {
     setERRORMessage(null);
     setIsLoading(true);
     const existingGuestId = sessionStorage.getItem("guestId");
-    const existingGuestToken = sessionStorage.getItem("guestToken");
-
+    // We don't rely on existingGuestToken here, better to validate via API or refresh logic
+    
     if (existingGuestId) {
-      // Restore existing guest token from backend
       try {
         const response = await api.get("/auth/guest", {
           params: { guestId: existingGuestId },
         });
         const { accessToken: refreshedToken, username } = response.data;
-        setIsLoading(false);
+        
         setAccessToken(refreshedToken);
         sessionStorage.setItem("guestToken", refreshedToken);
-        setUser({ username, role: "guest", id: existingGuestId });
+        
+        // ✅ Fix: Add token to user object for guest too
+        setUser({ 
+            username, 
+            role: "guest", 
+            id: existingGuestId, 
+            accessToken: refreshedToken 
+        });
+        
         setIncognito(true);
         setLogBut(t("login"));
         return;
@@ -124,15 +136,14 @@ export const AuthProvider = ({ children }) => {
         console.error("Error refreshing guest token", err);
         sessionStorage.removeItem("guestId");
         sessionStorage.removeItem("guestToken");
-        setIsLoading(false);
       } finally {
-    setIsLoading(false); // always reset
-  }
+        setIsLoading(false);
+      }
     }
 
-    // Create new guest if none exists
+    // Create new guest if none exists or refresh failed
     try {
-      localStorage.removeItem("user");
+      localStorage.removeItem("accessToken"); // clear real user token
       setUser(null);
       setAccessToken(null);
 
@@ -149,19 +160,25 @@ export const AuthProvider = ({ children }) => {
       const timeout = payload.exp * 1000 - Date.now();
       if (timeout > 0) setTimeout(() => logout(), timeout);
 
-      setUser({ username: `Guest_${guestId.slice(0, 8)}`, role: "guest", id: guestId });
-      setIsLoading(false);
+      // ✅ Fix: Add token to user object
+      setUser({ 
+        username: `Guest_${guestId.slice(0, 8)}`, 
+        role: "guest", 
+        id: guestId, 
+        accessToken: guestToken 
+      });
+
       setLogBut(t("login"));
       console.log("Guest logged in", guestId);
     } catch (error) {
       console.error("Error logging in as guest", error);
       setERRORMessage(t("guest_login_failed"));
-      setIsLoading(false);
     } finally {
-    setIsLoading(false); // always reset
-  }
+      setIsLoading(false);
+    }
   };
 
+  // --- Logout ---
   const logout = () => {
     if (!incognito) {
       localStorage.removeItem("accessToken");
@@ -173,84 +190,57 @@ export const AuthProvider = ({ children }) => {
     setAccessToken(null);
     setIncognito(false);
     setLogBut(t("login"));
+    localStorage.removeItem("Button");
   };
 
-  // Initialize auth on page load
-// useEffect(() => {
-//   const initializeAuth = () => {
-//     setIsLoading(true);
+  // --- Initialize Auth on Page Refresh ---
+  useEffect(() => {
+    const initializeAuth = async () => {
+      setIsLoading(true);
+      
+      const token = localStorage.getItem("accessToken");
+      const guestToken = sessionStorage.getItem("guestToken");
+      const guestId = sessionStorage.getItem("guestId");
 
-//     const storedUser = localStorage.getItem("user");
-//     const guestId = sessionStorage.getItem("guestId");
-//     const guestToken = sessionStorage.getItem("guestToken");
-
-//     if (storedUser) {
-//       // Real logged-in user exists
-//       setUser(JSON.parse(storedUser));
-//       setIncognito(false);
-//       setAccessToken(null);
-//       localStorage.setItem("vst", "true");
-//     } else if (guestId && guestToken) {
-//       // Restore existing incognito user without creating a new guest
-//       setUser({ username: `Guest_${guestId.slice(0, 8)}`, role: "guest", id: guestId });
-//       setAccessToken(guestToken);
-//       setIncognito(true);
-//       setLogBut(t("login"));
-//       localStorage.setItem("vst", "true");
-//     } else {
-//       // No user, no guest → do nothing until button click
-//       setUser(null);
-//       setAccessToken(null);
-//       setIncognito(false);
-//       sessionStorage.removeItem("guestId");
-//       sessionStorage.removeItem("guestToken");
-//       sessionStorage.removeItem("incognito");
-//     }
-
-//     setIsLoading(false);
-//   };
-
-//   initializeAuth();
-// }, []);
-
-useEffect(() => {
-  const initializeAuth = async () => {
-    setIsLoading(true);
-    const token = localStorage.getItem("accessToken");
-    const guestToken = sessionStorage.getItem("guestToken");
-    const guestId = sessionStorage.getItem("guestId");
-
-    if (token) {
-      setAccessToken(token);
-      try {
-        // Fetch user from backend
-        const response = await api.get("/auth/me", {
-          headers: { Authorization: `Bearer ${token}` },
+      if (token) {
+        setAccessToken(token);
+        try {
+          // Fetch user details using the persistent token
+          const response = await api.get("/auth/me", {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          
+          // ✅ FIX: Merge backend data + persistent token
+          setUser({ ...response.data, accessToken: token });
+          setIncognito(false);
+        } catch (error) {
+          console.error("Failed to restore user session:", error);
+          localStorage.removeItem("accessToken");
+          setUser(null);
+          setAccessToken(null);
+        }
+      } else if (guestToken && guestId) {
+        // Restore guest session
+        setUser({ 
+            username: `Guest_${guestId.slice(0, 8)}`, 
+            role: "guest", 
+            id: guestId, 
+            accessToken: guestToken // ✅ Ensure token is present
         });
-        setUser(response.data); // set user from backend
-        setIncognito(false);
-      } catch (error) {
-        console.error("Failed to fetch user on refresh", error);
+        setAccessToken(guestToken);
+        setIncognito(true);
+      } else {
+        // No valid session found
         setUser(null);
         setAccessToken(null);
+        setIncognito(false);
       }
-    } else if (guestToken && guestId) {
-      setUser({ username: `Guest_${guestId.slice(0, 8)}`, role: "guest", id: guestId });
-      setAccessToken(guestToken);
-      setIncognito(true);
-    } else {
-      setUser(null);
-      setAccessToken(null);
-      setIncognito(false);
-    }
 
-    setIsLoading(false);
-  };
+      setIsLoading(false);
+    };
 
-  initializeAuth();
-}, []);
-
-
+    initializeAuth();
+  }, []); // Run once on mount
 
   return (
     <AuthContext.Provider

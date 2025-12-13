@@ -334,12 +334,13 @@ useEffect(() => {
     setSuccessMessage("Registration was successful, you are now logging in...");
     setloadingg(false);
     setsignupbut("");
+    localStorage.setItem('vst', 'true');
 
     
 
     setTimeout(async () => {
+      await login(username,password); 
       setSuccess(false);
-      await login(username,password); // Hide success message after 2s
     }, 2000);
   } else {
     // Registration failed
