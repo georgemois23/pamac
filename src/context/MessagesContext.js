@@ -10,6 +10,8 @@ export const MessagesProvider = ({ children }) => {
   const { user } = useContext(AuthContext);
   const { showSnackbar } = useSnackbar();
 
+  console.log("🔄 Current User State:", user);
+
   const [messages, setMessages] = useState([]);
   const [connected, setConnected] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -67,13 +69,13 @@ export const MessagesProvider = ({ children }) => {
 
     // 👇 VITAL: Listen for the message and update state
     socket.on('newMessage', (msg) => {
-      console.log('📩 Packet Received via Socket:', msg); 
-      
+      console.log('📩 Packet Received via Socket:', msg);
+
       setMessages((prev) => {
         // Prevent duplicates
         if (prev.find(m => m.id === msg.id)) {
-           console.warn("⚠️ Duplicate message detected from socket, ignoring.");
-           return prev;
+          console.warn("⚠️ Duplicate message detected from socket, ignoring.");
+          return prev;
         }
         console.log(`📝 Updating State. Old Count: ${prev.length} -> New Count: ${prev.length + 1}`);
         return [...prev, msg];
@@ -88,31 +90,31 @@ export const MessagesProvider = ({ children }) => {
       socket.off('newMessage');
       socket.disconnect();
     };
-  }, [user?.accessToken]); 
+  }, [user?.accessToken]);
 
   // --- 2. Fetch initial messages ---
   useEffect(() => {
     // 1. If no user, STOP loading and exit.
     if (!user?.accessToken) {
-        setLoading(false); // <--- Fixes infinite loading
-        return;
+      setLoading(false); // <--- Fixes infinite loading
+      return;
     }
 
     const fetchMessages = async () => {
       try {
         setLoading(true);
         console.log("📥 Fetching message history via REST API...");
-        
+
         const res = await fetch(`${API_URL}/messages`, {
           headers: {
             'x-frontend-key': process.env.REACT_APP_FRONTEND_KEY || '',
             // 👇 Fixes 403 Forbidden
-            'Authorization': `Bearer ${user.accessToken}`, 
+            'Authorization': `Bearer ${user.accessToken}`,
           },
         });
 
         if (!res.ok) throw new Error(`Error ${res.status}: Failed to load messages`);
-        
+
         const data = await res.json();
         setMessages(data);
         console.log(`📚 Fetched ${data.length} historical messages`);

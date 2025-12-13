@@ -334,6 +334,7 @@ useEffect(() => {
     setSuccessMessage("Registration was successful, you are now logging in...");
     setloadingg(false);
     setsignupbut("");
+    localStorage.setItem('vst', 'true');
 
     
 
