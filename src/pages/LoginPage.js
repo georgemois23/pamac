@@ -332,7 +332,6 @@ useEffect(() => {
     console.log("User registered");
     setSuccess(true);
     setSuccessMessage("Registration was successful, you are now logging in...");
-    setloadingg(false);
     setsignupbut("");
     localStorage.setItem('vst', 'true');
 
@@ -341,6 +340,7 @@ useEffect(() => {
     setTimeout(async () => {
       await login(username,password); 
       setSuccess(false);
+      setloadingg(false);
     }, 2000);
   } else {
     // Registration failed
