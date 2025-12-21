@@ -52,10 +52,10 @@ function Chat({ user = {} }) {
     <Paper 
       elevation={3}
       sx={{ 
-        position: 'fixed',
-        bottom: 0, 
-        left: 0, 
-        right: 0, 
+        position: 'relative',
+        // bottom: 0, 
+        // left: 0, 
+        // right: 0, 
         zIndex: 11000000, // Higher than other content
         p: 2,
         backgroundColor: 'inherit',
