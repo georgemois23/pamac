@@ -180,7 +180,7 @@ function PreviewMsg() {
             pl: { xs: 0.5, sm: 1 },
             pr: { xs: 0.5, sm: 1 },
             pt: 2, 
-            pb: 2,
+            pb: 12,
             '&::-webkit-scrollbar': { width: '6px' },
             '&::-webkit-scrollbar-track': { background: 'transparent' },
             '&::-webkit-scrollbar-thumb': { backgroundColor: 'rgba(0,0,0,0.1)', borderRadius: '10px' },
