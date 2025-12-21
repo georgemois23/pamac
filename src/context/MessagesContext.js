@@ -51,12 +51,7 @@ export const MessagesProvider = ({ children }) => {
       });
       if (res.ok) {
         const data = await res.json();
-        setConversations(data); // The backend returns them sorted DESC, so this is perfect
-        const otherParticipant = data.find((p) => p.id !== user.id);
-        if (otherParticipant) {
-          setParticipantUsername(otherParticipant.username);
-          setParticipantId(otherParticipant.id);
-        }
+        setConversations(data); 
       }
     } catch (err) {
       console.error(err);
@@ -66,6 +61,38 @@ export const MessagesProvider = ({ children }) => {
   useEffect(() => {
     fetchConversations();
   }, [fetchConversations]);
+
+  // =========================================================
+  // NEW: SYNC ACTIVE PARTICIPANT FROM CONVERSATIONS LIST
+  // =========================================================
+  useEffect(() => {
+    // 1. Safety checks
+    if (!conversationId || conversations.length === 0 || !user) return;
+
+    // 2. Find the SPECIFIC active conversation in the list
+    // Note: Use == to match string "5" with number 5 just in case
+    const activeConv = conversations.find((c) => c.id == conversationId);
+
+    if (activeConv) {
+        // 3. Extract the 'other' user from this specific conversation
+        // IMPORTANT: This depends on how your backend sends the 'conversations' list.
+        // Usually, it's either an array of participants OR a direct object.
+        
+        // SCENARIO A: If your backend sends a 'participants' array inside the conversation:
+        if (activeConv.participants) {
+            const other = activeConv.participants.find(p => p.id !== user.id);
+            if (other) {
+                setParticipantUsername(other.username);
+                setParticipantId(other.id);
+            }
+        } 
+        // SCENARIO B: If your backend pre-calculates the name/id (common in some setups):
+        else if (activeConv.username) { 
+             setParticipantUsername(activeConv.username);
+             setParticipantId(activeConv.otherUserId || activeConv.participantId); 
+        }
+    }
+  }, [conversations, conversationId, user]);
 
 
   // =========================================================
