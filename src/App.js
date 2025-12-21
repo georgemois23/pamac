@@ -1,4 +1,4 @@
-import './App.css';
+// import './App.css';
 import React, { useContext,useState,useEffect } from 'react';
 import FirstLand from './pages/Firstland';
 import LoginPage from './pages/LoginPage';
@@ -22,11 +22,13 @@ import LoginIcon from '@mui/icons-material/Login';
 import Logout from './pages/Logout';
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from './languageSwitcher';
-import { Avatar, Tooltip } from '@mui/material';
+import { Avatar, Button, Tooltip } from '@mui/material';
 import LoadingSpinner from './components/LoadingSpinner';
 import OutOfService from './pages/OutOfService';
 import ChangePassword from './components/ChangePassword';
 import ForgotPassword from './components/ForgotPassword';
+import FriendshipsPage from './pages/Friends';
+import Home from './pages/Home';
 
 function App() {
   const navigate = useNavigate();
@@ -139,36 +141,63 @@ useEffect(() => {
       // {/* <PopUpContext.Provider value={{}}> */}
           <div className="App">
           {location.pathname === "/" && <UnderConstruction message={t("this_website_under_construction")}/>}
-          {user && !incognito && !location.pathname.startsWith("/profile") &&  location.pathname !== "/messages" && window.location.pathname !== "/404" &&(
+          {user && !incognito && !location.pathname.startsWith("/profile")  && window.location.pathname !== "/404" && window.location.pathname !== '/home' && location.pathname.startsWith("/messages/*") &&(
         // <AccountCircleIcon titleAccess={t('visit_profile_info')} onClick={handleProfile} sx={{ position: 'fixed', top: '.8rem', left: '.8rem',cursor:'pointer' }} className='accountIcon' />
         <Tooltip title={t('visit_profile_info')}>
-        <Avatar title={t('visit_profile_info')}  onClick={handleProfile} sx={{ position: 'fixed', top: '.8rem', left: '.8rem',cursor:'pointer', backgroundColor:"text.primary", }}  >{(user.first_name && user.last_name) ? user.first_name[0].toUpperCase() + user.last_name[0].toUpperCase() : user.username[0].toUpperCase()}</Avatar>
+        <Avatar title={t('visit_profile_info')}  onClick={handleProfile} sx={{ position: 'fixed',zIndex: 2, top: '.8rem', left: '.8rem',cursor:'pointer', backgroundColor:"text.primary", }}  >{(user.first_name && user.last_name) ? user.first_name[0].toUpperCase() + user.last_name[0].toUpperCase() : user.username[0].toUpperCase()}</Avatar>
         </Tooltip>
 
       )}
 
       {user && !incognito && location.pathname === "/profile" && (
-        <ChatBubbleOutlineIcon titleAccess={t('back_to_chat')} onClick={handleChat} sx={{ position: 'fixed', top: '.8rem', left: '.8rem',cursor:'pointer', backgroundColor:'transparent' }} className='chatIcon' />
+        <ChatBubbleOutlineIcon titleAccess={t('back_to_chat')} onClick={handleChat} sx={{ position: 'fixed',zIndex: 2, top: '.8rem', left: '.8rem',cursor:'pointer', backgroundColor:'transparent' }} className='chatIcon' />
       )}
-        {user && location.pathname !== "/profile"&& location.pathname !== "/" && window.location.pathname !== "/404" && window.location.pathname !== "/restricted"  &&(
-          isMobile ? (incognito ? <LoginIcon onClick={handleLogout} sx={{ position: 'fixed', top: '.8rem', right: '.8rem',cursor:'pointer', backgroundColor:'transparent' }}/> : <LogoutIcon onClick={handleLogout} sx={{ position: 'fixed', top: '.8rem', right: '.8rem',cursor:'pointer', backgroundColor:'transparent' }}/>) :
-          <button onClick={handleLogout} className="logout-button" title={LogBut===t('Logout') ? t("logout_title") : t("enter_chat_with_credentials")}>
-             {LogBut}
-          </button>
-          
-        )}
+        {user && location.pathname === "/profile"  && (
+    isMobile ? (
+        incognito ? 
+        <LoginIcon onClick={handleLogout} sx={{ position: 'fixed', top: '.8rem', right: '.8rem',zIndex: 2, cursor:'pointer', backgroundColor:'transparent' }}/> : 
+        <LogoutIcon onClick={handleLogout} sx={{ position: 'fixed', top: '.8rem', right: '.8rem',zIndex: 2, cursor:'pointer', backgroundColor:'transparent' }}/>
+    ) : (
+        <Button 
+            variant="outlined" 
+            onClick={handleLogout} 
+            sx={{ 
+                position: 'fixed', 
+                top: '.8rem', 
+                right: '.8rem',
+                cursor: 'pointer',
+                // --- ADDED STYLES TO MATCH PHOTO ---
+                borderRadius: '10px',       
+                textTransform: 'none',
+                color: 'inherit',         
+                borderColor: 'currentColor', 
+                zIndex: 2,
+                padding: 0,
+                fontSize: '16px',
+            }} 
+            titleAccess={LogBut === t('Logout') ? t("logout_title") : t("enter_chat_with_credentials")}
+        >
+            {user ? 'Logout' : 'Login'}
+        </Button>
+    )
+)}
 
-        {(location.pathname === "/chat" || location.pathname === '/auth/login' || location.pathname === '/auth/register')  &&  <ForumIcon titleAccess={t('view_messages')} onClick={handleMessages} sx={{ position: 'fixed', bottom: '.8rem', right: '.8rem',cursor:'pointer', backgroundColor:'transparent' }} className='chatIcon' />} 
+        {/* {(location.pathname === "/chat" || location.pathname === '/auth/login' || location.pathname === '/auth/register')  &&  <ForumIcon titleAccess={t('view_messages')} onClick={handleMessages} sx={{ position: 'fixed',zIndex: 2, bottom: '.8rem', right: '.8rem',cursor:'pointer', backgroundColor:'transparent' }} className='chatIcon' />}  */}
            
         {/* {location.pathname === "/" && !user && (!isMobile ? <div style={{fontSize:'20px',height:'fit-content', cursor: 'pointer', position:'fixed', left: '50%', transform: 'translateX(-50%)',bottom:'0.8rem',userSelect:'none'}} onClick={changeToGreek}>{t(i18n.language==='en' ? 'switch_language_el' : 'switch_language_en')}</div> : <div style={{fontSize:'20px',height:'fit-content', position: 'fixed', top: '.8rem', right: '.8rem' , cursor: 'pointer' }}><LanguageSwitcher/></div> )} */}
         {/* {location.pathname === "/profile" && <div style={{fontSize:'20px',height:'fit-content', position: 'fixed', top: '.8rem', right: '.8rem' , cursor: 'pointer' }}><LanguageSwitcher/></div>} */}
         <Routes>
           <Route
             path="/"
-            element={user ? <Navigate to="/chat" /> : <FirstLand />}
+            element={user ? <Navigate to="/home" /> : <FirstLand />}
                 // element={<FirstLand />}
               />
-              <Route path="/auth/:mode" element={user ? <Navigate to="/chat"/> :<LoginPage />} />
+          <Route
+            path="/home"
+            element={!user ? <LoginPage /> : <Home />}
+                // element={<FirstLand />}
+              />
+              <Route path="/auth/:mode" element={user ? <Navigate to="/home"/> :<LoginPage />} />
               <Route
               path="/logout"
               element={
@@ -184,21 +213,23 @@ useEffect(() => {
               }
             />
           <Route path="/out-of-service" element={<OutOfService />} />  
+          <Route path="/friends" element={<FriendshipsPage />} />  
           <Route path="/el" element={<Navigate to="/" replace />} />  
           <Route path="/en" element={<Navigate to="/" replace />} />  
               <Route
                 path="/auth"
-                element={user ? <Navigate to="/chat" replace /> : <LoginPage />}
+                element={user ? <Navigate to="/home" replace /> : <LoginPage />}
               /> 
-               <Route path="/c/*" element={<Navigate to="/chat" replace />} />
+               {/* <Route path="/c/*" element={<Navigate to="/chat" replace />} /> */}
             <Route
                 path="/chat"
-                element={user ? <Chat user={user} /> : <Navigate to="/auth" replace />}
+                // element={user ? <Chat user={user} /> : <Navigate to="/auth" replace />}
+                element={<Navigate to="/home" replace />}
                 //  element={<Navigate to="/out-of-service" replace /> }
-              />
-              <Route path="/login" element={user ? <Navigate to="/chat"/> : <Navigate to="/auth/login" />} />
-              <Route path="/register" element={user ? <Navigate to="/chat"/> : <Navigate to="/auth/register" />} />
-              <Route path="/signup" element={user ? <Navigate to="/chat"/> : <Navigate to="/auth/register" />} />
+              /> 
+              <Route path="/login" element={user ? <Navigate to="/home"/> : <Navigate to="/auth/login" />} />
+              <Route path="/register" element={user ? <Navigate to="/home"/> : <Navigate to="/auth/register" />} />
+              <Route path="/signup" element={user ? <Navigate to="/home"/> : <Navigate to="/auth/register" />} />
               
               <Route path="/forgot-password" element={location.state?.username ? <ForgotPassword /> : <Navigate to='/auth' /> }/>
               <Route
@@ -219,9 +250,9 @@ useEffect(() => {
   element={user ? <UserProfile /> : <Navigate to="/auth" replace />}
     />
               <Route
-                path="/messages"
-                element={<PreviewMsg />}
-              />
+  path="/messages/:conversationId"
+  element={<PreviewMsg />}
+/>
               <Route path="*" element={<Navigate to="/404" />} /> 
               <Route path="/restricted" element={incognito  ? <ContentNotAvaiable/> : <Navigate to='/' replace/>} /> 
               <Route path="/404" element={<ErrorPage />} />

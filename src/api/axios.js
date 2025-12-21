@@ -1,74 +1,126 @@
-// src/api/axios.js
 import axios from "axios";
-import { AuthContext } from "../AuthContext";
-import React from "react";
+import { useEffect } from "react";
 
+// --- 1. GLOBAL STORE ---
 let store = {
   accessToken: null,
   setAccessToken: null,
+  onSessionExpired: null,
 };
 
-// Hook to keep accessToken updated in the Axios instance
-export const useAxiosInterceptor = (accessToken, setAccessToken) => {
-  React.useEffect(() => {
+// --- 2. EXPORTED HELPER (New) ---
+// Allows AuthContext to wipe memory immediately during logout
+export const setClientToken = (token) => {
+  store.accessToken = token;
+};
+
+// --- 3. REFRESH QUEUE ---
+let isRefreshing = false;
+let failedQueue = [];
+
+const processQueue = (error, token = null) => {
+  failedQueue.forEach((prom) => {
+    if (error) {
+      prom.reject(error);
+    } else {
+      prom.resolve(token);
+    }
+  });
+  failedQueue = [];
+};
+
+// --- 4. THE HOOK (Exported) ---
+export const useAxiosInterceptor = (accessToken, setAccessToken, logout) => {
+  useEffect(() => {
     store.accessToken = accessToken;
     store.setAccessToken = setAccessToken;
-  }, [accessToken, setAccessToken]);
+    store.onSessionExpired = logout;
+  }, [accessToken, setAccessToken, logout]);
 };
 
-// Create Axios instance
+// --- 5. AXIOS INSTANCE ---
 const api = axios.create({
-  baseURL: process.env.REACT_APP_API_URL, // change to your backend
-  withCredentials: true, // send cookies
+  baseURL: process.env.REACT_APP_API_URL,
+  withCredentials: true,
 });
 
-// Request interceptor: attach access token
+// --- 6. REQUEST INTERCEPTOR ---
 api.interceptors.request.use(
   (config) => {
-    if (store.accessToken) {
-      config.headers["Authorization"] = `Bearer ${store.accessToken}`;
+    const token = store.accessToken;
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
   (error) => Promise.reject(error)
 );
 
-// Response interceptor: auto-refresh on 401
+// --- 7. RESPONSE INTERCEPTOR ---
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
 
-    // Only try refreshing if the original request wasn't a refresh call
-    if (
-      error.response?.status === 401 &&
-      !originalRequest._retry &&
-      !originalRequest.url.includes("/auth/refresh")
-    ) {
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      
+      if (isRefreshing) {
+        return new Promise((resolve, reject) => {
+          failedQueue.push({ resolve, reject });
+        })
+          .then((token) => {
+            originalRequest.headers.Authorization = `Bearer ${token}`;
+            return api(originalRequest);
+          })
+          .catch((err) => Promise.reject(err));
+      }
+
       originalRequest._retry = true;
+      isRefreshing = true;
 
       try {
-        // Call refresh endpoint
-        const res = await api.post("/auth/refresh");
-        const newToken = res.data.accessToken;
+        console.log("🔄 Access token expired. Refreshing...");
 
-        // Update token in memory store
-        store.setAccessToken?.(newToken);
+        // Use 'axios' (raw instance) to avoid infinite loops
+        const response = await axios.post(
+          `${process.env.REACT_APP_API_URL}/auth/refresh`,
+          {},
+          { withCredentials: true }
+        );
+
+        const newToken = response.data.accessToken;
+
+        // Update Store, State & Storage
         store.accessToken = newToken;
+        if (store.setAccessToken) store.setAccessToken(newToken);
+        localStorage.setItem("accessToken", newToken);
 
-        // Retry original request with new token
-        originalRequest.headers["Authorization"] = `Bearer ${newToken}`;
+        // Process Queue
+        processQueue(null, newToken);
+
+        // Update Header for this request
+        originalRequest.headers.Authorization = `Bearer ${newToken}`;
+
+        console.log("✅ Refresh successful. Retrying original request.");
         return api(originalRequest);
-      } catch (err) {
-        // Refresh failed — user should log in again
-        return Promise.reject(err);
+
+      } catch (refreshError) {
+        console.error("❌ Refresh failed. Session expired.");
+        
+        processQueue(refreshError, null);
+        
+        if (store.onSessionExpired) {
+           store.onSessionExpired();
+        }
+        
+        return Promise.reject(refreshError);
+      } finally {
+        isRefreshing = false;
       }
     }
 
     return Promise.reject(error);
   }
-
 );
-
 
 export default api;

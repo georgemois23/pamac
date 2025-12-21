@@ -16,6 +16,28 @@ const ForgotPassword = () => {
   const [loading, setLoading] = useState(false);
   document.title = "Forgot Password";
   const size = 250;
+  const [validEmail, setValidEmail] = useState(false);
+  const [whyButDisabled, setWhyButDisabled] = useState("");
+
+  const handleEmailChange = (e) => {
+    const value = e.target.value.replace(/[^a-zA-Z0-9._%+-@.-]/g, '');
+    setEmail(value);
+
+    if (value === "") {
+      setValidEmail(false);
+      return;
+    }
+
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(value)) {
+      setValidEmail(false);
+      setWhyButDisabled("Invalid email format");
+      return;
+    }
+
+    setValidEmail(true);
+    setWhyButDisabled("");
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -61,6 +83,7 @@ const ForgotPassword = () => {
       justifyContent="center"
       gap={3}
       p={{ xs: 2, sm: 4 }}
+      mt={12}
       minHeight="70vh"
     >
       <Typography
@@ -118,17 +141,18 @@ const ForgotPassword = () => {
         <InputBase
           type="email"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={handleEmailChange}
           placeholder="Email"
           fullWidth
           sx={{ textAlign: "center", fontSize: { xs: "0.9rem", sm: "1rem" } }}
         />
       </Box>
+      <Typography variant="body2" color="error">{whyButDisabled}</Typography>
 
       <Button
         variant="outlined"
         onClick={handleSubmit}
-        disabled={!username || !email}
+        disabled={!username || !email || !validEmail}
         sx={{
           width: 'fit-content',
           borderRadius: "10px",

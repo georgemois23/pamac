@@ -1,4 +1,4 @@
-import '../App.css';
+// import '../App.css';
 import { useNavigate } from 'react-router-dom';
 import { Container, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
@@ -70,6 +70,7 @@ function ErrorPage() {
              zIndex: 2,
              background: 'none',
              fontSize: '16px',
+              color: 'inherit',
         }}
         onClick={goBack}
       >

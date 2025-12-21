@@ -5,6 +5,7 @@ import AuthContext from "../../AuthContext";
 import ContentNotAvaiable from '../ContentNotAvailable';
 import { useTranslation } from 'react-i18next';
 import { useSnackbar } from '../../context/SnackbarContext';
+import GlobalDialog from '../../components/GlobalDialog';
 
 // --- FIXED: Component defined OUTSIDE the main function ---
 // This prevents the input from losing focus after every character
@@ -104,6 +105,11 @@ function Profile({ user }) {
       alert("Failed to save changes. Please try again.");
     }
   };
+
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const handleOpen = () => {
+     setDialogOpen(!dialogOpen);
+  }
     
   const handleForgotPassword = async () => {
     // const { email} = formData;
@@ -215,9 +221,9 @@ function Profile({ user }) {
                                 Cancel
                             </Button>
                             <Button variant="contained" onClick={handleSave} sx={{ borderRadius: '15px' }}>
-                                Save Changes
+                                Save
                             </Button>
-                            {user.email && <Button variant="contained" onClick={handleForgotPassword} sx={{ borderRadius: '15px' }}>
+                            {user.email && <Button variant="contained" onClick={handleOpen} sx={{ borderRadius: '15px' }}>
                                 Change Password
                             </Button>}
                         </>
@@ -226,6 +232,17 @@ function Profile({ user }) {
                 </Stack>
                    
             </Stack>
+            <GlobalDialog onOpen={dialogOpen} open={dialogOpen} onClose={handleOpen}
+                title={"Change Password"}
+                primaryButtonText={"Send Reset Email"}
+                onPrimaryClick={handleForgotPassword}
+                secondaryButtonText={"Cancel"}
+                onSecondaryClick={() => {handleOpen();}}
+            >
+                <Typography>
+                    {"Are you sure you want to send a password reset email to " + user.email + "?"}
+                </Typography>
+            </GlobalDialog>
         </Container>
     );
 }

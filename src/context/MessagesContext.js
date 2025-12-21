@@ -17,15 +17,15 @@ export const MessagesProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [deleteThisMessage, setDeleteThisMessage] = useState(null);
   const [goToProfile, setGoToProfile] = useState(null);
+  const [conversationId, setConversationId] = useState(null); // New state for conversationId
 
   const messagesEndRef = useRef(null);
   const socketRef = useRef(null);
   const messageQueue = useRef([]);
 
-  // --- 1. Initialize Socket.IO ---
+  // --- 1. Initialize Socket.IO --- 
   useEffect(() => {
-    // Wait for the user to be logged in
-    if (!user?.accessToken) return;
+    if (!user?.accessToken || !conversationId) return; // Only connect if we have a conversationId
 
     // Disconnect old socket if it exists to prevent duplicates
     if (socketRef.current) {
@@ -48,11 +48,11 @@ export const MessagesProvider = ({ children }) => {
       console.log('✅ Connected to WebSocket with ID:', socket.id);
       setConnected(true);
 
-      // Send queued messages
+      // Send queued messages if any
       if (messageQueue.current.length > 0) {
         console.log(`🚀 Sending ${messageQueue.current.length} queued messages`);
         messageQueue.current.forEach((msg) => {
-          socket.emit('sendMessage', { message: msg, userId: user.id });
+          socket.emit('sendMessage', { message: msg, userId: user.id, conversationId });
         });
         messageQueue.current = [];
       }
@@ -67,19 +67,21 @@ export const MessagesProvider = ({ children }) => {
       console.error('❌ Connection Error:', err.message);
     });
 
-    // 👇 VITAL: Listen for the message and update state
+    // Listen for the message and update state (filter by conversationId)
     socket.on('newMessage', (msg) => {
       console.log('📩 Packet Received via Socket:', msg);
 
-      setMessages((prev) => {
-        // Prevent duplicates
-        if (prev.find(m => m.id === msg.id)) {
-          console.warn("⚠️ Duplicate message detected from socket, ignoring.");
-          return prev;
-        }
-        console.log(`📝 Updating State. Old Count: ${prev.length} -> New Count: ${prev.length + 1}`);
-        return [...prev, msg];
-      });
+      // Only update the state if the message is for the current conversationId
+      if (msg.conversationId === conversationId) {
+        setMessages((prev) => {
+          if (prev.find((m) => m.id === msg.id)) {
+            console.warn("⚠️ Duplicate message detected from socket, ignoring.");
+            return prev;
+          }
+          console.log(`📝 Updating State. Old Count: ${prev.length} -> New Count: ${prev.length + 1}`);
+          return [...prev, msg];
+        });
+      }
     });
 
     socket.on('messageDeleted', (messageId) => {
@@ -96,12 +98,12 @@ export const MessagesProvider = ({ children }) => {
       socket.off('messageDeleted');
       socket.disconnect();
     };
-  }, [user?.accessToken]);
+  }, [user?.accessToken, conversationId]); // Dependency array includes conversationId
 
-  // --- 2. Fetch initial messages ---
+  // --- 2. Fetch initial messages --- 
   useEffect(() => {
-    // 1. If no user, STOP loading and exit.
-    if (!user?.accessToken) {
+    // 1. If no user or conversationId, STOP loading and exit.
+    if (!user?.accessToken || !conversationId) {
       setLoading(false); // <--- Fixes infinite loading
       return;
     }
@@ -111,10 +113,9 @@ export const MessagesProvider = ({ children }) => {
         setLoading(true);
         console.log("📥 Fetching message history via REST API...");
 
-        const res = await fetch(`${API_URL}/messages`, {
+        const res = await fetch(`${API_URL}/messages/${conversationId}`, {
           headers: {
             'x-frontend-key': process.env.REACT_APP_FRONTEND_KEY || '',
-            // 👇 Fixes 403 Forbidden
             'Authorization': `Bearer ${user.accessToken}`,
           },
         });
@@ -133,32 +134,60 @@ export const MessagesProvider = ({ children }) => {
     };
 
     fetchMessages();
-  }, [user?.accessToken, showSnackbar]);
+  }, [user?.accessToken, conversationId, showSnackbar]);
 
-  // --- Send a message ---
+  const [participantUsername, setParticipantUsername] = useState(null);
+  const [participantId, setParticipantId] = useState(null);
+  useEffect(() => {
+    if (!conversationId || !user?.accessToken) return;
+    fetch(`${API_URL}/conversations/${conversationId}/participants`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${user.accessToken}`,
+        },
+      })
+      .then((res) => {
+        if (!res.ok) throw new Error('Failed to fetch participants');
+        return res.json();
+      })
+      .then((data) => {
+        const otherParticipant = data.find((p) => p.id !== user.id);
+        if (otherParticipant) {
+          setParticipantUsername(otherParticipant.username);
+          setParticipantId(otherParticipant.id);
+        }
+      })
+      .catch((error) => {
+        console.error('Error fetching participants:', error);
+
+        })}
+  , [conversationId]);
+
+  // --- Send a message --- 
   const sendMessage = useCallback((content) => {
-    if (!content.trim() || !user?.id) return;
+    if (!content.trim() || !user?.id || !conversationId) return;
 
     const currentSocket = socketRef.current;
 
-    // 👇 Debug: Check exactly which socket ID is trying to send
     console.log(`📤 Attempting send. Socket ID: ${currentSocket?.id} | Connected: ${currentSocket?.connected}`);
 
     if (currentSocket && currentSocket.connected) {
       currentSocket.emit('sendMessage', {
         message: content,
         userId: user.id,
+        conversationId,
       });
     } else {
       console.warn("⏳ Socket disconnected. Queueing message...");
       messageQueue.current.push(content);
       showSnackbar({ message: 'Reconnecting...', severity: 'info' });
     }
-  }, [user?.id, showSnackbar]);
+  }, [user?.id, conversationId, showSnackbar]);
 
-  // --- Delete a message ---
+  // --- Delete a message --- 
   useEffect(() => {
-    if (!deleteThisMessage || !user?.accessToken) return;
+    if (!deleteThisMessage || !user?.accessToken || !conversationId) return;
 
     const deleteMessage = async () => {
       try {
@@ -190,7 +219,7 @@ export const MessagesProvider = ({ children }) => {
     };
 
     deleteMessage();
-  }, [deleteThisMessage, user?.accessToken, user?.role, showSnackbar]);
+  }, [deleteThisMessage, user?.accessToken, user?.role, conversationId, showSnackbar]);
 
   const value = {
     messages,
@@ -200,6 +229,9 @@ export const MessagesProvider = ({ children }) => {
     loading,
     setDeleteThisMessage,
     setGoToProfile,
+    setConversationId, // Add setter for conversationId
+    participantUsername,
+    participantId,
   };
 
   return <MessagesContext.Provider value={value}>{children}</MessagesContext.Provider>;

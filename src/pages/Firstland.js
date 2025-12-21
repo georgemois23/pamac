@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Box, Button, Container, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { ReactComponent as PolyvoxLogo } from '../Polyvox.svg';
-import '../App.css';
+// import '../App.css';
 
 function FirstLand() {
   const { t } = useTranslation();

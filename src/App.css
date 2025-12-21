@@ -425,15 +425,15 @@ button{
 label {
   font-size: 22px;
 }
-button{
-  outline-style: none;
-  border: 1px solid var(--basic-txt-blue);
+/* button{ */
+  /* outline-style: none; */
+  /* border: 1px solid var(--basic-txt-blue); */
   /* border: 1px solid #00563B; */
-  border-radius: 10px;
-  height: 90px;
-  width: fit-content;
-  font-size: 50px;
-}
+  /* border-radius: 10px; */
+  /* height: 90px; */
+  /* width: fit-content; */
+  /* font-size: 50px; */
+/* } */
 
 form{
   margin-top: 0;
@@ -698,16 +698,15 @@ form{
   
   
 
-button{
-  outline-style: none;
-  border: 1px solid var(--basic-txt-blue);
-  /* border: 1px solid #00563B; */
-  border-radius: 10px;
-  height: 30px;
-  width: fit-content;
-  font-size: 20px;
-  transition: all 0.5s ease;
-}
+/* button{ */
+  /* outline-style: none; */
+  /* border: 1px solid var(--basic-txt-blue); */
+  /* border-radius: 10px; */
+  /* height: 30px; */
+  /* width: fit-content; */
+  /* font-size: 20px; */
+  /* transition: all 0.5s ease; */
+/* } */
 .username{
   height: 25px;
   /* width: 230px; */

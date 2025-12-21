@@ -2,156 +2,68 @@ import { createTheme, responsiveFontSizes, ThemeProvider } from "@mui/material/s
 import CssBaseline from "@mui/material/CssBaseline";
 import React, { useState, useEffect } from "react";
 
-// Base theme configuration
+// 1. Define your specific brand colors here
+const brandColors = {
+  darkBlue: "#001f3f",
+  lightBlue: "#a4c2f4",
+  greyText: "#6d8ba7",
+  paperBg: "#1e1e1e",
+};
+
 const baseTheme = {
   palette: {
     mode: "dark",
+    background: { 
+      default: brandColors.darkBlue, 
+      paper: brandColors.paperBg 
+    },
+    text: { 
+      primary: brandColors.lightBlue 
+    },
+    primary: {
+      main: brandColors.lightBlue,
+    },
   },
   typography: {
     fontFamily: "Advent Pro, Arial, sans-serif",
   },
   components: {
+    // Global CSS Reset for Body
     MuiCssBaseline: {
       styleOverrides: {
         body: {
-          backgroundColor: "#001f3f",
-          color: "#a4c2f4",
+          backgroundColor: brandColors.darkBlue,
+          color: brandColors.lightBlue,
         },
       },
     },
-
-    // -------------------------------------------------------
-    // ✅ BUTTON OVERRIDES (Your original custom button theme)
-    // -------------------------------------------------------
+    // Standard Button Defaults (Normal size, not huge)
     MuiButton: {
-      defaultProps: {
-        disableRipple: true,
-      },
       styleOverrides: {
         root: {
-          transition: "background-color 0.3s ease, color 0.3s ease",
-          "&:focus": {
-            outline: "none",
-          },
-          "&:focus-visible": {
-            outline: "2px solid #a4c2f4",
-            outlineOffset: "2px",
-          },
-        },
-
-        contained: {
-          color: "#a4c2f4",
-          backgroundColor: "#001f3f",
-          borderColor: "#a4c2f4",
-          border: "2px solid",
-          borderRadius: "8px",
-          height: "fit-content",
-          "&:hover": {
-            backgroundColor: "#a4c2f4",
-            color: "#001f3f",
-          },
-          "&:disabled": {
-            backgroundColor: "#6d8ba7",
-            color: "#4f4f4f",
-          },
-        },
-
-        outlined: {
-          color: "#a4c2f4",
-          borderColor: "#a4c2f4",
-          border: "2px solid",
-          borderRadius: "8px",
-          height: "fit-content",
-          "&:hover": {
-            backgroundColor: "rgba(164, 194, 244, 0.1)",
-            borderColor: "#a4c2f4",
-          },
-          "&:disabled": {
-            borderColor: "#6d8ba7",
-            color: "#6d8ba7",
-          },
-        },
-
-        text: {
-          color: "#a4c2f4",
-          "&:hover": {
-            backgroundColor: "rgba(164, 194, 244, 0.1)",
-          },
-          "&:disabled": {
-            color: "#6d8ba7",
-          },
+          borderRadius: "8px", // Standard radius for all buttons
+          textTransform: "none", // Optional: prevents UPPERCASE text
+          width: "fit-content",
+          padding: 6,
         },
       },
     },
-
-    // -------------------------------------------------------
-    // ❌ TEXTFIELD — RESET TO DEFAULT (no custom styles)
-    // -------------------------------------------------------
-    MuiTextField: {
-      styleOverrides: {
-        root: {},
-      },
-    },
-    MuiOutlinedInput: {
-      styleOverrides: {
-        root: {},
-        input: {},
-        notchedOutline: {},
-      },
-    },
-    MuiInputLabel: {
-      styleOverrides: {
-        root: {},
-      },
-    },
-
-    // -------------------------------------------------------
-    // Other components already safe
-    // -------------------------------------------------------
-    MuiPaper: {
+    // Fix IconButton color generally
+    MuiIconButton: {
       styleOverrides: {
         root: {
-          backgroundColor: "#1e1e1e",
-          color: "#a4c2f4",
-        },
-      },
-    },
-    MuiSnackbar: {
-      styleOverrides: {
-        root: {
-          backgroundColor: "transparent",
-        },
-      },
-    },
-    MuiSnackbarContent: {
-      styleOverrides: {
-        root: {
-          backgroundColor: "#1e1e1e",
-          color: "#a4c2f4",
+          color: brandColors.lightBlue,
         },
       },
     },
   },
 };
 
-// FINAL THEME
-export const originalTheme = responsiveFontSizes(
-  createTheme({
-    ...baseTheme,
-    palette: {
-      ...baseTheme.palette,
-      background: { default: "#001f3f", paper: "#1e1e1e" },
-      text: { primary: "#a4c2f4" },
-    },
-  })
-);
+export const originalTheme = responsiveFontSizes(createTheme(baseTheme));
 
-// Wrapper with theme provider
 export const ThemeOption = ({ children }) => {
-  const [theme, setTheme] = useState(
-    () => localStorage.getItem("theme") || "original"
-  );
-
+  const [theme] = useState("original");
+  
   useEffect(() => {
     document.body.setAttribute("data-theme", theme);
   }, [theme]);
