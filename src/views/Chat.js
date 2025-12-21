@@ -86,7 +86,8 @@ function Chat({ user = {} }) {
             onKeyDown={handleKeyDown}
             placeholder={"Type a message..."}
             multiline
-            maxRows={1} // Grows up to 4 lines then scrolls
+            minRows={1}
+             maxRows={5}
             fullWidth
             variant="outlined"
             size="small"

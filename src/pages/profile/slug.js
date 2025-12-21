@@ -331,6 +331,10 @@ const stringToColor = (string) => {
       return color;
   }
 
+  if( !userData  ) {
+    return <LoadingSpinner />;
+  }
+
   return (
     <Container maxWidth="md" sx={{ display: 'flex', minHeight: '100vh', pb: 10, pt: 4, justifyContent: 'center' }}>
       
