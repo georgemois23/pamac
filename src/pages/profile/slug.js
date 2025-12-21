@@ -369,7 +369,7 @@ const stringToColor = (string) => {
       height: { xs: 64, md: 100 }, 
       mb: { xs: 1.5, md: 0 },       // margin bottom only for stacked mobile layout
       fontSize: { xs: '1.5rem', md: '2rem' },
-      bgcolor: stringToColor(userData?.username),
+      bgcolor: stringToColor(userData?.username || 'U'),
       boxShadow: '0 4px 14px rgba(0,0,0,0.2)',
       cursor: 'pointer' 
     }}

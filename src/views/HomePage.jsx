@@ -72,19 +72,26 @@ const HomePage = () => {
     getFriendRequestStatus,
     handleFriendshipResponse,
     handleRemoveFriend,
-    setFriendRequests        // Used to clear search
+    setFriendRequests,    
+    refetchFriends,    // Used to clear search
+    conversations,
+    setConversations,
   } = useFriendContext();
 
   // State
   const [tabValue, setTabValue] = useState(0); 
   const [searchQuery, setSearchQuery] = useState('');
-  const [conversations, setConversations] = useState([]);
+  // const [conversations, setConversations] = useState([]);
   const [showAddFriends, setShowAddFriends] = useState(false); 
   const [friendRequestsSearch, setFriendRequestsSearch] = useState(''); 
   const [showRequests, setShowRequests] = useState(false);
   const { showSnackbar } = useSnackbar();
   
   // --- STATE CHANGE: Show Add Friends Logic ---
+  useEffect(() => {
+    if (tabValue === 1)
+      refetchFriends();
+  }, [tabValue]);
 
   // Handlers
   const handleTabChange = (event, newValue) => setTabValue(newValue);
@@ -182,6 +189,8 @@ const HomePage = () => {
       console.error('Error starting conversation:', error);
     }
   };
+
+  console.log('Conversations:', conversations); 
 
 
   return (
@@ -364,7 +373,7 @@ const HomePage = () => {
               <Box sx={{ flexGrow: 1, overflowY: 'auto', px: {sm:0, md:2}, pb: 2 }}>
                 <List>
                   {/* VIEW 1: CONVERSATIONS */}
-                  {tabValue === 0 && conversations.length>0 && conversations.toReversed().map((chat) => {
+                  {tabValue === 0 && conversations.length > 0 && conversations.map((chat) => {
                     const { name, initial, msg, time } = getDisplayInfo(chat);
 
                     return (

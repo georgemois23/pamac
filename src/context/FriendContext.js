@@ -1,7 +1,8 @@
 import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
 import AuthContext from '../AuthContext'; 
 import { useSnackbar } from './SnackbarContext'; 
-import { set } from 'mongoose';
+import { useMessages } from './MessagesContext'; // 1. Import Messages Hook
+import { useNavigate } from 'react-router-dom'; // Optional: To redirect to chat
 
 const FriendContext = createContext();
 
@@ -10,12 +11,37 @@ export const useFriendContext = () => useContext(FriendContext);
 export const FriendProvider = ({ children }) => {
   const { user } = useContext(AuthContext);
   const { showSnackbar } = useSnackbar();
+  
+  // 2. Consume Messages Context
+  // Now you have access to the live list of conversations and the setter
+  const { conversations, setConversationId } = useMessages(); 
+  
+  const navigate = useNavigate(); // Optional: used for redirection
   const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000';
 
-  // --- STATES (Matching your HomePage names) ---
+  // --- STATES ---
   const [friends, setFriends] = useState([]);
-  const [friendRequests, setFriendRequests] = useState([]); // This is your Search Results
-  const [friendRequestStatus, setFriendRequestStatus] = useState([]); // This is your Pending List
+  const [friendRequests, setFriendRequests] = useState([]); 
+  const [friendRequestStatus, setFriendRequestStatus] = useState([]); 
+
+  // --- NEW: Helper to link Friend -> Conversation ---
+  const openChatWithFriend = (friendId) => {
+    // A. Search existing conversations for this friend
+    // (Assuming conversation.participants is an array of users)
+    const existingConvo = conversations.find(c => 
+      c.participants && c.participants.some(p => p.id === friendId)
+    );
+
+    if (existingConvo) {
+      console.log("Found existing chat, opening:", existingConvo.id);
+      setConversationId(existingConvo.id); // Set active chat in MessagesContext
+      navigate('/chat'); // Redirect to chat page
+    } else {
+      console.log("No chat found, you might need to create one via API first");
+      // Logic to create a new empty conversation via API usually goes here
+      // Or set a temporary "new" state
+    }
+  };
 
   // --- 1. GET FRIENDS ---
   const fetchFriends = useCallback(async () => {
@@ -58,8 +84,12 @@ export const FriendProvider = ({ children }) => {
       });
       if (!res.ok) return;
       const users = await res.json();
-      const friendIds = friends.map(f => f.friend.id);
+      
+      // Filter out people who are already friends
+      // Note: We check against the current 'friends' state
+      const friendIds = friends.map(f => f.friend ? f.friend.id : f.id);
       const filteredUsers = users.filter(u => !friendIds.includes(u.id));
+      
       setFriendRequests(filteredUsers);
     } catch (err) {
       console.error(err);
@@ -104,7 +134,6 @@ export const FriendProvider = ({ children }) => {
       
       if (res.ok) {
         showSnackbar({ message: accept ? 'Friend request accepted' : 'Friend request rejected', severity: 'success' });
-        // Refresh the lists automatically
         getFriendRequestStatus(); 
         if(accept) fetchFriends();
         return true;
@@ -127,7 +156,7 @@ export const FriendProvider = ({ children }) => {
       });
       if (res.ok) {
         showSnackbar({ message: 'Friend removed', severity: 'success' });
-        fetchFriends(); // Refresh list
+        fetchFriends(); 
         return true;
       } else {
         showSnackbar({ message: 'Failed to remove friend', severity: 'error' });
@@ -138,7 +167,7 @@ export const FriendProvider = ({ children }) => {
     return false;
   };
 
-  // --- 7. HELPER FOR PROFILE PAGE (Is Friend?) ---
+  // --- 7. HELPER FOR PROFILE PAGE ---
   const checkIsFriend = async (userId) => {
      try {
        const res = await fetch(`${API_URL}/friendships/is-friend/${userId}`, {
@@ -149,7 +178,6 @@ export const FriendProvider = ({ children }) => {
      return null;
   }
 
-  // Initial Load
   useEffect(() => {
     if (user?.accessToken) {
       fetchFriends();
@@ -157,18 +185,25 @@ export const FriendProvider = ({ children }) => {
     }
   }, [user, fetchFriends, getFriendRequestStatus]);
 
+  const refetchFriends = () => {
+    fetchFriends();
+  }
+
   return (
     <FriendContext.Provider value={{
       friends,
-      friendRequests,       // The search results
-      friendRequestStatus,  // The pending list
+      friendRequests,       
+      friendRequestStatus,  
       handleSearch,
       handleSendRequest,
       getFriendRequestStatus,
       handleFriendshipResponse,
       handleRemoveFriend,
-      checkIsFriend,         // Helper for UserProfile
-      setFriendRequests      // Exposed to clear search manually
+      checkIsFriend,         
+      setFriendRequests,      
+      refetchFriends,
+      conversations,
+      openChatWithFriend 
     }}>
       {children}
     </FriendContext.Provider>

@@ -131,7 +131,7 @@ function PreviewMsg() {
               
               <Stack direction="row" alignItems="center" spacing={1.5} sx={{ cursor: 'pointer' }}>
                   {/* Generic Avatar for the "Bot/AI" */}
-                  <Avatar sx={{ bgcolor: 'primary.main', width: 32, height: 32, fontSize: '0.9rem' }} onClick={() => {navigate(`/profile/${participantId}`)}}>
+                  <Avatar sx={{ bgcolor: stringToColor(participantUsername || 'U'), width: 32, height: 32, fontSize: '0.9rem' }} onClick={() => {navigate(`/profile/${participantId}`)}}>
                     {participantUsername ? participantUsername.charAt(0).toUpperCase() : 'A'}
                   </Avatar>
                   <Box>

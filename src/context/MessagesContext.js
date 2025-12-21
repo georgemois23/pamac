@@ -10,37 +10,77 @@ export const MessagesProvider = ({ children }) => {
   const { user } = useContext(AuthContext);
   const { showSnackbar } = useSnackbar();
 
-  console.log("🔄 Current User State:", user);
-
-  const [messages, setMessages] = useState([]);
+  // --- State ---
+  const [conversations, setConversations] = useState([]); // List of all conversations
+  const [messages, setMessages] = useState([]);           // Messages of ACTIVE conversation
+  const [conversationId, setConversationId] = useState(null); // Currently active conversation
   const [connected, setConnected] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false); // Changed default to false to prevent initial block
+  
+  // Participants state
+  const [participantUsername, setParticipantUsername] = useState(null);
+  const [participantId, setParticipantId] = useState(null);
+
+  // Actions state
   const [deleteThisMessage, setDeleteThisMessage] = useState(null);
   const [goToProfile, setGoToProfile] = useState(null);
-  const [conversationId, setConversationId] = useState(null); // New state for conversationId
 
-  const messagesEndRef = useRef(null);
+  // --- Refs ---
   const socketRef = useRef(null);
   const messageQueue = useRef([]);
+  const messagesEndRef = useRef(null);
+  
+  // We use a Ref to track the active ID inside socket listeners 
+  // without re-running the useEffect (which would disconnect the socket)
+  const activeConversationIdRef = useRef(null);
 
-  // --- 1. Initialize Socket.IO --- 
+  // Sync Ref with State
   useEffect(() => {
-    if (!user?.accessToken || !conversationId) return; // Only connect if we have a conversationId
+    activeConversationIdRef.current = conversationId;
+  }, [conversationId]);
 
-    // Disconnect old socket if it exists to prevent duplicates
-    if (socketRef.current) {
-      console.log("♻️ Disconnecting old socket...");
-      socketRef.current.disconnect();
+
+  // =========================================================
+  // 1. FETCH CONVERSATIONS LIST (Run once on auth)
+  // =========================================================
+  const fetchConversations = useCallback(async () => {
+    if (!user?.accessToken) return;
+    try {
+      const res = await fetch(`${API_URL}/conversations`, {
+        headers: { 'Authorization': `Bearer ${user.accessToken}` },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setConversations(data); // The backend returns them sorted DESC, so this is perfect
+        const otherParticipant = data.find((p) => p.id !== user.id);
+        if (otherParticipant) {
+          setParticipantUsername(otherParticipant.username);
+          setParticipantId(otherParticipant.id);
+        }
+      }
+    } catch (err) {
+      console.error(err);
     }
+  }, [user?.accessToken]);
+
+  useEffect(() => {
+    fetchConversations();
+  }, [fetchConversations]);
+
+
+  // =========================================================
+  // 2. SOCKET CONNECTION & GLOBAL EVENTS
+  // =========================================================
+  useEffect(() => {
+    if (!user?.accessToken) return;
 
     console.log("🔌 Initializing Socket Connection...");
-    console.log(`🔑 Token prefix: ${user.accessToken.substring(0, 10)}...`);
-
-    // Initialize new socket
+    
+    // Initialize Socket
     const socket = io(API_URL, {
       auth: { token: user.accessToken },
       autoConnect: true,
-      transports: ['websocket'], // Force WebSocket
+      transports: ['websocket'],
     });
     socketRef.current = socket;
 
@@ -48,11 +88,11 @@ export const MessagesProvider = ({ children }) => {
       console.log('✅ Connected to WebSocket with ID:', socket.id);
       setConnected(true);
 
-      // Send queued messages if any
+      // Process Queue
       if (messageQueue.current.length > 0) {
         console.log(`🚀 Sending ${messageQueue.current.length} queued messages`);
-        messageQueue.current.forEach((msg) => {
-          socket.emit('sendMessage', { message: msg, userId: user.id, conversationId });
+        messageQueue.current.forEach((item) => {
+          socket.emit('sendMessage', item);
         });
         messageQueue.current = [];
       }
@@ -67,132 +107,117 @@ export const MessagesProvider = ({ children }) => {
       console.error('❌ Connection Error:', err.message);
     });
 
-    // Listen for the message and update state (filter by conversationId)
+    // --- HANDLE INCOMING MESSAGES ---
     socket.on('newMessage', (msg) => {
-      console.log('📩 Packet Received via Socket:', msg);
+      console.log('📩 New Message:', msg);
 
-      // Only update the state if the message is for the current conversationId
-      if (msg.conversationId === conversationId) {
+      // A. Update Active Chat Window (only if we are looking at this conversation)
+      if (activeConversationIdRef.current === msg.conversationId) {
         setMessages((prev) => {
-          if (prev.find((m) => m.id === msg.id)) {
-            console.warn("⚠️ Duplicate message detected from socket, ignoring.");
-            return prev;
-          }
-          console.log(`📝 Updating State. Old Count: ${prev.length} -> New Count: ${prev.length + 1}`);
+          if (prev.find((m) => m.id === msg.id)) return prev; // Dedup
           return [...prev, msg];
         });
       }
+
+      fetchConversations();
     });
 
+    // --- HANDLE DELETION ---
     socket.on('messageDeleted', (messageId) => {
-      console.log('🗑️ Received deletion event for ID:', messageId);
+      console.log('🗑️ Received deletion event:', messageId);
+      // Remove from active messages
+      fetchConversations();
       setMessages((prev) => prev.filter((msg) => msg.id !== messageId));
+      // Optional: You could also update 'lastMessage' in conversations list if the last one was deleted
     });
 
     return () => {
       console.log("🧹 Cleaning up Socket...");
-      socket.off('connect');
-      socket.off('disconnect');
-      socket.off('connect_error');
-      socket.off('newMessage');
-      socket.off('messageDeleted');
       socket.disconnect();
     };
-  }, [user?.accessToken, conversationId]); // Dependency array includes conversationId
+  }, [user?.accessToken,fetchConversations]); 
 
-  // --- 2. Fetch initial messages --- 
+
+  // =========================================================
+  // 3. FETCH ACTIVE CHAT MESSAGES & PARTICIPANTS
+  // =========================================================
   useEffect(() => {
-    // 1. If no user or conversationId, STOP loading and exit.
     if (!user?.accessToken || !conversationId) {
-      setLoading(false); // <--- Fixes infinite loading
+      setLoading(false);
       return;
     }
 
-    const fetchMessages = async () => {
+    const loadConversationData = async () => {
+      setLoading(true);
       try {
-        setLoading(true);
-        console.log("📥 Fetching message history via REST API...");
-
-        const res = await fetch(`${API_URL}/messages/${conversationId}`, {
+        // A. Fetch Messages
+        const msgRes = await fetch(`${API_URL}/messages/${conversationId}`, {
           headers: {
             'x-frontend-key': process.env.REACT_APP_FRONTEND_KEY || '',
             'Authorization': `Bearer ${user.accessToken}`,
           },
         });
+        if (msgRes.ok) {
+          const msgData = await msgRes.json();
+          setMessages(msgData);
+        }
 
-        if (!res.ok) throw new Error(`Error ${res.status}: Failed to load messages`);
+        // B. Fetch Participants
+        const partRes = await fetch(`${API_URL}/conversations/${conversationId}/participants`, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${user.accessToken}`,
+          },
+        });
+        if (partRes.ok) {
+          const partData = await partRes.json();
+          const otherParticipant = partData.find((p) => p.id !== user.id);
+          if (otherParticipant) {
+            setParticipantUsername(otherParticipant.username);
+            setParticipantId(otherParticipant.id);
+          }
+        }
 
-        const data = await res.json();
-        setMessages(data);
-        console.log(`📚 Fetched ${data.length} historical messages`);
       } catch (err) {
         console.error(err);
-        showSnackbar({ message: 'Failed to load messages', severity: 'error' });
+        showSnackbar({ message: 'Failed to load conversation', severity: 'error' });
       } finally {
         setLoading(false);
       }
     };
 
-    fetchMessages();
-  }, [user?.accessToken, conversationId, showSnackbar]);
+    loadConversationData();
+  }, [conversationId, user?.accessToken, user?.id, showSnackbar]);
 
-  const [participantUsername, setParticipantUsername] = useState(null);
-  const [participantId, setParticipantId] = useState(null);
-  useEffect(() => {
-    if (!conversationId || !user?.accessToken) return;
-    fetch(`${API_URL}/conversations/${conversationId}/participants`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${user.accessToken}`,
-        },
-      })
-      .then((res) => {
-        if (!res.ok) throw new Error('Failed to fetch participants');
-        return res.json();
-      })
-      .then((data) => {
-        const otherParticipant = data.find((p) => p.id !== user.id);
-        if (otherParticipant) {
-          setParticipantUsername(otherParticipant.username);
-          setParticipantId(otherParticipant.id);
-        }
-      })
-      .catch((error) => {
-        console.error('Error fetching participants:', error);
 
-        })}
-  , [conversationId]);
-
-  // --- Send a message --- 
+  // =========================================================
+  // 4. ACTIONS (Send, Delete)
+  // =========================================================
   const sendMessage = useCallback((content) => {
     if (!content.trim() || !user?.id || !conversationId) return;
 
-    const currentSocket = socketRef.current;
+    const payload = {
+      message: content,
+      userId: user.id,
+      conversationId,
+    };
 
-    console.log(`📤 Attempting send. Socket ID: ${currentSocket?.id} | Connected: ${currentSocket?.connected}`);
-
-    if (currentSocket && currentSocket.connected) {
-      currentSocket.emit('sendMessage', {
-        message: content,
-        userId: user.id,
-        conversationId,
-      });
+    if (socketRef.current && socketRef.current.connected) {
+      socketRef.current.emit('sendMessage', payload);
     } else {
       console.warn("⏳ Socket disconnected. Queueing message...");
-      messageQueue.current.push(content);
+      messageQueue.current.push(payload);
       showSnackbar({ message: 'Reconnecting...', severity: 'info' });
     }
   }, [user?.id, conversationId, showSnackbar]);
 
-  // --- Delete a message --- 
+
   useEffect(() => {
-    if (!deleteThisMessage || !user?.accessToken || !conversationId) return;
+    if (!deleteThisMessage || !user?.accessToken) return;
 
     const deleteMessage = async () => {
       try {
-        const endpoint =
-          user.role?.toLowerCase() === 'admin'
+        const endpoint = user.role?.toLowerCase() === 'admin'
             ? `${API_URL}/messages/admin/${deleteThisMessage}`
             : `${API_URL}/messages/${deleteThisMessage}`;
 
@@ -206,32 +231,45 @@ export const MessagesProvider = ({ children }) => {
 
         if (!res.ok) throw new Error('Failed to delete message');
 
+        // Optimistic update
         setMessages((prev) => prev.filter((msg) => msg.id !== deleteThisMessage));
+        
         if (socketRef.current) {
-            socketRef.current.emit('deleteMessage', deleteThisMessage);
+          socketRef.current.emit('deleteMessage', deleteThisMessage);
         }
-        showSnackbar({ message: 'Message deleted successfully!', severity: 'success' });
+        showSnackbar({ message: 'Message deleted!', severity: 'success' });
       } catch (err) {
-        showSnackbar({ message: 'Message deletion failed!', severity: 'error' });
+        showSnackbar({ message: 'Deletion failed!', severity: 'error' });
       } finally {
         setDeleteThisMessage(null);
       }
     };
 
     deleteMessage();
-  }, [deleteThisMessage, user?.accessToken, user?.role, conversationId, showSnackbar]);
+  }, [deleteThisMessage, user?.accessToken, user?.role, showSnackbar]);
 
+
+  // =========================================================
+  // 5. EXPORT
+  // =========================================================
   const value = {
-    messages,
+    conversations,      // List of all conversations (for sidebar)
+    messages,          // Messages of current active conversation
     sendMessage,
     connected,
-    messagesEndRef,
     loading,
+    
+    // Setters
+    setConversationId, 
     setDeleteThisMessage,
     setGoToProfile,
-    setConversationId, // Add setter for conversationId
+    
+    // Participant Info
     participantUsername,
     participantId,
+    
+    // Refs
+    messagesEndRef,
   };
 
   return <MessagesContext.Provider value={value}>{children}</MessagesContext.Provider>;

@@ -10,6 +10,7 @@ import "./i18n";
 import GreekLanguageRouter from './GreekLanguageRouter';
 import { MessagesProvider } from './context/MessagesContext';
 import { SnackbarProvider } from './context/SnackbarContext';
+import { FriendProvider } from './context/FriendContext';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <Router>
@@ -19,7 +20,9 @@ root.render(
     <AuthProvider>
     {/* <ChakraProvider> */}
     <MessagesProvider>
+      <FriendProvider>
     <GreekLanguageRouter />
+    </FriendProvider>
     </MessagesProvider>
     {/* <App /> */}
     </AuthProvider>

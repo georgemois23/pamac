@@ -251,7 +251,7 @@ useEffect(() => {
     />
               <Route
   path="/messages/:conversationId"
-  element={<PreviewMsg />}
+  element={user ? <PreviewMsg /> : <Navigate to="/auth" replace />}
 />
               <Route path="*" element={<Navigate to="/404" />} /> 
               <Route path="/restricted" element={incognito  ? <ContentNotAvaiable/> : <Navigate to='/' replace/>} /> 
