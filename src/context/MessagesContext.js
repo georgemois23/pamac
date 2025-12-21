@@ -67,29 +67,21 @@ export const MessagesProvider = ({ children }) => {
     if (!conversationId || conversations.length === 0 || !user) return;
 
     // 2. Find the SPECIFIC active conversation in the list
-    const activeConv = conversations.find((c) => c.id == conversationId);
+    const activeConv = conversations.find((c) => c.id === conversationId);
 
-    if (activeConv) {
-        // SCENARIO A: Participants array exists
-        if (activeConv.participants) {
-            const other = activeConv.participants.find(p => p.id !== user.id);
-            if (other) {
-                setParticipantUsername(other.username);
-                setParticipantId(other.id);
-            }
-        } 
-        // SCENARIO B: Direct properties
-        else if (activeConv.username) { 
-             setParticipantUsername(activeConv.username);
-             
-             // --- FIX START: Safety Check ---
-             // Only update if we actually found a valid ID. 
-             // Otherwise, keep the existing ID (which was likely set by Step 3).
-             const foundId = activeConv.otherUserId || activeConv.participantId;
-             if (foundId) {
-                 setParticipantId(foundId); 
-             }
-             // --- FIX END ---
+    if (activeConv && activeConv.participants) {
+        // 3. Find the participant that is NOT the current logged-in user
+        // We must look at p.user.id, not p.id
+        const otherParticipantWrapper = activeConv.participants.find(
+            (p) => p.user?.id !== user.id
+        );
+
+        if (otherParticipantWrapper && otherParticipantWrapper.user) {
+            const otherUser = otherParticipantWrapper.user;
+            
+            // Set the correct UUID and Username
+            setParticipantUsername(otherUser.username);
+            setParticipantId(otherUser.id);
         }
     }
   }, [conversations, conversationId, user]);
