@@ -11,12 +11,12 @@ export const MessagesProvider = ({ children }) => {
   const { showSnackbar } = useSnackbar();
 
   // --- State ---
-  const [conversations, setConversations] = useState([]); // List of all conversations
-  const [messages, setMessages] = useState([]);           // Messages of ACTIVE conversation
-  const [conversationId, setConversationId] = useState(null); // Currently active conversation
+  const [conversations, setConversations] = useState([]); 
+  const [messages, setMessages] = useState([]);           
+  const [conversationId, setConversationId] = useState(null); 
   const [connected, setConnected] = useState(false);
-  const [loading, setLoading] = useState(false); // Changed default to false to prevent initial block
-  
+  const [loading, setLoading] = useState(false); 
+   
   // Participants state
   const [participantUsername, setParticipantUsername] = useState(null);
   const [participantId, setParticipantId] = useState(null);
@@ -29,19 +29,16 @@ export const MessagesProvider = ({ children }) => {
   const socketRef = useRef(null);
   const messageQueue = useRef([]);
   const messagesEndRef = useRef(null);
-  
-  // We use a Ref to track the active ID inside socket listeners 
-  // without re-running the useEffect (which would disconnect the socket)
+   
   const activeConversationIdRef = useRef(null);
 
-  // Sync Ref with State
   useEffect(() => {
     activeConversationIdRef.current = conversationId;
   }, [conversationId]);
 
 
   // =========================================================
-  // 1. FETCH CONVERSATIONS LIST (Run once on auth)
+  // 1. FETCH CONVERSATIONS LIST
   // =========================================================
   const fetchConversations = useCallback(async () => {
     if (!user?.accessToken) return;
@@ -63,22 +60,17 @@ export const MessagesProvider = ({ children }) => {
   }, [fetchConversations]);
 
   // =========================================================
-  // NEW: SYNC ACTIVE PARTICIPANT FROM CONVERSATIONS LIST
+  // FIXED: SYNC ACTIVE PARTICIPANT FROM CONVERSATIONS LIST
   // =========================================================
   useEffect(() => {
     // 1. Safety checks
     if (!conversationId || conversations.length === 0 || !user) return;
 
     // 2. Find the SPECIFIC active conversation in the list
-    // Note: Use == to match string "5" with number 5 just in case
     const activeConv = conversations.find((c) => c.id == conversationId);
 
     if (activeConv) {
-        // 3. Extract the 'other' user from this specific conversation
-        // IMPORTANT: This depends on how your backend sends the 'conversations' list.
-        // Usually, it's either an array of participants OR a direct object.
-        
-        // SCENARIO A: If your backend sends a 'participants' array inside the conversation:
+        // SCENARIO A: Participants array exists
         if (activeConv.participants) {
             const other = activeConv.participants.find(p => p.id !== user.id);
             if (other) {
@@ -86,10 +78,18 @@ export const MessagesProvider = ({ children }) => {
                 setParticipantId(other.id);
             }
         } 
-        // SCENARIO B: If your backend pre-calculates the name/id (common in some setups):
+        // SCENARIO B: Direct properties
         else if (activeConv.username) { 
              setParticipantUsername(activeConv.username);
-             setParticipantId(activeConv.otherUserId || activeConv.participantId); 
+             
+             // --- FIX START: Safety Check ---
+             // Only update if we actually found a valid ID. 
+             // Otherwise, keep the existing ID (which was likely set by Step 3).
+             const foundId = activeConv.otherUserId || activeConv.participantId;
+             if (foundId) {
+                 setParticipantId(foundId); 
+             }
+             // --- FIX END ---
         }
     }
   }, [conversations, conversationId, user]);
@@ -101,8 +101,6 @@ export const MessagesProvider = ({ children }) => {
   useEffect(() => {
     if (!user?.accessToken) return;
 
-    console.log("🔌 Initializing Socket Connection...");
-    
     // Initialize Socket
     const socket = io(API_URL, {
       auth: { token: user.accessToken },
@@ -112,57 +110,35 @@ export const MessagesProvider = ({ children }) => {
     socketRef.current = socket;
 
     socket.on('connect', () => {
-      console.log('✅ Connected to WebSocket with ID:', socket.id);
       setConnected(true);
-
-      // Process Queue
       if (messageQueue.current.length > 0) {
-        console.log(`🚀 Sending ${messageQueue.current.length} queued messages`);
-        messageQueue.current.forEach((item) => {
-          socket.emit('sendMessage', item);
-        });
+        messageQueue.current.forEach((item) => socket.emit('sendMessage', item));
         messageQueue.current = [];
       }
     });
 
-    socket.on('disconnect', (reason) => {
-      console.warn('⚠️ Disconnected from server:', reason);
-      setConnected(false);
-    });
-
-    socket.on('connect_error', (err) => {
-      console.error('❌ Connection Error:', err.message);
-    });
+    socket.on('disconnect', () => setConnected(false));
+    socket.on('connect_error', (err) => console.error(err));
 
     // --- HANDLE INCOMING MESSAGES ---
     socket.on('newMessage', (msg) => {
-      console.log('📩 New Message:', msg);
-
-      // A. Update Active Chat Window (only if we are looking at this conversation)
       if (activeConversationIdRef.current === msg.conversationId) {
         setMessages((prev) => {
-          if (prev.find((m) => m.id === msg.id)) return prev; // Dedup
+          if (prev.find((m) => m.id === msg.id)) return prev; 
           return [...prev, msg];
         });
       }
-
+      // This fetch triggers the "Sync" useEffect above!
       fetchConversations();
     });
 
-    // --- HANDLE DELETION ---
     socket.on('messageDeleted', (messageId) => {
-      console.log('🗑️ Received deletion event:', messageId);
-      // Remove from active messages
       fetchConversations();
       setMessages((prev) => prev.filter((msg) => msg.id !== messageId));
-      // Optional: You could also update 'lastMessage' in conversations list if the last one was deleted
     });
 
-    return () => {
-      console.log("🧹 Cleaning up Socket...");
-      socket.disconnect();
-    };
-  }, [user?.accessToken,fetchConversations]); 
+    return () => socket.disconnect();
+  }, [user?.accessToken, fetchConversations]); 
 
 
   // =========================================================
@@ -232,11 +208,9 @@ export const MessagesProvider = ({ children }) => {
     if (socketRef.current && socketRef.current.connected) {
       socketRef.current.emit('sendMessage', payload);
     } else {
-      console.warn("⏳ Socket disconnected. Queueing message...");
       messageQueue.current.push(payload);
-      showSnackbar({ message: 'Reconnecting...', severity: 'info' });
     }
-  }, [user?.id, conversationId, showSnackbar]);
+  }, [user?.id, conversationId]);
 
 
   useEffect(() => {
@@ -256,9 +230,8 @@ export const MessagesProvider = ({ children }) => {
           },
         });
 
-        if (!res.ok) throw new Error('Failed to delete message');
+        if (!res.ok) throw new Error('Failed to delete');
 
-        // Optimistic update
         setMessages((prev) => prev.filter((msg) => msg.id !== deleteThisMessage));
         
         if (socketRef.current) {
@@ -275,28 +248,10 @@ export const MessagesProvider = ({ children }) => {
     deleteMessage();
   }, [deleteThisMessage, user?.accessToken, user?.role, showSnackbar]);
 
-
-  // =========================================================
-  // 5. EXPORT
-  // =========================================================
   const value = {
-    conversations,      // List of all conversations (for sidebar)
-    messages,          // Messages of current active conversation
-    sendMessage,
-    connected,
-    loading,
-    
-    // Setters
-    setConversationId, 
-    setDeleteThisMessage,
-    setGoToProfile,
-    
-    // Participant Info
-    participantUsername,
-    participantId,
-    
-    // Refs
-    messagesEndRef,
+    conversations, messages, sendMessage, connected, loading,
+    setConversationId, setDeleteThisMessage, setGoToProfile,
+    participantUsername, participantId, messagesEndRef,
   };
 
   return <MessagesContext.Provider value={value}>{children}</MessagesContext.Provider>;
