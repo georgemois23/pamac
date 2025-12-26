@@ -11,7 +11,7 @@ import GlobalDialog from '../../components/GlobalDialog';
 // This prevents the input from losing focus after every character
 const ProfileRow = ({ label, name, value, onChange, isEditing, isEditable = true }) => {
     return (
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, width: '100%', justifyContent: 'center' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, width: '100%', justifyContent: 'center',  }}>
             {/* Label */}
             <Typography sx={{ width: '100px', textAlign: 'right', fontWeight: 'bold', color: '#a4c2f4' }}>
                 {label}:
@@ -150,7 +150,7 @@ function Profile({ user }) {
     if (incognito) return <ContentNotAvaiable />;
 
     return (
-        <Container sx={{ minHeight: '100vh', pt: 5, textAlign: 'center', color: '#a4c2f4' }}>
+        <Container sx={{ minHeight: '100vh', pt: 5, textAlign: 'center', color: '#a4c2f4',zIndex: 3 }}>
             
             <Typography variant='h3' sx={{ fontFamily: "Advent Pro", mb: 4 }}>
                 {user.username ? `${user.username} ` : ""} {t("profile")}

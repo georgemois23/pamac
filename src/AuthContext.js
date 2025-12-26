@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect, useCallback } from "react";
-import api, { useAxiosInterceptor } from "./api/axios"; 
+import api, { useAxiosInterceptor, setClientToken } from "./api/axios";
 import { useTranslation } from "react-i18next";
 
 const AuthContext = createContext();
@@ -107,6 +107,7 @@ export const AuthProvider = ({ children }) => {
       const token = localStorage.getItem("accessToken");
       const guestToken = sessionStorage.getItem("guestToken");
 
+      if (token) setClientToken(token);
       if (token) {
         setAccessToken(token);
         await fetchUser(token);

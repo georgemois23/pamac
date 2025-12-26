@@ -34,10 +34,15 @@ const textInputStyle = {
     backgroundColor: 'rgba(2, 26, 50, 0.6)',
     transition: 'all 0.3s ease',
     position: 'relative',
-    overflow: 'hidden', 
-    // ⚡️ MOVE PADDING HERE: This keeps the text away from the edges
-    // while letting the input element expand to the full width
-    padding: '0 50px', 
+    overflow: 'hidden',
+    
+    // --- RESPONSIVE HEIGHT ---
+    height: { xs: '42px', sm: '50px', md: '56px' },
+    
+    // --- RESPONSIVE PADDING ---
+    // Reduced side padding on mobile to give text more room
+    padding: { xs: '0 35px', sm: '0 50px' }, 
+    
     '& fieldset': { border: 'none' },
     '&:hover': {
       border: '1px solid #66b2ff',
@@ -49,38 +54,32 @@ const textInputStyle = {
     },
     '& .MuiInputAdornment-root': {
       position: 'absolute',
-      // Ensure the icon stays within that 50px right padding
-      right: '15px',
+      right: { xs: '10px', sm: '15px' }, // Move icon closer to edge on mobile
       top: '50%',
       transform: 'translateY(-50%)',
       zIndex: 2, 
     },
   },
   '& .MuiInputBase-input': {
-    // ⚡️ REMOVE PADDING FROM INPUT: This ensures the autofill color
-    // touches your actual border, leaving no gap.
-    padding: '12px 0', 
+    // --- RESPONSIVE FONT ---
+    fontSize: { xs: '0.85rem', sm: '1rem' },
+    padding: '0 !important', // Critical for vertical centering with custom height
     textAlign: 'center',
     zIndex: 1,
-    border: 'none !important',
-    outline: 'none !important',
+    height: '100%', // Ensures the click area fills the whole height
     
-    // --- ⚡️ AUTOFILL FIX START ⚡️ ---
+    // --- AUTOFILL FIX ---
     '&:-webkit-autofill, &:-webkit-autofill:hover, &:-webkit-autofill:focus, &:-webkit-autofill:active': {
       WebkitTextFillColor: '#b0c4de !important',
-      // We use a large inset shadow to force our color over the browser's blue
+      // The 1000px spread ensures the color fills the box regardless of height
       WebkitBoxShadow: '0 0 0 1000px #021a32 inset !important',
       boxShadow: '0 0 0 1000px #021a32 inset !important',
-      
-      // These force the browser to hide its own internal borders
       border: 'none !important',
       outline: 'none !important',
-      backgroundClip: 'content-box !important',
-      
       caretColor: '#b0c4de',
-      transition: 'background-color 500000s ease-in-out 0s',
+      // This prevents the "flash" of white on some browsers
+      transition: 'background-color 5000s ease-in-out 0s',
     },
-    // --- ⚡️ AUTOFILL FIX END ⚡️ ---
   }
 };
 
@@ -383,7 +382,7 @@ function LoginPage() {
       sx={{ 
         userSelect: 'none', 
         minHeight: '100vh', 
-        backgroundColor: '#021a32', 
+        // backgroundColor: '#021a32', 
         display: 'flex', 
         flexDirection: 'column', 
         alignItems: 'center', 
@@ -600,6 +599,7 @@ function LoginPage() {
                               fullWidth
                               value={email}
                               onChange={handleEmailChange}
+                              
                               inputProps={{ 
                                 maxLength: 254,
                                 style: { textAlign: 'center' } 

@@ -169,7 +169,11 @@ const HomePage = () => {
     return { name, initial, msg: msgContent, time: timeStr };
   };
 
-  const openConversation = async (participantId) => {
+  const openConversation = async (participant) => {
+    if (participant.conversation) {
+      navigate(`/messages/${participant.conversation}`);
+    }
+    else {
     try {
       const res = await fetch(`${API_URL}/conversations`, {
         method: 'POST',
@@ -177,7 +181,7 @@ const HomePage = () => {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${user.accessToken}`,
         },
-        body: JSON.stringify({ participantId }),
+        body: JSON.stringify({ participantId: participant.id }),
       });
       
       if (!res.ok) throw new Error('Failed to start conversation');
@@ -188,6 +192,7 @@ const HomePage = () => {
     } catch (error) {
       console.error('Error starting conversation:', error);
     }
+  }
   };
 
   console.log('Conversations:', conversations); 
@@ -321,7 +326,7 @@ const HomePage = () => {
           py: { xs: 0.5, md: 1 },
           fontSize: { xs: '0.8125rem', md: '0.875rem' }
         }} 
-        onClick={() => logout()}
+        onClick={() => {logout(); navigate('/logout', { state: { fromLogout: true } });}}
       >
         Logout
       </Button>
@@ -473,7 +478,8 @@ const HomePage = () => {
               </Avatar>
             </ListItemAvatar>
             <ListItemText primary={friend.username} onClick={() => navigate(`/profile/${friend.id}`)} />
-            <IconButton color="primary" onClick={() => openConversation(friend.id)}>
+            {/* <IconButton color="primary" onClick={() => navigate(`/messages/${friend.conversation}`)}> */}
+            <IconButton color="primary" onClick={() => openConversation(friend)}>
               <ChatIcon />
             </IconButton>
             <IconButton color="error" onClick={() => handleRemoveFriend(friendshipId)}>

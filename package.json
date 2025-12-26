@@ -24,6 +24,7 @@
     "jwt-decode": "^4.0.0",
     "mongoose": "^8.6.2",
     "notistack": "^3.0.2",
+    "ogl": "^1.0.11",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-i18next": "^15.4.1",

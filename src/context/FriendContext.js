@@ -111,7 +111,7 @@ export const FriendProvider = ({ children }) => {
         setFriendRequests(prev => prev.filter(u => u.id !== userId));
         return true; 
       } else {
-        showSnackbar({ message: error.response?.data?.message || 'Failed to send friend request', severity: 'error' });
+        showSnackbar({ message: res.response?.data?.message || 'Failed to send friend request', severity: 'error' });
         return false;
       }
     } catch (error) {

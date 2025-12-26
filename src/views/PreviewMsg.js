@@ -106,7 +106,9 @@ function PreviewMsg() {
         display: 'flex', 
         flexDirection: 'column', 
         overflow: 'hidden',
-        bgcolor: 'background.default'
+        // bgcolor: 'background.default',
+        // zIndex: 
+        
     }}>
       
       {/* --- NEW INSTAGRAM STYLE HEADER --- */}
@@ -117,9 +119,10 @@ function PreviewMsg() {
           alignItems: 'center', 
           justifyContent: 'space-between', 
           px: 2, 
-          borderBottom: '1px solid', 
+          borderBottom: '3px solid', 
           borderColor: 'divider',
-        //   bgcolor: 'background.paper',
+        //   bgcolor: 'background.default',
+        backdropFilter: 'blur(30px)',
           flexShrink: 0, // Prevents header from collapsing
           zIndex: 10
       }}>
@@ -188,7 +191,10 @@ function PreviewMsg() {
         }}
       >
         
-        <Container sx={{ display: 'flex', flexDirection: 'column-reverse', padding: '0 !important' }}>
+        <Container sx={{ display: 'flex', flexDirection: 'column-reverse', padding: '0 !important',
+        fontFamily: 'Inter, sans-serif',
+        fontWeight: 400
+         }}>
             
             {/* MESSAGES MAPPING */}
             {messages.length > 0 ? (

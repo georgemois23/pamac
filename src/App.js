@@ -29,6 +29,7 @@ import ChangePassword from './components/ChangePassword';
 import ForgotPassword from './components/ForgotPassword';
 import FriendshipsPage from './pages/Friends';
 import Home from './pages/Home';
+import Aurora from './components/Aurora';
 
 function App() {
   const navigate = useNavigate();
@@ -140,6 +141,12 @@ useEffect(() => {
     // <ThemeOption>
       // {/* <PopUpContext.Provider value={{}}> */}
           <div className="App">
+            <Aurora
+  colorStops={['#001f3f', '#1e90ff', '#001f3f']}
+  amplitude={1.1}
+  blend={0.55}
+  speed={0.8}
+/>
           {location.pathname === "/" && <UnderConstruction message={t("this_website_under_construction")}/>}
           {user && !incognito && !location.pathname.startsWith("/profile")  && window.location.pathname !== "/404" && window.location.pathname !== '/home' && location.pathname.startsWith("/messages/*") &&(
         // <AccountCircleIcon titleAccess={t('visit_profile_info')} onClick={handleProfile} sx={{ position: 'fixed', top: '.8rem', left: '.8rem',cursor:'pointer' }} className='accountIcon' />
@@ -192,11 +199,10 @@ useEffect(() => {
             element={user ? <Navigate to="/home" /> : <FirstLand />}
                 // element={<FirstLand />}
               />
-          <Route
-            path="/home"
-            element={!user ? <LoginPage /> : <Home />}
-                // element={<FirstLand />}
-              />
+          <Route 
+          path="/home" 
+          element={user ? <Home /> : <Navigate to="/auth/login" replace />} 
+        />
               <Route path="/auth/:mode" element={user ? <Navigate to="/home"/> :<LoginPage />} />
               <Route
               path="/logout"
