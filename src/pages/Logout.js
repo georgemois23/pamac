@@ -89,7 +89,7 @@ function Logout() {
           </Typography>
   
           {/* Go to messages button */}
-          <Typography
+          {/* <Typography
             variant="h6"
             sx={{
               cursor: 'pointer',
@@ -105,7 +105,7 @@ function Logout() {
             onClick={handleGoToMessages}
           >
             {t('view_messages')}
-          </Typography>
+          </Typography> */}
         </Box>
       </Box>
     </Container>
