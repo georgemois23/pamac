@@ -18,7 +18,8 @@ import {
   Stack,
   useTheme,
   Tooltip,
-  Divider
+  Divider,
+  Link
 } from '@mui/material';
 
 // --- NEW IMPORTS FOR HEADER ---
@@ -32,43 +33,48 @@ import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import LoadingSpinner from '../components/LoadingSpinner';
 import Chat from './Chat';
 
-const isGifUrl = (text) => {
+const isMediaUrl = (text) => {
   try {
     const url = new URL(text.trim());
+    const ext = url.pathname.toLowerCase();
     return (
-      url.pathname.endsWith(".gif") ||
-      url.hostname.includes("tenor.com") ||
-      url.hostname.includes("giphy.com")
+      ext.endsWith('.gif') ||
+      ext.endsWith('.png') ||
+      ext.endsWith('.jpg') ||
+      ext.endsWith('.jpeg') ||
+      ext.endsWith('.webp')
     );
   } catch {
     return false;
   }
 };
 
-const PreviewThisMsg = ({ message }) => {
+const isLink = (text) => {
+  if (!text) return false;
+
+  const trimmed = text.trim();
+
+  const urlRegex =
+    /^(https?:\/\/)([\w-]+\.)+[\w-]+(\/[\w\-._~:/?#[\]@!$&'()*+,;=]*)?$/i;
+
+  return urlRegex.test(trimmed);
+};
+
+
+
+
+const PreviewThisMsg = React.memo(({ message }) => {
   const [imgError, setImgError] = React.useState(false);
 
-  const isGifUrl = (text) => {
-    try {
-      const url = new URL(text.trim());
-      return (
-        url.pathname.endsWith(".gif") ||
-        url.hostname.includes("tenor.com") ||
-        url.hostname.includes("giphy.com")
-      );
-    } catch {
-      return false;
-    }
-  };
-
-  if (isGifUrl(message) && !imgError) {
+  if (isMediaUrl(message) && !imgError) {
     return (
       <Box sx={{ maxWidth: '100%' }}>
         <Box
           component="img"
           src={message}
-          alt="GIF"
+          alt="media"
           loading="lazy"
+          draggable="false"
           onError={() => setImgError(true)}
           sx={{
             maxWidth: { xs: '100%', sm: 320, md: 360 },
@@ -77,25 +83,29 @@ const PreviewThisMsg = ({ message }) => {
             borderRadius: 2,
             objectFit: 'contain',
           }}
+        //   onClick={() => window.open(message, '_blank')}
         />
       </Box>
     );
   }
 
+  if (isLink(message)) {
+    return (
+      <Typography sx={{ fontSize: '0.95rem', wordBreak: 'break-word' }}>
+        <Link href={message} target="_blank" rel="noopener noreferrer" underline='none'>
+          {message}
+        </Link>
+      </Typography>
+    );
+  }
+
   return (
-    <Typography
-      variant="body1"
-      sx={{
-        fontSize: '0.95rem',
-        lineHeight: 1.4,
-        wordBreak: 'break-word',
-        color: isGifUrl(message) ? 'primary.main' : 'inherit',
-      }}
-    >
+    <Typography sx={{ fontSize: '0.95rem', wordBreak: 'break-word' }}>
       {message}
     </Typography>
   );
-};
+});
+
 
 
 function PreviewMsg() {
