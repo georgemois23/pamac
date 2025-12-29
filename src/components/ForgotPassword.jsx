@@ -162,17 +162,18 @@ const ForgotPassword = () => {
       >
         Send Email
       </Button>
-      <Logo
-                style={{
-                  width: size * 0.6,   
-                  height: size * 0.6,  
-                  position: 'absolute',
-                  top: '5%',
-                  left: '50%',
-                  transform: 'translate(-50%, -50%)',
-                  marginTop:'20px',
-                }}
-              />
+       <Logo
+        style={{
+          width: size * 0.6,
+          height: size * 0.6,
+          position: 'absolute',
+          top: '-5%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          marginTop: '20px',
+        }}
+        onClick={() => navigate('/auth')}
+      />
     </Box>
   );
 };

@@ -387,7 +387,8 @@ function LoginPage() {
         flexDirection: 'column', 
         alignItems: 'center', 
         justifyContent: 'center',
-        padding: 2
+        padding: 2,
+        fontFamily: "Advent Pro, Arial, sans-serif",
       }}
     >
       <ThemeOption />
@@ -415,7 +416,8 @@ function LoginPage() {
               padding: { xs: 3, md: 8 },
               position: 'relative',
               backgroundColor: 'transparent', 
-              width: '100%'
+              width: '100%',
+              fontFamily: "Advent Pro, Arial, sans-serif",
             }}
           >
             <Grid container spacing={4} alignItems="center">
@@ -429,7 +431,8 @@ function LoginPage() {
                   sx={{ 
                     color: '#b0c4de', 
                     fontSize: { xs: '3rem', md: '5rem' },
-                    letterSpacing: '-2px'
+                    letterSpacing: '-2px',
+                    fontFamily: "Advent Pro, Arial, sans-serif",
                   }}
                 >
                   {login_check ? `${t("Login")}!` : `${t("signup")}!`}
@@ -462,7 +465,8 @@ function LoginPage() {
           fontWeight: 'bold',
           // ⚡️ FIX: Set a bright color so it is visible on dark background
           color: '#ff6b6b', 
-          textShadow: '0 0 10px rgba(255, 107, 107, 0.3)'
+          textShadow: '0 0 10px rgba(255, 107, 107, 0.3)',
+          fontFamily: "Advent Pro, Arial, sans-serif",
         }}
       >
         {/* Prioritize server errors, otherwise show validation errors */}
@@ -473,7 +477,7 @@ function LoginPage() {
 
                 {/* Login Form */}
                 {login_check && (
-                  <Box component="form" onSubmit={handleLoginbutton} sx={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                  <Box component="form" onSubmit={handleLoginbutton} sx={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center',fontFamily: "Advent Pro, Arial, sans-serif", }}>
                     <Stack spacing={2} sx={{ width: '100%', maxWidth: '300px' }}>
                       
                       <Box>
@@ -558,7 +562,8 @@ function LoginPage() {
                             '&:disabled': {
                                 borderColor: '#334',
                                 color: '#445'
-                            }
+                            },
+                            fontFamily: "Advent Pro, Arial, sans-serif",
                         }}
                         startIcon={loginbut ? <CircularProgress size={20} color="inherit" /> : null}
                       >
@@ -717,7 +722,8 @@ function LoginPage() {
                                 backgroundColor: 'rgba(255,255,255,0.1)',
                                 borderColor: '#fff',
                                 color: '#fff'
-                            }
+                            },
+                            fontFamily: "Advent Pro, Arial, sans-serif",
                         }}
                         startIcon={signupbut ? <CircularProgress size={20} color="inherit" /> : null}
                       >

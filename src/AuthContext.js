@@ -80,6 +80,13 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const refetchUser = async () => {
+    if (accessToken) {
+      return await fetchUser(accessToken);
+    }
+    return false;
+  }
+
   const register = async (username, password, email = "", full_name = "") => {
     setIsLoading(true);
     try {
@@ -129,6 +136,7 @@ export const AuthProvider = ({ children }) => {
         logout,
         isLoading,
         incognito,
+        refetchUser
         // ... other exports
       }}
     >

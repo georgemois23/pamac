@@ -81,30 +81,24 @@ function Profile({ user }) {
     };
 
    const handleSave = async () => {
-    // 1. Extract values from the formData state
-    const { email, first_name, last_name } = formData;
+  try {
+    await api.patch(`/users/${user.id}`, formData);
+    await refetchUser();
 
-    try {
-      // 2. Send data to backend
-      const response = await api.patch(`/users/${user.id}`, {
-        email,
-        first_name,
-        last_name
-});
+    showSnackbar({
+      message: "Profile updated successfully",
+      severity: "success",
+    });
 
-      console.log("Saved successfully:", response.data);
+    setIsEditing(false);
+  } catch (error) {
+    showSnackbar({
+      message: error.response?.data?.message || "Failed to update profile",
+      severity: "error",
+    });
+  }
+};
 
-      await refetchUser(); // Refresh user data after saving
-
-      // 3. Close edit mode ONLY if the API call succeeds
-      setIsEditing(false);
-
-
-    } catch (error) {
-      console.error("Error saving profile:", error);
-      alert("Failed to save changes. Please try again.");
-    }
-  };
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const handleOpen = () => {
@@ -134,7 +128,6 @@ function Profile({ user }) {
 
     } catch (error) {
       console.error("Error saving profile:", error);
-      alert("Failed to save changes. Please try again.");
     }
   };
 

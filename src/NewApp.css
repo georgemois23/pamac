@@ -1,0 +1,12 @@
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+  background-color: #001f3f;
+}
+.App {
+  min-height: 100vh;
+  background: transparent;
+  position: relative;
+  z-index: 1;
+}

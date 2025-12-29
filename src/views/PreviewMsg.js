@@ -91,7 +91,7 @@ const PreviewThisMsg = React.memo(({ message }) => {
 
   if (isLink(message)) {
     return (
-      <Typography sx={{ fontSize: '0.95rem', wordBreak: 'break-word' }}>
+      <Typography sx={{ fontSize: '0.95rem', wordBreak: 'break-word',fontFamily: 'Inter, sans-serif' }}>
         <Link href={message} target="_blank" rel="noopener noreferrer" underline='none'>
           {message}
         </Link>
@@ -100,7 +100,7 @@ const PreviewThisMsg = React.memo(({ message }) => {
   }
 
   return (
-    <Typography sx={{ fontSize: '0.95rem', wordBreak: 'break-word' }}>
+    <Typography sx={{ fontSize: '0.95rem', wordBreak: 'break-word', fontFamily: 'Inter, sans-serif' }}>
       {message}
     </Typography>
   );

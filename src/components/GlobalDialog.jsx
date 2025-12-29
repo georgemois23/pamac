@@ -49,7 +49,7 @@ export default function GlobalDialog({
       maxWidth="sm" // You can change this to 'md' or 'lg' if needed
     >
       {/* --- Title Section --- */}
-      <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
+      <DialogTitle sx={{ m: 0, p: 2, backgroundColor:'background.default' }} id="customized-dialog-title">
         {title}
       </DialogTitle>
       
@@ -69,12 +69,12 @@ export default function GlobalDialog({
       </IconButton>
 
       {/* --- Body Content --- */}
-      <DialogContent dividers>
+      <DialogContent dividers sx={{ backgroundColor:'background.default' }}>
         {children}
       </DialogContent>
 
       {/* --- Footer / Buttons --- */}
-      <DialogActions>
+      <DialogActions sx={{ backgroundColor:'background.default' }}>
         <Button autoFocus onClick={handleSecondaryClick} color="secondary">
           {secondaryButtonText}
         </Button>

@@ -25,7 +25,8 @@ const baseTheme = {
     },
   },
   typography: {
-    fontFamily: "Advent Pro, Arial, sans-serif",
+    fontFamily: "Inter, Arial, sans-serif",
+    // fontFamily: "Advent Pro, Arial, sans-serif",
   },
   components: {
     // Global CSS Reset for Body

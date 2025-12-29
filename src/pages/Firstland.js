@@ -104,6 +104,7 @@ function FirstLand() {
           fontFamily: 'Advent Pro',
           color: 'text.secondary',
           maxWidth: '600px',
+          pb: { xs: 6, sm: 0 },
         }}
       >
         <InfoOutlined fontSize="xs" sx={{ verticalAlign: 'middle', mr: 0.5, mb:0.5 }} />

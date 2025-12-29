@@ -30,6 +30,7 @@ import ForgotPassword from './components/ForgotPassword';
 import FriendshipsPage from './pages/Friends';
 import Home from './pages/Home';
 import Aurora from './components/Aurora';
+import './NewApp.css';
 
 function App() {
   const navigate = useNavigate();
@@ -140,7 +141,7 @@ useEffect(() => {
   return (
     // <ThemeOption>
       // {/* <PopUpContext.Provider value={{}}> */}
-          <div className="App">
+          <div className="App" >
             <Aurora
   colorStops={['#001f3f', '#1e90ff', '#001f3f']}
   amplitude={1.1}

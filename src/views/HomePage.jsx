@@ -139,7 +139,8 @@ const HomePage = () => {
       setFriendRequestsSearch('');
       setFriendRequests([]); 
   };
-  
+
+ 
 
   // --- HELPER: Get Partner Name & Last Message ---
   const getDisplayInfo = (chat) => {
@@ -197,7 +198,35 @@ const HomePage = () => {
 
   console.log('Conversations:', conversations); 
 
-  
+ const getDisplayMessage = (message) => {
+  if (!message || typeof message !== 'string') return '';
+
+  const trimmed = message.trim();
+
+  const urlRegex =
+    /^(https?:\/\/)([\w-]+\.)+[\w-]+(\/[\w\-._~:/?#[\]@!$&'()*+,;=]*)?$/i;
+
+  if (!urlRegex.test(trimmed)) {
+    return message;
+  }
+
+  const lower = trimmed.toLowerCase();
+
+  if (lower.endsWith('.gif')) return 'Sent a GIF';
+
+  if (
+    lower.endsWith('.png') ||
+    lower.endsWith('.jpg') ||
+    lower.endsWith('.jpeg') ||
+    lower.endsWith('.webp')
+  ) {
+    return 'Sent an Image';
+  }
+
+  return 'Sent a Link';
+};
+
+
 
 
   return (
@@ -405,7 +434,7 @@ const HomePage = () => {
                         </ListItemAvatar>
                         <ListItemText 
                           primary={name} 
-                          secondary={msg} 
+                          secondary={getDisplayMessage(msg)} 
                           primaryTypographyProps={{ fontWeight: 'bold' }}
                           secondaryTypographyProps={{ 
                           noWrap: true,                 // prevents line wrap
@@ -413,6 +442,7 @@ const HomePage = () => {
                           maxWidth: { xs: '120px', md: '200px' }, // responsive max width
                           overflow: 'hidden',           // hide overflow
                           textOverflow: {xs: 'ellipsis', md: 'auto'},     // show "..." when too long
+                          fontFamily: 'Inter, sans-serif',
                         }}
                         />
                       </ListItem>
