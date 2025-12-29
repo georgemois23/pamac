@@ -197,6 +197,8 @@ const HomePage = () => {
 
   console.log('Conversations:', conversations); 
 
+  
+
 
   return (
     <Box sx={{ 
@@ -386,20 +388,20 @@ const HomePage = () => {
                         key={chat.id} 
                         button 
                         onClick={() => navigate(`/messages/${chat.id}`)}
-                        sx={{ borderRadius: 2, mb: 1, '&:hover': { bgcolor: 'rgba(0,0,0,0.05)' } }}
+                        sx={{ borderRadius: 2, mb: 1, '&:hover': { bgcolor: 'rgba(0,0,0,0.05)' }, userSelect: 'none' }}
                         secondaryAction={
                           <Typography variant="caption" color="text.secondary">{time}</Typography>
                         }
                       >
                         <ListItemAvatar>
-                          <Badge 
+                          {/* <Badge 
                             overlap="circular" 
                             anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
                             variant="dot"
                             color="success" 
-                          >
+                          > */}
                             <Avatar sx={{ bgcolor: stringToColor(name) }}>{initial}</Avatar>
-                          </Badge>
+                          {/* </Badge> */}
                         </ListItemAvatar>
                         <ListItemText 
                           primary={name} 

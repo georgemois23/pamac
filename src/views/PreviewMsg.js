@@ -32,6 +32,72 @@ import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import LoadingSpinner from '../components/LoadingSpinner';
 import Chat from './Chat';
 
+const isGifUrl = (text) => {
+  try {
+    const url = new URL(text.trim());
+    return (
+      url.pathname.endsWith(".gif") ||
+      url.hostname.includes("tenor.com") ||
+      url.hostname.includes("giphy.com")
+    );
+  } catch {
+    return false;
+  }
+};
+
+const PreviewThisMsg = ({ message }) => {
+  const [imgError, setImgError] = React.useState(false);
+
+  const isGifUrl = (text) => {
+    try {
+      const url = new URL(text.trim());
+      return (
+        url.pathname.endsWith(".gif") ||
+        url.hostname.includes("tenor.com") ||
+        url.hostname.includes("giphy.com")
+      );
+    } catch {
+      return false;
+    }
+  };
+
+  if (isGifUrl(message) && !imgError) {
+    return (
+      <Box sx={{ maxWidth: '100%' }}>
+        <Box
+          component="img"
+          src={message}
+          alt="GIF"
+          loading="lazy"
+          onError={() => setImgError(true)}
+          sx={{
+            maxWidth: { xs: '100%', sm: 320, md: 360 },
+            width: '100%',
+            height: 'auto',
+            borderRadius: 2,
+            objectFit: 'contain',
+          }}
+        />
+      </Box>
+    );
+  }
+
+  return (
+    <Typography
+      variant="body1"
+      sx={{
+        fontSize: '0.95rem',
+        lineHeight: 1.4,
+        wordBreak: 'break-word',
+        color: isGifUrl(message) ? 'primary.main' : 'inherit',
+      }}
+    >
+      {message}
+    </Typography>
+  );
+};
+
+
 function PreviewMsg() {
   const navigate = useNavigate();
   const theme = useTheme(); 
@@ -98,6 +164,8 @@ function PreviewMsg() {
   if (loading) return <LoadingSpinner />;
 
   const reversedMessages = [...messages].reverse();
+
+  
 
   return (
     // MAIN APP LAYOUT (Flex Column)
@@ -239,6 +307,7 @@ function PreviewMsg() {
                             </Tooltip>
                         ) : ( <Box sx={{ width: 34 }} /> )
                     );
+                    
 
                     return (
                         <Box key={msg.id || index} sx={{ display: 'flex', width: '100%', justifyContent: isOwnMessage ? 'flex-end' : 'flex-start', alignItems: 'flex-end', gap: 1.5, mt: marginBottom }}>
@@ -256,7 +325,8 @@ function PreviewMsg() {
                                 {!isOwnMessage && isFirstInSequence && (
                                     <Typography variant="caption" sx={{ display: 'block', fontWeight: 'bold', opacity: 0.6, mb: 0.5, fontSize: '0.75rem', ml: 0.5 }}>{displayName}</Typography>
                                 )}
-                                <Typography variant="body1" sx={{ fontSize: '0.95rem', lineHeight: 1.4 }}>{msg.content}</Typography>
+                                {/* <Typography variant="body1" sx={{ fontSize: '0.95rem', lineHeight: 1.4 }}>{msg.content}</Typography> */}
+                                <PreviewThisMsg message={msg.content} />
                                 {/* {((isOwnMessage || isAdmin) && !incognito) && (
                                     <Box className="delete-overlay" sx={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: borderRadius, bgcolor: 'rgba(0,0,0,0.4)', opacity: 0, transition: 'opacity 0.2s', '&:hover': { opacity: 1 }, cursor: 'pointer' }} onClick={(e) => { e.stopPropagation(); handleDelete(msg.id); setDeleteThisMessage(msg.id); }}>
                                             <DeleteForeverIcon sx={{ color: '#fff' }} />
