@@ -175,7 +175,6 @@ function PreviewMsg() {
 
   const reversedMessages = [...messages].reverse();
 
-  
 
   return (
     // MAIN APP LAYOUT (Flex Column)
