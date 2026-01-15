@@ -153,7 +153,10 @@ useEffect(() => {
   blend={0.55}
   speed={0.8}
 />
-          {isLoading && <LoadingSpinner message={loginMessage} />}
+          {isLoading ? (
+       <LoadingSpinner message={loginMessage} />
+    ) : (
+      <>
           {location.pathname === "/" && <UnderConstruction message={t("this_website_under_construction")}/>}
           {user && !incognito && !location.pathname.startsWith("/profile")  && window.location.pathname !== "/404" && window.location.pathname !== '/home' && location.pathname.startsWith("/messages/*") &&(
         // <AccountCircleIcon titleAccess={t('visit_profile_info')} onClick={handleProfile} sx={{ position: 'fixed', top: '.8rem', left: '.8rem',cursor:'pointer' }} className='accountIcon' />
@@ -270,6 +273,8 @@ useEffect(() => {
               <Route path="/restricted" element={incognito  ? <ContentNotAvaiable/> : <Navigate to='/' replace/>} /> 
               <Route path="/404" element={<ErrorPage />} />
             </Routes>
+            </>
+    )}
           </div>
   );
 }
