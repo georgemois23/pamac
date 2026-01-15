@@ -96,27 +96,32 @@ useEffect(() => {
 //   setThemeLoaded(true);
 // }, []);
   // if (isLoading) return <CircularProgress sx={{marginTop:"1rem"}} />;
-  if (isLoading) {
-    return (
-      <div style={{
-        position: "fixed", 
-        top: "50%", 
-        left: "50%", 
-        transform: "translate(-50%, -50%)", 
-        padding: "20px", 
-        borderRadius: "10px",
-        fontSize: "18px",
-        textAlign: "center",
-        zIndex: 1000
-      }}>
-       <LoadingSpinner />
-        {loginMessage && (
-  <div>          
-    <p>{loginMessage}</p>
-  </div>)}
-      </div> 
-    );
-  }
+  // if (isLoading) {
+  //   return (
+  //     <div style={{
+  //       position: "fixed", 
+  //       top: "50%", 
+  //       left: "50%", 
+  //       transform: "translate(-50%, -50%)", 
+  //       padding: "20px", 
+  //       borderRadius: "10px",
+  //       fontSize: "18px",
+  //       textAlign: "center",
+  //       zIndex: 1000,
+  //     }}>
+  //      <LoadingSpinner />
+  //       {loginMessage && (
+  // <div>          
+  //   <p>{loginMessage}</p>
+  // </div>)}
+  //     </div> 
+  //   );
+  // }
+//   if (isLoading) {
+//   // Just return the component directly. 
+//   // It already handles centering, full-screen blur, and the message text.
+//   return <LoadingSpinner message={loginMessage} />;
+// }
  
   const handleLogout = () => {
     if(!incognito){
@@ -148,6 +153,7 @@ useEffect(() => {
   blend={0.55}
   speed={0.8}
 />
+          {isLoading && <LoadingSpinner message={loginMessage} />}
           {location.pathname === "/" && <UnderConstruction message={t("this_website_under_construction")}/>}
           {user && !incognito && !location.pathname.startsWith("/profile")  && window.location.pathname !== "/404" && window.location.pathname !== '/home' && location.pathname.startsWith("/messages/*") &&(
         // <AccountCircleIcon titleAccess={t('visit_profile_info')} onClick={handleProfile} sx={{ position: 'fixed', top: '.8rem', left: '.8rem',cursor:'pointer' }} className='accountIcon' />

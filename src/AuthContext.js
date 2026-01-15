@@ -17,8 +17,15 @@ export const AuthProvider = ({ children }) => {
   const [incognito, setIncognito] = useState(sessionStorage.getItem("incognito") === "true");
 
   // --- LOGOUT (Cleanup) ---
-  const logout = useCallback(() => {
+  const logout = useCallback(async () => {
     console.warn("🔒 Logging out...");
+    try {
+        await api.post('/auth/logout'); 
+    } catch (e) {
+        // We ignore errors here. If the user is offline, we still want to 
+        // delete local data and show the login screen.
+        console.error("Logout backend failed", e);
+    }
     if (!incognito) {
       localStorage.removeItem("accessToken");
     } else {

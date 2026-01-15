@@ -171,7 +171,7 @@ function PreviewMsg() {
       return color;
   }
 
-  if (loading) return <LoadingSpinner />;
+  if (loading || !participantUsername) return <LoadingSpinner />;
 
   const reversedMessages = [...messages].reverse();
 

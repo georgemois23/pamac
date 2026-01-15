@@ -37,6 +37,7 @@ import CheckIcon from '@mui/icons-material/Check';
 import { useSnackbar } from '../context/SnackbarContext';
 import { get } from 'mongoose';
 import { useFriendContext } from '../context/FriendContext';
+import GlobalDialog from '../components/GlobalDialog';
 
 // --- 1. GLASSMORPHISM STYLED COMPONENT ---
 const GlassBox = styled(Box)(({ theme }) => ({
@@ -86,19 +87,42 @@ const HomePage = () => {
   const [friendRequestsSearch, setFriendRequestsSearch] = useState(''); 
   const [showRequests, setShowRequests] = useState(false);
   const { showSnackbar } = useSnackbar();
-  
+  const conversationSearch = searchQuery ? conversations.filter(chat => {
+    const partner = chat.participants.find(p => p.user.id !== user.id);
+    return partner && partner.user.username.toLowerCase().includes(searchQuery.toLowerCase());
+  }) : conversations;
+  const friendsSearch = searchQuery ? friends.filter(f => 
+    f.friend.username.toLowerCase().includes(searchQuery.toLowerCase())
+  ) : friends;
+  const [dialogOpen, setDialogOpen] = useState(false);
+    const handleOpen = () => {
+       setDialogOpen(!dialogOpen);
+    }
   // --- STATE CHANGE: Show Add Friends Logic ---
   useEffect(() => {
     if (tabValue === 1)
       refetchFriends();
   }, [tabValue]);
-
+  const [friendToDelete, setFriendToDelete] = useState(null);
   // Handlers
   const handleTabChange = (event, newValue) => setTabValue(newValue);
   const handleUserSearch = (val) => {
       setFriendRequestsSearch(val);
       handleSearch(val);
   };
+
+  document.title = `Home - ${user?.username || ''}`;
+
+  const handleDeleteButtonClick = (friend, username) => {
+    setFriendToDelete({id: friend, username: username});
+
+    console.log("Delete button clicked");
+    setDialogOpen(true);
+  }
+
+  const handleRemoveThisFriend = async () => {
+    handleRemoveFriend(friendToDelete.id);
+  }
 
   const stringToColor = (string) => {
     if (!string) return '#2196f3';
@@ -141,7 +165,7 @@ const HomePage = () => {
   };
 
  
-
+  console.log("Friend to be deleted:", friendToDelete);
   // --- HELPER: Get Partner Name & Last Message ---
   const getDisplayInfo = (chat) => {
     if (!user || !chat.participants) return { name: 'Loading...', initial: '?', msg: '', time: '' };
@@ -204,10 +228,10 @@ const HomePage = () => {
   const trimmed = message.trim();
 
   const urlRegex =
-    /^(https?:\/\/)([\w-]+\.)+[\w-]+(\/[\w\-._~:/?#[\]@!$&'()*+,;=]*)?$/i;
+  /(https?:\/\/)([\w-]+\.)+[\w-]+(\/[\w\-._~:/?#[\]@!$&'()*+,;=]*)?/i;
 
-  if (!urlRegex.test(trimmed)) {
-    return message;
+  if (!urlRegex.test(message)) {
+  return message;
   }
 
   const lower = trimmed.toLowerCase();
@@ -405,49 +429,87 @@ const HomePage = () => {
                 />
               </Box>
 
-              {/* List Content */}
-              <Box sx={{ flexGrow: 1, overflowY: 'auto', px: {sm:0, md:2}, pb: 2 }}>
-                <List>
-                  {/* VIEW 1: CONVERSATIONS */}
-                  {tabValue === 0 && conversations.length > 0 && conversations.map((chat) => {
-                    const { name, initial, msg, time } = getDisplayInfo(chat);
+                  <Box
+      sx={{
+        flexGrow: 1,
+        overflowY: 'auto',
+        px: { sm: 0, md: 2 },
+        pb: 2,
+        
+        '&::-webkit-scrollbar': {
+          width: '6px',
+        },
+        '&::-webkit-scrollbar-track': {
+          backgroundColor: 'transparent',
+          marginBottom: '20px',
+          marginTop: '15px',
+        },
+        '&::-webkit-scrollbar-thumb': {
+          backgroundColor: '#6b6b6b',
+          borderRadius: '20px',
+        },
+        '&::-webkit-scrollbar-thumb:hover': {
+          backgroundColor: '#555',
+        },
+        '&::-webkit-scrollbar-button': {
+          display: 'none',
+        },
+      }}
+    >
+                <List >
+                  {tabValue === 0 && (
+              conversationSearch.length > 0 ? (
+                conversationSearch.map((chat) => {
+                  const { name, initial, msg, time } = getDisplayInfo(chat);
 
-                    return (
-                      <ListItem 
-                        key={chat.id} 
-                        button 
-                        onClick={() => navigate(`/messages/${chat.id}`)}
-                        sx={{ borderRadius: 2, mb: 1, '&:hover': { bgcolor: 'rgba(0,0,0,0.05)' }, userSelect: 'none' }}
-                        secondaryAction={
-                          <Typography variant="caption" color="text.secondary">{time}</Typography>
+                  return (
+                    <ListItem
+                      key={chat.id}
+                      button
+                      onClick={() => navigate(`/messages/${chat.id}`)}
+                      sx={{ borderRadius: 2, mb: 1 }}
+                    >
+                      <ListItemAvatar>
+                        <Avatar sx={{ bgcolor: stringToColor(name) }}>
+                          {initial}
+                        </Avatar>
+                      </ListItemAvatar>
+
+                      <ListItemText
+                        primary={
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <Typography fontWeight="bold" noWrap>
+                            {name}
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary" sx={{ ml: 1, whiteSpace: 'nowrap' }}>
+                            {time}
+                          </Typography>
+                        </Box>
                         }
-                      >
-                        <ListItemAvatar>
-                          {/* <Badge 
-                            overlap="circular" 
-                            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-                            variant="dot"
-                            color="success" 
-                          > */}
-                            <Avatar sx={{ bgcolor: stringToColor(name) }}>{initial}</Avatar>
-                          {/* </Badge> */}
-                        </ListItemAvatar>
-                        <ListItemText 
-                          primary={name} 
-                          secondary={getDisplayMessage(msg)} 
-                          primaryTypographyProps={{ fontWeight: 'bold' }}
-                          secondaryTypographyProps={{ 
-                          noWrap: true,                 // prevents line wrap
-                          color: 'text.secondary', 
-                          maxWidth: { xs: '120px', md: '200px' }, // responsive max width
-                          overflow: 'hidden',           // hide overflow
-                          textOverflow: {xs: 'ellipsis', md: 'auto'},     // show "..." when too long
-                          fontFamily: 'Inter, sans-serif',
+                        secondary={getDisplayMessage(msg)}
+                        primaryTypographyProps={{ fontWeight: 'bold' }}
+                        secondaryTypographyProps={{
+                          noWrap: true,
+                          color: 'text.secondary',
+                          maxWidth: { xs: '120px', md: '200px' },
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
                         }}
-                        />
-                      </ListItem>
-                    );
-                  })}
+                      />
+                    </ListItem>
+                  );
+                })
+              ) : searchQuery ? (
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{ mt: 2, textAlign: 'center' }}
+                >
+                  No conversations found.
+                </Typography>
+              ) : null
+            )}
+
 
                   {tabValue === 1 &&  (
   <>
@@ -494,12 +556,12 @@ const HomePage = () => {
     )}
 
     {/* FRIENDS LIST */}
-    {friends.length > 0 ? (
+    {friendsSearch.length > 0 ? (
       <>
         <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1, pl:2 }}>
           Friends
         </Typography>
-        {friends.map(({ friend, friendshipId }) => (
+        {friendsSearch.map(({ friend, friendshipId }) => (
           <ListItem
             key={friend.id}
             sx={{ borderRadius: 2, mb: 1 }}
@@ -514,7 +576,8 @@ const HomePage = () => {
             <IconButton color="primary" onClick={() => openConversation(friend)}>
               <ChatIcon />
             </IconButton>
-            <IconButton color="error" onClick={() => handleRemoveFriend(friendshipId)}>
+            {/* <IconButton color="error" onClick={() => handleRemoveFriend(friendshipId)}> */}
+            <IconButton color="error" onClick={() => handleDeleteButtonClick(friendshipId, friend.username)}>
               <RemoveIcon />
             </IconButton>
           </ListItem>
@@ -574,6 +637,27 @@ const HomePage = () => {
           )}
 
         </Grid>
+          <GlobalDialog
+            open={dialogOpen}
+            onClose={handleOpen}
+            title="Remove Friend"
+            primaryButtonText="Remove"
+            secondaryButtonText="Cancel"
+            onPrimaryClick={() => {
+              handleRemoveThisFriend(); 
+              handleOpen();         
+            }}
+            onSecondaryClick={handleOpen}
+          >
+            <Typography>
+            Are you sure you want to remove{' '}
+            <Typography component="span" fontWeight={800}>
+              {friendToDelete?.username || 'this user'}
+            </Typography>{' '}
+            from your friends?
+          </Typography>
+          </GlobalDialog>
+
       </Container>
     </Box>
   );
