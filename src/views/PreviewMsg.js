@@ -141,7 +141,7 @@ function PreviewMsg() {
     if (!user && UserExist) navigate('/auth');
   }, [user, UserExist, navigate]);
 
-  const handleGoBack = () => { navigate('/chat'); document.title = 'Chat'; };
+  const handleGoBack = () => { navigate('/home'); document.title = 'Home'; };
 
   // --- Scroll Logic ---
   const [visible, setVisible] = useState(false);
