@@ -113,7 +113,7 @@ const HomePage = () => {
       handleSearch(val);
   };
 
-  document.title = `Home • ${user?.username || ''}`;
+  document.title = `${user?.username || ''} • Home`;
 
   const handleDeleteButtonClick = (friend, username) => {
     setFriendToDelete({id: friend, username: username});

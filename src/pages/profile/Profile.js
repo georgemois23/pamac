@@ -142,6 +142,8 @@ function Profile({ user }) {
 
     if (incognito) return <ContentNotAvaiable />;
 
+    document.title = user.username ? `${user.username} • Profile` : 'Profile';
+
     return (
         <Container sx={{ minHeight: '100vh', pt: 5, textAlign: 'center', color: '#a4c2f4',zIndex: 3 }}>
             

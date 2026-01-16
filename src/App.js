@@ -31,6 +31,7 @@ import FriendshipsPage from './pages/Friends';
 import Home from './pages/Home';
 import Aurora from './components/Aurora';
 import './NewApp.css';
+import { ArrowBack } from '@mui/icons-material';
 
 function App() {
   const navigate = useNavigate();
@@ -167,7 +168,7 @@ useEffect(() => {
       )}
 
       {user && !incognito && location.pathname === "/profile" && (
-        <ChatBubbleOutlineIcon titleAccess={t('back_to_chat')} onClick={handleChat} sx={{ position: 'fixed',zIndex: 2, top: '.8rem', left: '.8rem',cursor:'pointer', backgroundColor:'transparent' }} className='chatIcon' />
+        <ArrowBack titleAccess={"Go back"} onClick={handleChat} sx={{ position: 'fixed',zIndex: 2, top: '.8rem', left: '.8rem',cursor:'pointer', backgroundColor:'transparent' }} className='chatIcon' />
       )}
         {user && location.pathname === "/profile"  && (
     isMobile ? (
