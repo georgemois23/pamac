@@ -595,7 +595,7 @@ const HomePage = () => {
           >
             <ListItemAvatar>
               <Avatar sx={{ bgcolor: stringToColor(friend.username) }} onClick={() => navigate(`/profile/${friend.id}`)}>
-                {friend.username[0]}
+                {friend.username[0].toUpperCase()}
               </Avatar>
             </ListItemAvatar>
             <ListItemText primary={friend.username} onClick={() => navigate(`/profile/${friend.id}`)} />
