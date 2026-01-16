@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect, useCallback } from "react";
-import api, { useAxiosInterceptor, setClientToken } from "./api/axios";
+// ✅ Import getClientToken
+import api, { useAxiosInterceptor, setClientToken, getClientToken } from "./api/axios";
 import { useTranslation } from "react-i18next";
 
 const AuthContext = createContext();
@@ -22,8 +23,6 @@ export const AuthProvider = ({ children }) => {
     try {
         await api.post('/auth/logout'); 
     } catch (e) {
-        // We ignore errors here. If the user is offline, we still want to 
-        // delete local data and show the login screen.
         console.error("Logout backend failed", e);
     }
     if (!incognito) {
@@ -32,54 +31,33 @@ export const AuthProvider = ({ children }) => {
       sessionStorage.removeItem("guestToken");
       sessionStorage.removeItem("incognito");
     }
+    
+    // ✅ Clear non-react store immediately
+    setClientToken(null);
+    
     setUser(null);
     setAccessToken(null);
     setIncognito(false);
     setLogBut(t("login"));
     localStorage.removeItem("Button");
-    
-    // Optional: Call backend to clear the cookie
-    // api.post('/auth/logout').catch(() => {}); 
   }, [incognito, t]);
 
-  // --- ⚡️ SYNC AXIOS (Keep ONLY this one) ⚡️ ---
-  // We place this AFTER 'logout' is defined so we can pass it in.
+  // --- SYNC AXIOS ---
   useAxiosInterceptor(accessToken, setAccessToken, logout);
 
-  // --- Login ---
-  const login = async (username, password) => {
-    setERRORMessage(null);
+  // --- Fetch User (REFACTORED) ---
+  // ❌ No longer accepts 'token' argument.
+  const fetchUser = async () => {
     try {
-      const response = await api.post("/auth/login", { username, password });
-      const { accessToken: newToken } = response.data;
-
-      setAccessToken(newToken);
-      localStorage.setItem("accessToken", newToken);
+      // 1. Just call API. The interceptor attaches the token automatically.
+      // If it fails (401), the interceptor refreshes it behind the scenes.
+      const response = await api.get("/auth/me");
       
-      // Pass token explicitly to ensure fetch uses the new one immediately
-      await fetchUser(newToken);
-      setLoginMessage(t("login_success"));
-      setLogBut(t("logout"));
-      localStorage.setItem("Button", "Logout");
+      // 2. ✅ Get the valid token from the Store.
+      // If a refresh happened, this returns the NEW token, not the old one.
+      const currentToken = getClientToken(); 
       
-      return true; // Indicate Success to the caller
-    } catch (error) {
-      setERRORMessage(t("login_failed"));
-      throw error; // <--- CRITICAL FIX: Throw error so LoginPage catches it!
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // --- Fetch User ---
-  const fetchUser = async (token) => {
-    try {
-      // Explicitly setting the header here is good practice!
-      // It ensures the fetch works immediately even if the global store update is 1ms behind.
-      const response = await api.get("/auth/me", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setUser({ ...response.data, accessToken: token });
+      setUser({ ...response.data, accessToken: currentToken });
       return true;
     } catch (error) {
       console.error("Fetch user failed:", error);
@@ -88,11 +66,38 @@ export const AuthProvider = ({ children }) => {
   };
 
   const refetchUser = async () => {
-    if (accessToken) {
-      return await fetchUser(accessToken);
-    }
-    return false;
+     return await fetchUser();
   }
+
+  // --- Login ---
+  const login = async (username, password) => {
+    setERRORMessage(null);
+    try {
+      const response = await api.post("/auth/login", { username, password });
+      const { accessToken: newToken } = response.data;
+
+      // 1. Update Global Store Immediately (Synchronous)
+      setClientToken(newToken);
+      
+      // 2. Update React State
+      setAccessToken(newToken);
+      localStorage.setItem("accessToken", newToken);
+      
+      // 3. Fetch User (No arguments!)
+      await fetchUser();
+      
+      setLoginMessage(t("login_success"));
+      setLogBut(t("logout"));
+      localStorage.setItem("Button", "Logout");
+      
+      return true; 
+    } catch (error) {
+      setERRORMessage(t("login_failed"));
+      throw error; 
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const register = async (username, password, email = "", full_name = "") => {
     setIsLoading(true);
@@ -109,25 +114,30 @@ export const AuthProvider = ({ children }) => {
       }
       setLoginMessage(null);
       setIsLoading(false);
-      // localStorage.setItem("enr")
       return false;
-    } finally {
-      // setIsLoading(false);
     }
   };
+
   // --- Initialize ---
   useEffect(() => {
     const initializeAuth = async () => {
       const token = localStorage.getItem("accessToken");
       const guestToken = sessionStorage.getItem("guestToken");
 
-      if (token) setClientToken(token);
       if (token) {
+        // 1. Load OLD token into store so interceptor has something to work with
+        setClientToken(token);
         setAccessToken(token);
-        await fetchUser(token);
+        
+        // 2. Fetch User. If token is old, interceptor refreshes it.
+        // fetchUser will grab the NEW token from store automatically.
+        await fetchUser();
+        
       } else if (guestToken) {
+        setClientToken(guestToken);
         setAccessToken(guestToken);
       }
+      
       setIsLoading(false);
     };
     initializeAuth();
@@ -144,7 +154,6 @@ export const AuthProvider = ({ children }) => {
         isLoading,
         incognito,
         refetchUser
-        // ... other exports
       }}
     >
       {children}

@@ -9,9 +9,13 @@ let store = {
 };
 
 // --- 2. EXPORTED HELPER (New) ---
-// Allows AuthContext to wipe memory immediately during logout
 export const setClientToken = (token) => {
   store.accessToken = token;
+};
+
+// ✅ NEW: Getter to retrieve the fresh token after a refresh
+export const getClientToken = () => {
+  return store.accessToken;
 };
 
 // --- 3. REFRESH QUEUE ---
@@ -81,7 +85,6 @@ api.interceptors.response.use(
       try {
         console.log("🔄 Access token expired. Refreshing...");
 
-        // Use 'axios' (raw instance) to avoid infinite loops
         const response = await axios.post(
           `${process.env.REACT_APP_API_URL}/auth/refresh`,
           {},

@@ -126,7 +126,7 @@ function PreviewMsg() {
   const containerRef = useRef(null);
   const { user, incognito } = useContext(AuthContext);
 
-  useEffect(() => { document.title = t("messages"); }, [t]);
+  useEffect(() => { document.title = {participantUsername} }, [participantUsername]);
 
   const handleDelete = (id) => { console.log("Delete function called for:", id); };
 
