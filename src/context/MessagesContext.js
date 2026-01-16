@@ -16,6 +16,7 @@ export const MessagesProvider = ({ children }) => {
   const [conversationId, setConversationId] = useState(null); 
   const [connected, setConnected] = useState(false);
   const [loading, setLoading] = useState(false); 
+  const [error, setError] = useState(false);
    
   // Participants state
   const [participantUsername, setParticipantUsername] = useState(null);
@@ -144,6 +145,7 @@ export const MessagesProvider = ({ children }) => {
 
     const loadConversationData = async () => {
       setLoading(true);
+      setError(false);
       try {
         // A. Fetch Messages
         const msgRes = await fetch(`${API_URL}/messages/${conversationId}`, {
@@ -152,6 +154,14 @@ export const MessagesProvider = ({ children }) => {
             'Authorization': `Bearer ${user.accessToken}`,
           },
         });
+        if (!msgRes.ok) {
+          setError(true);
+        if (msgRes.status === 404) {
+            
+             throw new Error("Conversation not found");
+        }
+        throw new Error("Failed to fetch messages");
+      }
         if (msgRes.ok) {
           const msgData = await msgRes.json();
           setMessages(msgData);
@@ -243,7 +253,7 @@ export const MessagesProvider = ({ children }) => {
   const value = {
     conversations, messages, sendMessage, connected, loading,
     setConversationId, setDeleteThisMessage, setGoToProfile,
-    participantUsername, participantId, messagesEndRef,
+    participantUsername, participantId, messagesEndRef, error,
   };
 
   return <MessagesContext.Provider value={value}>{children}</MessagesContext.Provider>;

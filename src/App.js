@@ -159,7 +159,7 @@ useEffect(() => {
     ) : (
       <>
           {location.pathname === "/" && <UnderConstruction message={t("this_website_under_construction")}/>}
-          {user && !incognito && !location.pathname.startsWith("/profile")  && window.location.pathname !== "/404" && window.location.pathname !== '/home' && location.pathname.startsWith("/messages/*") &&(
+          {user && !incognito && !location.pathname.startsWith("/profile")  && window.location.pathname !== "/404" && window.location.pathname !== '/home' && location.pathname.startsWith("/inbox/*") &&(
         // <AccountCircleIcon titleAccess={t('visit_profile_info')} onClick={handleProfile} sx={{ position: 'fixed', top: '.8rem', left: '.8rem',cursor:'pointer' }} className='accountIcon' />
         <Tooltip title={t('visit_profile_info')}>
         <Avatar title={t('visit_profile_info')}  onClick={handleProfile} sx={{ position: 'fixed',zIndex: 2, top: '.8rem', left: '.8rem',cursor:'pointer', backgroundColor:"text.primary", }}  >{(user.first_name && user.last_name) ? user.first_name[0].toUpperCase() + user.last_name[0].toUpperCase() : user.username[0].toUpperCase()}</Avatar>
@@ -267,7 +267,7 @@ useEffect(() => {
   element={user ? <UserProfile /> : <Navigate to="/auth" replace />}
     />
               <Route
-  path="/messages/:conversationId"
+  path="/inbox/:conversationId"
   element={user ? <PreviewMsg /> : <Navigate to="/auth" replace />}
 />
               <Route path="*" element={<Navigate to="/404" />} /> 

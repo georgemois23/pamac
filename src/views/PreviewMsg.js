@@ -114,7 +114,7 @@ function PreviewMsg() {
   const [UserExist, setUserExist] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 910);
   const { conversationId } = useParams();
-  const { messages, loading, setDeleteThisMessage, setConversationId, participantUsername,participantId  } = useMessages();
+  const { messages, loading, setDeleteThisMessage, setConversationId, participantUsername,participantId, error  } = useMessages();
   const { t, i18n } = useTranslation();
   
   useEffect(() => {
@@ -170,8 +170,9 @@ function PreviewMsg() {
       for (let i = 0; i < 3; i++) color += `00${((hash >> (i * 8)) & 0xff).toString(16)}`.slice(-2);
       return color;
   }
-
+  if (error) return navigate('/404');
   if (loading || !participantUsername) return <LoadingSpinner />;
+  
 
   const reversedMessages = [...messages].reverse();
 

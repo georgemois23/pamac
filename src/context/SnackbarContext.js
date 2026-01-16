@@ -37,6 +37,7 @@ const Provider = ({ children }) => {
         marginBottom: 0,
         padding: 0,
         backgroundColor: 'transparent',
+        zIndex: 13000000,
       }}
       >
         <Alert

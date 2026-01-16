@@ -198,7 +198,7 @@ const HomePage = () => {
 
   const openConversation = async (participant) => {
     if (participant.conversation) {
-      navigate(`/messages/${participant.conversation}`);
+      navigate(`/inbox/${participant.conversation}`);
     }
     else {
     try {
@@ -214,7 +214,7 @@ const HomePage = () => {
       if (!res.ok) throw new Error('Failed to start conversation');
       
       const conversation = await res.json();
-      navigate(`/messages/${conversation.id}`);
+      navigate(`/inbox/${conversation.id}`);
 
     } catch (error) {
       console.error('Error starting conversation:', error);
@@ -493,7 +493,7 @@ const HomePage = () => {
                     <ListItem
                       key={chat.id}
                       button
-                      onClick={() => navigate(`/messages/${chat.id}`)}
+                      onClick={() => navigate(`/inbox/${chat.id}`)}
                       sx={{ borderRadius: 2, mb: 1 }}
                     >
                       <ListItemAvatar>
