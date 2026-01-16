@@ -33,6 +33,7 @@ import { useSnackbar } from '../../context/SnackbarContext';
 // Components (assuming these exist based on your imports)
 import LoadingSpinner from '../../components/LoadingSpinner';
 import { set } from 'mongoose';
+import { ArrowBack } from '@mui/icons-material';
 // import ContentNotAvaiable from '../ContentNotAvailable'; // Uncomment if you want to use this component
 
 const UserProfile = () => {
@@ -159,8 +160,8 @@ const fetchFriendStatus = async () => {
 
 
   useEffect(() => {
-    document.title = t("messages") + (messages && messages.length > 0 ? ' - ' + formattedUsername : '');
-  }, [messages, formattedUsername, t]);
+    document.title = userData ? `${userData.username} • Profile` : 'Profile';
+  }, [userData]);
 
   const handleFriendButton = () => {
     fetch(`${API_URL}/friendships/request/${id}`, {
@@ -339,7 +340,7 @@ const stringToColor = (string) => {
     <Container maxWidth="md" sx={{ display: 'flex', minHeight: '100vh', pb: 10, pt: 4, justifyContent: 'center' }}>
       
       {/* Navigation Icon */}
-      <Tooltip title={t('view_messages')}>
+      <Tooltip title={"Go back"}>
         <IconButton 
           onClick={handleMessages} 
           sx={{ 
@@ -349,7 +350,7 @@ const stringToColor = (string) => {
             zIndex: 1100,
           }}
         >
-          <ForumIcon color="primary" />
+          <ArrowBack color="primary" />
         </IconButton>
       </Tooltip>
       

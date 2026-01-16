@@ -24,9 +24,11 @@ import {
 import { 
   Search as SearchIcon, 
   ChatBubbleOutline as ChatIcon, 
-  PersonAdd as AddPersonIcon, 
+  PersonAddAlt1 as AddPersonIcon, 
   PersonRemove as RemoveIcon,
   Circle as CircleIcon,
+  Logout as LogoutIcon,
+  PersonRemove,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import AuthContext from '../AuthContext'; 
@@ -111,7 +113,7 @@ const HomePage = () => {
       handleSearch(val);
   };
 
-  document.title = `Home - ${user?.username || ''}`;
+  document.title = `Home • ${user?.username || ''}`;
 
   const handleDeleteButtonClick = (friend, username) => {
     setFriendToDelete({id: friend, username: username});
@@ -272,118 +274,143 @@ const HomePage = () => {
         >
           
           {/* --- LEFT COLUMN: PROFILE --- */}
-          <Grid item xs={12} md={3} sx={{ height: { md: '100%' } }}>
+<Grid item xs={12} md={3} sx={{ height: { md: '100%' } }}>
   <GlassBox 
     sx={{ 
       display: 'flex', 
       flexDirection: 'column', 
       alignItems: 'center', 
       textAlign: 'center', 
-      // Responsive padding: 2 (16px) on mobile, 4 (32px) on desktop
-      p: { xs: 1, md: 4 }, 
+      // Adjusted padding for a cleaner mobile look
+      p: { xs: 2, md: 4 }, 
       bgcolor: 'inherit' 
     }}
   >
-    <Box sx={{ display: 'flex', flexDirection: {xs: 'row', md:'column'}, alignItems: 'center', gap: {xs:2, md:0},  }}>
-    <Badge
-      overlap="circular"
-      anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-      badgeContent={
+    {/* PROFILE INFO CONTAINER */}
+    <Box sx={{ 
+      display: 'flex', 
+      // Mobile: Row (Side-by-side), Desktop: Column (Stacked)
+      flexDirection: {xs: 'row', md:'column'}, 
+      alignItems: 'center', 
+      justifyContent: {xs: 'flex-start', md: 'center'},
+      gap: {xs: 2, md: 0}, 
+      width: '100%'
+    }}>
+      
+      {/* AVATAR */}
+      <Badge
+        overlap="circular"
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        badgeContent={
+          <Avatar 
+            sx={{ 
+              width: { xs: 20, md: 32 }, 
+              height: { xs: 20, md: 32 }, 
+              border: `2px solid ${theme.palette.background.paper}`,
+              bgcolor: 'background.paper',
+              cursor: 'pointer',
+              mb: { xs: 0, md: 4 }, // No margin bottom on mobile badge
+            }}
+            onClick={() => navigate(`/profile`)}
+          >
+            <EditIcon sx={{ width: { xs: 14, md: 20 }, height: { xs: 14, md: 20 }, color: 'text.primary' }} />
+          </Avatar>
+        }
+      >
         <Avatar 
           sx={{ 
-            // Responsive edit icon size
-            width: { xs: 18, md: 32 }, 
-            height: { xs: 18, md: 32 }, 
-            border: `2px solid ${theme.palette.background.paper}`,
-            bgcolor: 'background.paper',
-            cursor: 'pointer',
-            // Adjust margin bottom for the badge position
-            mb: { xs: 1, md: 4 },
+            // INCREASED SIZE: 32px was too small. 56px is better for mobile.
+            width: { xs: 56, md: 100 }, 
+            height: { xs: 56, md: 100 }, 
+            mb: { xs: 0, md: 2 }, 
+            fontSize: { xs: '1.5rem', md: '2rem' },
+            bgcolor: stringToColor(user?.username),
+            boxShadow: '0 4px 14px rgba(0,0,0,0.2)',
+            cursor: 'pointer' 
           }}
           onClick={() => navigate(`/profile`)}
         >
-          <EditIcon sx={{ width: { xs: 12, md: 20 }, height: { xs: 12, md: 20 }, color: 'text.primary' }} />
+          {user?.username?.charAt(0).toUpperCase()}
         </Avatar>
-      }
-    >
-      <Avatar 
-        sx={{ 
-          // Responsive Avatar Size: 64px on mobile, 100px on desktop
-          width: { xs: 32, md: 100 }, 
-          height: { xs: 32, md: 100 }, 
-          // Reduce margin below avatar on mobile
-          mb: { xs: 1, md: 2 }, 
-          fontSize: { xs: '1.5rem', md: '2rem' },
-          bgcolor: stringToColor(user?.username),
-          boxShadow: '0 4px 14px rgba(0,0,0,0.2)',
-          cursor: 'pointer' 
-        }}
-        onClick={() => navigate(`/profile`)}
-      >
-        {user?.username?.charAt(0).toUpperCase()}
-      </Avatar>
-    </Badge>
+      </Badge>
 
-    {/* Responsive Typography */}
-    <Box>
-    <Typography 
-      variant="h5" 
-      fontWeight="bold" 
-      sx={{ fontSize: { xs: '1.1rem', md: '1.5rem' } }}
-    >
-      {user?.username || 'Guest'}
-    </Typography>
+      {/* TEXT INFO */}
+      <Box sx={{ textAlign: { xs: 'left', md: 'center' } }}>
+        <Typography 
+          variant="h5" 
+          fontWeight="bold" 
+          sx={{ fontSize: { xs: '1.25rem', md: '1.5rem' } }}
+        >
+          {user?.username || 'Guest'}
+        </Typography>
 
-    <Typography 
-      variant="body2" 
-      color="text.secondary" 
-      sx={{ fontSize: { xs: '0.8rem', md: '0.875rem' }, mb: 0 }} // Removed gutterBottom for tighter fit
-    >
-      {user?.email || ''}
-    </Typography>
+        <Typography 
+          variant="body2" 
+          color="text.secondary" 
+          sx={{ fontSize: { xs: '0.85rem', md: '0.875rem' } }}
+        >
+          {user?.email || ''}
+        </Typography>
+      </Box>
     </Box>
-    </Box>
+
+    {/* BUTTONS CONTAINER */}
     <Box 
       sx={{ 
-        // Reduced gap and top margin on mobile
         mt: { xs: 2, md: 4 }, 
         display: 'flex', 
+        // Mobile: Row, Desktop: Column
         flexDirection: { xs: 'row', md: 'column' },
         alignItems: 'center',
-        gap: { xs: 0, md: 2 }, 
+        gap: { xs: 1, md: 2 }, 
         width: '100%' 
       }}
     >
+      {/* FIND FRIENDS BUTTON */}
       <Button 
           variant="contained" 
-          fullWidth 
-          startIcon={<AddPersonIcon />} 
-          // Thinner buttons on mobile
+          // 'startIcon' is only handled automatically if we want text. 
+          // We are doing manual layout for responsive icon-only mode.
           sx={{ 
             borderRadius: 3, 
-            py: { xs: 0.75, md: 1.5 }, 
+            py: { xs: 1, md: 1.5 }, 
             px: 2,
             fontSize: { xs: '0.8125rem', md: '0.875rem' }, 
-            marginInline:'auto',
+            // FLEX MAGIC: This makes buttons share width equally on mobile
+            flex: { xs: 1, md: 'unset' },
+            width: { md: '100%' }, 
+            minWidth: 0, // Prevents overflow on very small screens
           }} 
           onClick={() => setShowAddFriends(!showAddFriends)}
       >
-        {showAddFriends ? "Hide" : "Find Friends"} 
+        {showAddFriends ? <PersonRemove/> : <AddPersonIcon />}
+        {/* Text is HIDDEN on mobile (xs: none), visible on desktop (md: block) */}
+        <Box component="span" sx={{ display: { xs: 'none', md: 'block' }, ml: 1 }}>
+           {showAddFriends ? "Hide" : "Find Friends"} 
+        </Box>
       </Button>
 
+      {/* LOGOUT BUTTON */}
       <Button 
         variant="outlined" 
-        fullWidth 
         color="error" 
-        // Thinner buttons on mobile
         sx={{ 
-          marginInline:'auto',
-          py: { xs: 0.5, md: 1 },
+          // FLEX MAGIC: Share width equally
+          flex: { xs: 1, md: 'unset' },
+          width: { md: '100%' },
+          minWidth: 0,
+          py: { xs: 1, md: 1 },
           fontSize: { xs: '0.8125rem', md: '0.875rem' }
         }} 
         onClick={() => {logout(); navigate('/logout', { state: { fromLogout: true } });}}
       >
-        Logout
+        {/* On Mobile: Show Icon Only */}
+        <LogoutIcon sx={{ display: { xs: 'block', md: 'none' } }} />
+        
+        {/* On Desktop: Show Text Only */}
+        <Box component="span" sx={{ display: { xs: 'none', md: 'block' } }}>
+          Logout
+        </Box>
       </Button>
     </Box>
   </GlassBox>
