@@ -141,7 +141,7 @@ function PreviewMsg() {
     if (!user && UserExist) navigate('/auth');
   }, [user, UserExist, navigate]);
 
-  const handleGoBack = () => { navigate('/home'); document.title = 'Home'; };
+  const handleGoBack = () => { navigate('/home'); document.title = 'Polyvox • Home'; };
 
   // --- Scroll Logic ---
   const [visible, setVisible] = useState(false);

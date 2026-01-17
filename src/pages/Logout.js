@@ -7,7 +7,7 @@ function Logout() {
   const location = useLocation();
   const [allowed, setAllowed] = useState(false);
   const { t } = useTranslation();
-  document.title = t("logged_out_successfully");
+  document.title = t("logged_out_successfully") + " • Polyvox";
   
   const handleCreateAnAccount = () => {
     navigate('/auth/login');

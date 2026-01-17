@@ -7,7 +7,7 @@ import errorSvg from '../assets/404.svg';
 
 function ErrorPage() {
   const { t } = useTranslation();
-  document.title = `Polyvox | ${t('not_found')}`;
+  document.title = `Polyvox • ${t('not_found')}`;
   localStorage.setItem('enter', 'false');
   const navigate = useNavigate();
   

@@ -167,7 +167,7 @@ function LoginPage() {
 
   useEffect(() => {
     if (document.title !== 'Log in' && document.title !== 'Sign up') {
-      document.title = 'Log in';
+      document.title = 'Log in • Polyvox';
     }
   }); 
 
@@ -299,7 +299,7 @@ function LoginPage() {
   };
 
   const handlelogin = () => {
-    document.title = 'Log in';
+    document.title = 'Log in • Polyvox';
     setErrorloginmessage("");
     setErrormessage("");
     setsignup(false);
@@ -309,7 +309,7 @@ function LoginPage() {
   };
 
   const handlesignup = () => {
-    document.title = 'Sign up';
+    document.title = 'Sign up • Polyvox';
     setErrorloginmessage("");
     setErrormessage("");
     setsignup(true);
