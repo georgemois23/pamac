@@ -2,13 +2,14 @@ import React, { useEffect,useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Box, Container, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { ReactComponent as Logo } from '../Polyvox.svg';
 function Logout() {
   const navigate = useNavigate();
   const location = useLocation();
   const [allowed, setAllowed] = useState(false);
   const { t } = useTranslation();
-  document.title = t("logged_out_successfully") + " • Polyvox";
-  
+  document.title = "Logged out! • Polyvox";
+    const size = 250;
   const handleCreateAnAccount = () => {
     navigate('/auth/login');
   };
@@ -59,7 +60,7 @@ function Logout() {
         }}
       >
         {/* "Changed your mind?" text */}
-        <Typography variant='h6'>{t("changed_mind")}</Typography>
+        <Typography variant='body2'>{t("changed_mind")}</Typography>
   
         {/* Buttons Box */}
         <Box
@@ -71,7 +72,7 @@ function Logout() {
         >
           {/* Go to login page button */}
           <Typography
-            variant="h6"
+            variant="body1"
             sx={{
               cursor: 'pointer',
               border: '2px solid',
@@ -107,7 +108,20 @@ function Logout() {
             {t('view_messages')}
           </Typography> */}
         </Box>
+        
       </Box>
+       <Logo
+              style={{
+                width: size * 0.6,
+                height: size * 0.6,
+                position: 'absolute',
+                top: '15%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                marginTop: '20px',
+              }}
+              onClick={() => navigate('/auth')}
+            />
     </Container>
   );
   

@@ -32,6 +32,7 @@ import Home from './pages/Home';
 import Aurora from './components/Aurora';
 import './NewApp.css';
 import { ArrowBack } from '@mui/icons-material';
+import { tr } from 'date-fns/locale';
 
 function RequireAuth({ children, user }) {
   const location = useLocation();
@@ -165,6 +166,8 @@ useEffect(() => {
   }, [location.state]);
   const afterLoginPath = redirectPath;
   // console.log("After Login Path:", afterLoginPath);
+
+  const maintenanceMode = false; // Set to true to enable maintenance mode
   return (
     // <ThemeOption>
       // {/* <PopUpContext.Provider value={{}}> */}
@@ -175,7 +178,13 @@ useEffect(() => {
   blend={0.55}
   speed={0.8}
 />
-          {isLoading ? (
+      {maintenanceMode ? (
+        // If maintenance is ON: Show only this
+        <Routes>
+           <Route path="*" element={<OutOfService />} />
+        </Routes>
+      ) : (
+          isLoading ? (
        <LoadingSpinner message={loginMessage} />
     ) : (
       <>
@@ -263,7 +272,7 @@ useEffect(() => {
                 )
               }
             />
-          <Route path="/out-of-service" element={<OutOfService />} />  
+          {/* <Route path="/out-of-service" element={<OutOfService />} />   */}
           <Route path="/friends" element={<FriendshipsPage />} />  
           <Route path="/el" element={<Navigate to="/" replace />} />  
           <Route path="/en" element={<Navigate to="/" replace />} />  
@@ -311,6 +320,10 @@ useEffect(() => {
     </RequireAuth>
   }
 />
+  <Route
+  path='/inbox'
+  element={<Navigate to="/home" replace />}
+/>
              <Route
   path="/inbox/:conversationId"
   element={
@@ -324,7 +337,8 @@ useEffect(() => {
               <Route path="/404" element={<ErrorPage />} />
             </Routes>
             </>
-    )}
+
+   ) )}
           </div>
   );
 }
