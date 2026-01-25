@@ -1,48 +1,100 @@
-// import '../App.css';
-import React, { useContext} from 'react';
-import { Navigate, useNavigate,useLocation } from 'react-router-dom';
-import { useState, useEffect } from 'react';
-// import { useState } from 'react';
-import { Box, Button, ButtonBase, Container, Typography } from '@mui/material';
-import AuthContext from "../AuthContext"; // Import the context
-import { useTranslation } from 'react-i18next';
+import React, { useEffect } from 'react';
+import { Box, Typography, Link, GlobalStyles } from '@mui/material';
 import { ReactComponent as Logo } from '../Polyvox.svg';
-function OutOfService() {
-  const { t } = useTranslation();
-  document.title='Out of Service'
-  
-  const handleNavigate=()=>{
-    window.location.href='https://moysiadis.dev';
-  }
 
-  const location = useLocation();
+function OutOfService() {
+  document.title = 'Out of Service';
   const size = 250;
 
+  const handleNavigate = () => {
+    window.location.href = 'https://moysiadis.dev';
+  };
 
-return(
-    <Container sx={{userSelect:'none',}}>
-    <Typography variant='h2'>Website is temporalily out of service</Typography>
-    <br/>
-     <Logo
+  return (
+    <>
+      {/* This injects CSS to prevent scrolling on the body/html level */}
+      <GlobalStyles styles={{ 
+        body: { overflow: 'hidden' }, 
+        html: { overflow: 'hidden' } 
+      }} />
+
+      <Box
+        display="flex"
+        flexDirection="column"
+        alignItems="center"
+        justifyContent="center"
+        gap={3}
+        p={{ xs: 2, sm: 4 }}
+        // Using 100vh ensures it fills the screen exactly
+        height="100vh" 
+        width="100vw"
+        sx={{ 
+          userSelect: 'none', 
+          textAlign: 'center',
+          overflow: 'hidden', // Prevents internal scrolling
+          position: 'fixed', // Fixes it to the viewport
+          top: 0,
+          left: 0
+        }}
+      >
+        <Logo
           style={{
-            width: size * 0.6,   
-            height: size * 0.6,  
-            position: 'absolute',
-            top: '65%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            marginTop:'20px',
+            width: size * 0.6,
+            height: size * 0.6,
+            cursor: 'pointer',
+            marginBottom: '10px',
           }}
+          onClick={handleNavigate}
         />
-    {/* <Typography>{t("more_feautures")} <span style={{textDecoration:'underline', cursor:'pointer'}}onClick={handleCreateAnAccount} >{t("create_an_account")}</span></Typography> */}
-    <br/>
-        <Typography sx={{position: 'absolute',
-            top: '85%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',}}>Visit my portfolio website <span style={{textDecoration:'underline', cursor:'pointer'}}onClick={handleNavigate} >moysiadis.dev</span></Typography>
-    {/* <button onClick={handleCreateAnAccount} className='Enter' style={{fontSize:'35px'}} >Create an account</button> */}
-    </Container>
-  );
 
+        <Typography
+          variant="h5"
+          sx={{ 
+            fontWeight: "bold", 
+            fontSize: { xs: "1.4rem", sm: "1.6rem", md: "1.8rem" },
+            maxWidth: "500px" 
+          }}
+        >
+          Website is temporarily out of service
+        </Typography>
+
+        <Typography
+          variant="body2"
+          sx={{
+            maxWidth: { xs: "90%", sm: "400px" },
+            fontSize: { xs: "0.85rem", sm: "0.9rem" },
+          }}
+        >
+          We are performing some maintenance. In the meantime, feel free to check out my other work.
+        </Typography>
+
+        <Box
+          sx={{
+            mt: 1,
+            p: 2,
+            width: { xs: "80%", sm: "350px" },
+          }}
+        >
+          <Typography variant="body1">
+            Visit my portfolio:{" "}
+            <Link
+              component="button"
+              variant="body1"
+              onClick={handleNavigate}
+              sx={{
+                textDecoration: 'underline',
+                fontWeight: 'bold',
+                color: 'primary.main',
+                verticalAlign: 'baseline'
+              }}
+            >
+              moysiadis.dev
+            </Link>
+          </Typography>
+        </Box>
+      </Box>
+    </>
+  );
 }
+
 export default OutOfService;

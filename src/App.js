@@ -33,6 +33,16 @@ import Aurora from './components/Aurora';
 import './NewApp.css';
 import { ArrowBack } from '@mui/icons-material';
 
+function RequireAuth({ children, user }) {
+  const location = useLocation();
+
+  if (!user) {
+    return <Navigate to="/auth/login" state={{ from: location }} replace />;
+  }
+
+  return children;
+}
+
 function App() {
   const navigate = useNavigate();
   const { user, token, login, logout, isLoading,loginMessage,LogBut,incognito  } = useContext(AuthContext); 
@@ -123,6 +133,8 @@ useEffect(() => {
 //   // It already handles centering, full-screen blur, and the message text.
 //   return <LoadingSpinner message={loginMessage} />;
 // }
+
+  
  
   const handleLogout = () => {
     if(!incognito){
@@ -143,7 +155,16 @@ useEffect(() => {
     navigate(newPath);
   };
 
-  
+  const [redirectPath, setRedirectPath] = useState("/home");
+
+  useEffect(() => {
+    if (location.state?.from?.pathname) {
+      setRedirectPath(location.state.from.pathname);
+      console.log("Saved Redirect Path:", location.state.from.pathname);
+    }
+  }, [location.state]);
+  const afterLoginPath = redirectPath;
+  // console.log("After Login Path:", afterLoginPath);
   return (
     // <ThemeOption>
       // {/* <PopUpContext.Provider value={{}}> */}
@@ -214,7 +235,20 @@ useEffect(() => {
           path="/home" 
           element={user ? <Home /> : <Navigate to="/auth/login" replace />} 
         />
-              <Route path="/auth/:mode" element={user ? <Navigate to="/home"/> :<LoginPage />} />
+              <Route 
+              path="/auth/:mode" 
+              element={user ? <Navigate to={afterLoginPath} replace /> : <LoginPage />} 
+            />
+
+            <Route 
+              path="/login" 
+              element={user ? <Navigate to={afterLoginPath} replace /> : <Navigate to="/auth/login" />} 
+            />
+
+            <Route 
+              path="/register" 
+              element={user ? <Navigate to={afterLoginPath} replace /> : <Navigate to="/auth/register" />} 
+            />
               <Route
               path="/logout"
               element={
@@ -244,9 +278,9 @@ useEffect(() => {
                 element={<Navigate to="/home" replace />}
                 //  element={<Navigate to="/out-of-service" replace /> }
               /> 
-              <Route path="/login" element={user ? <Navigate to="/home"/> : <Navigate to="/auth/login" />} />
-              <Route path="/register" element={user ? <Navigate to="/home"/> : <Navigate to="/auth/register" />} />
-              <Route path="/signup" element={user ? <Navigate to="/home"/> : <Navigate to="/auth/register" />} />
+              {/* <Route path="/login" element={user ? <Navigate to="/home"/> : <Navigate to="/auth/login" />} /> */}
+              {/* <Route path="/register" element={user ? <Navigate to="/home"/> : <Navigate to="/auth/register" />} /> */}
+              {/* <Route path="/signup" element={user ? <Navigate to="/home"/> : <Navigate to="/auth/register" />} /> */}
               
               <Route path="/forgot-password" element={location.state?.username ? <ForgotPassword /> : <Navigate to='/auth' /> }/>
               <Route
@@ -260,15 +294,30 @@ useEffect(() => {
 
              
 
-  <Route path="/profile" element={<ProtectedProfile user={user} incognito={incognito} />} />
+  <Route 
+  path="/profile" 
+  element={
+    <RequireAuth user={user} incognito={incognito}>
+      <Profile user={user} />
+    </RequireAuth>
+  } 
+/>
 
       <Route
   path="/profile/:id"
-  element={user ? <UserProfile /> : <Navigate to="/auth" replace />}
-    />
-              <Route
+  element={
+    <RequireAuth user={user}>
+      <UserProfile />
+    </RequireAuth>
+  }
+/>
+             <Route
   path="/inbox/:conversationId"
-  element={user ? <PreviewMsg /> : <Navigate to="/auth" replace />}
+  element={
+    <RequireAuth user={user} >
+      <PreviewMsg />
+    </RequireAuth>
+  }
 />
               <Route path="*" element={<Navigate to="/404" />} /> 
               <Route path="/restricted" element={incognito  ? <ContentNotAvaiable/> : <Navigate to='/' replace/>} /> 
