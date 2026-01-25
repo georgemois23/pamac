@@ -165,11 +165,7 @@ function LoginPage() {
     setErrorloginmessage(ERRORMessage);
   }, [ERRORMessage]);
 
-  useEffect(() => {
-    if (document.title !== 'Log in' && document.title !== 'Sign up') {
-      document.title = 'Log in • Polyvox';
-    }
-  }); 
+ 
 
   useEffect(() => {
     if (mode === 'login') handlelogin();
