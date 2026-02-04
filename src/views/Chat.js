@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useRef } from 'react';
 import { 
   Box, 
   IconButton, 
@@ -14,10 +14,12 @@ import { useMessages } from '../context/MessagesContext';
 function Chat({ user = {} }) { 
   const { t } = useTranslation();
   const [message, setMessage] = useState('');
-  const { sendMessage } = useMessages();
+  const { sendMessage, setTyping } = useMessages();
 
   // Logic for disabling button
   const isButtonDisabled = !message || message.trim().length === 0;
+
+  const typingTimeoutRef = useRef(null);
 
   const handleMessageChange = (event) => {
     const input = event.target.value;
@@ -25,14 +27,22 @@ function Chat({ user = {} }) {
     const allowedPattern = /^[\p{Script=Greek}\p{Script=Latin}\P{Letter}]*$/u;
     if (allowedPattern.test(input)) {
       setMessage(input);
+
+      setTyping(true);
+       clearTimeout(typingTimeoutRef.current);
+      typingTimeoutRef.current = setTimeout(() => {
+        setTyping(false);
+      }, 3200);
     }
-  };
+    }
 
   const handleSend = (event) => {
     event.preventDefault();
     if (message.trim()) {
       sendMessage(message);
       setMessage('');
+      setTyping(false);
+      
       // We don't need navigate('/messages') if this component is already ON the messages page
     }
   };
@@ -123,5 +133,6 @@ function Chat({ user = {} }) {
     </Paper>
   );
 }
+
 
 export default Chat;

@@ -61,7 +61,58 @@ const isLink = (text) => {
 };
 
 
+const TypingIndicator = ({ username, color }) => {
+  const theme = useTheme();
 
+  // Define the bounce animation directly in JS
+  const bounceKeyframes = {
+    '0%, 80%, 100%': { transform: 'translateY(0)' },
+    '40%': { transform: 'translateY(-5px)' },
+  };
+
+  const dotStyle = (delay) => ({
+    width: 6,
+    height: 6,
+    borderRadius: '50%',
+    bgcolor: 'currentColor', // Inherits text color
+    mr: 0.5,
+    animation: 'bounce 1.4s infinite ease-in-out both',
+    animationDelay: delay,
+    '@keyframes bounce': bounceKeyframes,
+  });
+
+  return (
+    <Box sx={{ display: 'flex', alignItems: 'flex-end', gap: 1.5, mb: 2, mt: 1 }}>
+      <Avatar sx={{ bgcolor: color, width: 34, height: 34, fontSize: '0.9rem' }}>
+        {username?.charAt(0).toUpperCase()}
+      </Avatar>
+      
+      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+        <Typography variant="caption" sx={{ fontWeight: 'bold', opacity: 0.6, mb: 0.5, ml: 0.5 }}>
+          {username}
+        </Typography>
+        
+        <Paper
+          elevation={0}
+          sx={{
+            p: '10px 16px',
+            bgcolor: theme.palette.mode === 'dark' ? '#333' : '#e4e6eb',
+            color: theme.palette.mode === 'dark' ? '#ccc' : '#666',
+            borderRadius: '20px 20px 20px 4px',
+            display: 'flex',
+            alignItems: 'center',
+            height: '35px',
+            boxShadow: '0 1px 2px rgba(0,0,0,0.1)',
+          }}
+        >
+          <Box sx={dotStyle('-0.32s')} />
+          <Box sx={dotStyle('-0.16s')} />
+          <Box sx={dotStyle('0s')} />
+        </Paper>
+      </Box>
+    </Box>
+  );
+};
 
 const PreviewThisMsg = React.memo(({ message }) => {
   const [imgError, setImgError] = React.useState(false);
@@ -114,7 +165,7 @@ function PreviewMsg() {
   const [UserExist, setUserExist] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 910);
   const { conversationId } = useParams();
-  const { messages, loading, setDeleteThisMessage, setConversationId, participantUsername,participantId, error  } = useMessages();
+  const { messages, loading, setDeleteThisMessage, setConversationId, participantUsername,participantId, error, typingUsers  } = useMessages();
   const { t, i18n } = useTranslation();
   
   useEffect(() => {
@@ -123,9 +174,12 @@ function PreviewMsg() {
     }
   }, [conversationId, setConversationId]); 
 
+  console.log(typingUsers[conversationId])
+
   const containerRef = useRef(null);
   const { user, incognito } = useContext(AuthContext);
-
+  const currentTypers = typingUsers[conversationId] || [];
+const otherIsTyping = participantId && currentTypers.some(id => String(id) === String(participantId));
   useEffect(() => { document.title = participantUsername ? participantUsername + " • Inbox" : 'Inbox' }, [participantUsername]);
 
   const handleDelete = (id) => { console.log("Delete function called for:", id); };
@@ -197,7 +251,7 @@ function PreviewMsg() {
           alignItems: 'center', 
           justifyContent: 'space-between', 
           px: 2, 
-          borderBottom: '3px solid', 
+          borderBottom: '2px solid', 
           borderColor: 'divider',
         //   bgcolor: 'background.default',
         backdropFilter: 'blur(30px)',
@@ -273,6 +327,13 @@ function PreviewMsg() {
         fontFamily: 'Inter, sans-serif',
         fontWeight: 400
          }}>
+
+         {otherIsTyping && (
+    <TypingIndicator 
+      username={participantUsername} 
+      color={stringToColor(participantUsername || 'U')} 
+    />
+  )}
             
             {/* MESSAGES MAPPING */}
             {messages.length > 0 ? (
@@ -320,32 +381,78 @@ function PreviewMsg() {
                     
 
                     return (
-                        <Box key={msg.id || index} sx={{ display: 'flex', width: '100%', justifyContent: isOwnMessage ? 'flex-end' : 'flex-start', alignItems: 'flex-end', gap: 1.5, mt: marginBottom }}>
-                            {!isOwnMessage && AvatarOrPlaceholder}
+ <Box
+  key={msg.id || index}
+  sx={{
+    display: 'flex',
+    width: '100%',
+    justifyContent: isOwnMessage ? 'flex-end' : 'flex-start',
+    alignItems: 'flex-end',
+    gap: 1.5,
+    mt: marginBottom,
+  }}
+>
+  {!isOwnMessage && AvatarOrPlaceholder}
 
-                            <Paper 
-                                elevation={0} 
-                                sx={{ 
-                                    p: '10px 16px', width: 'fit-content', maxWidth: { xs: '75%', sm: '75%', md: '60%' }, 
-                                    bgcolor: isOwnMessage ? (theme.palette.mode === 'dark' ? '#1e88e5' : '#0084ff') : (theme.palette.mode === 'dark' ? '#333' : '#e4e6eb'),   
-                                    color: isOwnMessage ? '#fff' : (theme.palette.mode === 'dark' ? '#fff' : '#050505'),
-                                    borderRadius: borderRadius, wordBreak: 'break-word', position: 'relative', boxShadow: '0 1px 2px rgba(0,0,0,0.1)' 
-                                }}
-                            >
-                                {!isOwnMessage && isFirstInSequence && (
-                                    <Typography variant="caption" sx={{ display: 'block', fontWeight: 'bold', opacity: 0.6, mb: 0.5, fontSize: '0.75rem', ml: 0.5 }}>{displayName}</Typography>
-                                )}
-                                {/* <Typography variant="body1" sx={{ fontSize: '0.95rem', lineHeight: 1.4 }}>{msg.content}</Typography> */}
-                                <PreviewThisMsg message={msg.content} />
-                                {/* {((isOwnMessage || isAdmin) && !incognito) && (
-                                    <Box className="delete-overlay" sx={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: borderRadius, bgcolor: 'rgba(0,0,0,0.4)', opacity: 0, transition: 'opacity 0.2s', '&:hover': { opacity: 1 }, cursor: 'pointer' }} onClick={(e) => { e.stopPropagation(); handleDelete(msg.id); setDeleteThisMessage(msg.id); }}>
-                                            <DeleteForeverIcon sx={{ color: '#fff' }} />
-                                    </Box>
-                                )} */}
-                            </Paper>
-                        </Box>
-                    );
-                })
+  {/* Wrapper for username + bubble */}
+  <Box
+    sx={{
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: isOwnMessage ? 'flex-end' : 'flex-start',
+
+      // ✅ IMPORTANT: don't let this flex item shrink smaller than it should
+      flexShrink: 0,
+
+      // ✅ keep the same max width you had on the bubble
+      maxWidth: { xs: '75%', sm: '75%', md: '60%' },
+    }}
+  >
+    {!isOwnMessage && isFirstInSequence && (
+      <Typography
+        variant="caption"
+        sx={{
+          fontWeight: 'bold',
+          opacity: 0.6,
+          mb: 0.5,
+          fontSize: '0.75rem',
+          ml: 0.5,
+          userSelect: 'none',
+        }}
+      >
+        {displayName}
+      </Typography>
+    )}
+
+    <Paper
+      elevation={0}
+      sx={{
+        p: '10px 16px',
+
+        // ✅ bubble behaves like before
+        width: 'fit-content',
+        maxWidth: '100%', // constrained by wrapper maxWidth
+
+        bgcolor: isOwnMessage
+          ? (theme.palette.mode === 'dark' ? '#1e88e5' : '#0084ff')
+          : (theme.palette.mode === 'dark' ? '#333' : '#e4e6eb'),
+        color: isOwnMessage ? '#fff' : (theme.palette.mode === 'dark' ? '#fff' : '#050505'),
+        borderRadius,
+        position: 'relative',
+        boxShadow: '0 1px 2px rgba(0,0,0,0.1)',
+
+        // ✅ prevents "develope r"
+        wordBreak: 'normal',
+        overflowWrap: 'break-word',
+      }}
+    >
+      <PreviewThisMsg message={msg.content} />
+    </Paper>
+  </Box>
+</Box>
+
+);
+                } ) 
             ) : (
                 <Box sx={{ textAlign: 'center', mb: 'auto', mb: '30vh', opacity: 0.4 }}> 
                     <ChatBubbleOutlineIcon sx={{ fontSize: 60, mb: 2 }} />
@@ -354,7 +461,7 @@ function PreviewMsg() {
             )}
             
             {/* --- OLD HEADER REMOVED FROM HERE --- */}
-
+              {otherIsTyping && <div style={{ padding: 8, opacity: 0.7 }}>Typing...</div>}
         </Container>
       </Box>
 

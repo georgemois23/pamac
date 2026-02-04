@@ -17,7 +17,11 @@ export const MessagesProvider = ({ children }) => {
   const [connected, setConnected] = useState(false);
   const [loading, setLoading] = useState(false); 
   const [error, setError] = useState(false);
-   
+
+  const [typing, setTypingState] = useState(false);       // local user typing
+  const [typingUsers, setTypingUsers] = useState({}); 
+
+
   // Participants state
   const [participantUsername, setParticipantUsername] = useState(null);
   const [participantId, setParticipantId] = useState(null);
@@ -28,6 +32,19 @@ export const MessagesProvider = ({ children }) => {
 
   // --- Refs ---
   const socketRef = useRef(null);
+
+  const setTyping = useCallback((value) => {
+  setTypingState(value);
+
+  const socket = socketRef.current;
+  if (!socket || !socket.connected || !conversationId) return;
+
+  console.log("EMIT typing:set", { roomId: conversationId, isTyping: value, userId: user?.id });
+  socket.emit("typing:set", { roomId: conversationId, isTyping: value, userId: user?.id});
+}, [conversationId]);
+
+
+
   const messageQueue = useRef([]);
   const messagesEndRef = useRef(null);
    
@@ -113,6 +130,26 @@ export const MessagesProvider = ({ children }) => {
     socket.on('disconnect', () => setConnected(false));
     socket.on('connect_error', (err) => console.error(err));
 
+    // Inside MessagesProvider (Frontend)
+socket.on("typing:update", (payload) => {
+  const { roomId, userId, isTyping } = payload;
+
+  setTypingUsers(prev => {
+    const currentUsers = prev[roomId] || [];
+    
+    if (isTyping) {
+      // Add user if not already in list
+      if (!currentUsers.includes(userId)) {
+        return { ...prev, [roomId]: [...currentUsers, userId] };
+      }
+    } else {
+      // Remove user
+      return { ...prev, [roomId]: currentUsers.filter(id => id !== userId) };
+    }
+    return prev;
+  });
+});
+
     // --- HANDLE INCOMING MESSAGES ---
     socket.on('newMessage', (msg) => {
       if (activeConversationIdRef.current === msg.conversationId) {
@@ -133,6 +170,17 @@ export const MessagesProvider = ({ children }) => {
     return () => socket.disconnect();
   }, [user?.accessToken, fetchConversations]); 
 
+
+  useEffect(() => {
+  const socket = socketRef.current;
+  if (!socket || !socket.connected || !conversationId) return;
+
+  // Join the active conversation room
+  socket.emit("room:join", { roomId: conversationId });
+
+  // Optional: clear typing users when switching conversations
+  setTypingUsers(prev => ({ ...prev, [conversationId]: [] }));
+}, [conversationId, connected]);
 
   // =========================================================
   // 3. FETCH ACTIVE CHAT MESSAGES & PARTICIPANTS
@@ -253,7 +301,7 @@ export const MessagesProvider = ({ children }) => {
   const value = {
     conversations, messages, sendMessage, connected, loading,
     setConversationId, setDeleteThisMessage, setGoToProfile,
-    participantUsername, participantId, messagesEndRef, error,
+    participantUsername, participantId, messagesEndRef, error, typing, setTyping, typingUsers
   };
 
   return <MessagesContext.Provider value={value}>{children}</MessagesContext.Provider>;
