@@ -12,6 +12,7 @@ const ConversationSearch = ({ conversationId, onClose,query,
   results, 
   setResults }) => {
   const [loading, setLoading] = useState(false);
+  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000';
 
   useEffect(() => {
     setResults([]);
@@ -25,7 +26,7 @@ const ConversationSearch = ({ conversationId, onClose,query,
     setLoading(true);
     try {
       const response = await fetch(
-        `http://localhost:7001/ai/search?query=${encodeURIComponent(query)}&conversationId=${conversationId}`
+        `${API_URL}/ai/search?query=${encodeURIComponent(query)}&conversationId=${conversationId}`
       );
       const data = await response.json();
 
