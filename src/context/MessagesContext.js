@@ -233,7 +233,7 @@ socket.on("typing:update", (payload) => {
 
       } catch (err) {
         console.error(err);
-        showSnackbar({ message: 'Failed to load conversation', severity: 'error' });
+        // showSnackbar({ message: 'Failed to load conversation', severity: 'error' });
       } finally {
         setLoading(false);
       }

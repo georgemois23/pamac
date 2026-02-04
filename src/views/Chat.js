@@ -66,7 +66,7 @@ function Chat({ user = {} }) {
         // bottom: 0, 
         // left: 0, 
         // right: 0, 
-        zIndex: 11000000, // Higher than other content
+        zIndex: 10000009, // Higher than other content
         p: 2,
         // backgroundColor: 'inherit',
 
