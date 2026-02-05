@@ -220,16 +220,16 @@ function PreviewMsg() {
         {/* MESSAGES AREA */}
         <Box ref={containerRef} sx={{ 
           flexGrow: 1,minHeight: 0, display: 'flex', flexDirection: 'column-reverse', overflowY: 'auto', px: { xs: 1, sm: 4 }, py: 2,
-          '&::-webkit-scrollbar': {
-      width: { xs: '0px', sm: '6px' }
-    },
-    '&::-webkit-scrollbar-thumb': {
-      bgcolor: { sm: 'divider' },
-      borderRadius: 10
-    },
-    scrollbarWidth: { xs: 'none', sm: 'thin' },
-    msOverflowStyle: { xs: 'none', sm: 'auto' }
-  }}
+           '&::-webkit-scrollbar': {
+    width: { xs: 0, sm: '6px' },
+  },
+  '&::-webkit-scrollbar-thumb': {
+    bgcolor: { xs: 'transparent', sm: 'divider' },
+    borderRadius: 10,
+  },
+  scrollbarWidth: { xs: 'none', sm: 'auto' },
+  msOverflowStyle: { xs: 'none', sm: 'auto' },
+}}
         >
           <Box sx={{ display: 'flex', flexDirection: 'column-reverse', p: '0 !important' }}>
             {otherIsTyping && <TypingIndicator username={participantUsername} color={stringToColor(participantUsername)} />}
