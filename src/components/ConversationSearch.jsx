@@ -116,7 +116,7 @@ const ConversationSearch = ({ conversationId, onClose,query,
         borderBottom: '1px solid', 
         borderColor: 'divider' 
       }}>
-        <Stack direction="row" spacing={1} alignItems="center" sx={{cursor: 'default'}}>
+        <Stack direction="row" spacing={1} alignItems="center" sx={{cursor: 'default', userSelect: 'none'}}>
   <PsychologyIcon color="primary" />
 
   <Box

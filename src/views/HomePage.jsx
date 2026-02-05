@@ -440,7 +440,7 @@ const HomePage = () => {
                   placeholder={tabValue === 0 ? "Search chats..." : "Search friends..."}
                   variant="outlined"
                   value={searchQuery}
-                  onChange={(e) => {setSearchQuery(e.target.value);}}
+                  onChange={(e) => {setSearchQuery(e.target.value.toLowerCase());}}
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
@@ -627,7 +627,7 @@ const HomePage = () => {
           {/* --- RIGHT COLUMN: ADD FRIENDS --- */}
           {showAddFriends && (
             <Grid item md={3} sx={{ height: { md: '100%' }, order: { xs: 1, md: 3 }, width: '100%',  }}>
-              <GlassBox sx={{  bgcolor: 'inherit' }}>
+              <GlassBox sx={{ overflow: 'hidden', display: 'flex', flexDirection: 'column', bgcolor: 'inherit' }}>
                 <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', }}>
                 <Typography variant="h6" fontWeight="bold" gutterBottom>Add Friends</Typography>
                 <Button variant="text" size="small" onClick={() => {setShowAddFriends(false); setFriendRequestsSearch(''); setFriendRequests([])}} sx={{ mb: 2 }}><CloseIcon /></Button>
@@ -636,12 +636,38 @@ const HomePage = () => {
                   fullWidth 
                   placeholder="Username..." 
                   size="small"
-                  onChange={(e)=> {handleSearch(e.target.value);  setFriendRequestsSearch(e.target.value);}}
+                  onChange={(e)=> {handleSearch(e.target.value.toLowerCase());  setFriendRequestsSearch(e.target.value.toLowerCase());}}
                   sx={{ mb: 2, '& .MuiOutlinedInput-root': { borderRadius: 4 } }} 
                 />
-                
+                <Box
+      sx={{
+        flex: 1,
+        overflowY: 'auto',
+        // px: { sm: 0, md: 2 },
+        pb: 2,
+        
+        '&::-webkit-scrollbar': {
+          width: '6px',
+        },
+        '&::-webkit-scrollbar-track': {
+          backgroundColor: 'transparent',
+          marginBottom: '20px',
+          marginTop: '15px',
+        },
+        '&::-webkit-scrollbar-thumb': {
+          backgroundColor: '#6b6b6b',
+          borderRadius: '20px',
+        },
+        '&::-webkit-scrollbar-thumb:hover': {
+          backgroundColor: '#555',
+        },
+        '&::-webkit-scrollbar-button': {
+          display: 'none',
+        },
+      }}
+    >
                 {friendRequests.length > 0 && friendRequests.map((req) => (
-                  <Box key={req.id} sx={{ mt: 2, p: 2, border: '1px solid', borderColor: 'divider', borderRadius: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Box key={req.id} sx={{ mt: 2, p: 2, border: '1px solid', borderColor: 'divider', borderRadius: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center', }}>
                     <Typography variant="subtitle1" fontWeight="bold" onClick={()=> navigate(`/profile/${req.id}`)} sx={{cursor:'pointer'}}>{req.username}</Typography>
                       <Button 
                         variant="contained"
@@ -654,11 +680,14 @@ const HomePage = () => {
                       
                   </Box>
                 ))}
+                
+                
                 {friendRequests.length === 0 && friendRequestsSearch.length>0 && (
                   <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
                     No users found.
                   </Typography>
                 )}
+                </Box>
               </GlassBox>
             </Grid>
           )}
