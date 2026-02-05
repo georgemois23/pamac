@@ -66,8 +66,9 @@ function Chat({ user = {} }) {
         // bottom: 0, 
         // left: 0, 
         // right: 0, 
-        zIndex: 10000009, // Higher than other content
+        zIndex: 100, // Higher than other content
         p: 2,
+        flexShrink: 0,
         // backgroundColor: 'inherit',
 
         backgroundColor: 'background.default',

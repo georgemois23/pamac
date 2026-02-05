@@ -6,6 +6,7 @@ import {
 import SearchIcon from '@mui/icons-material/Search';
 import CloseIcon from '@mui/icons-material/Close';
 import PsychologyIcon from '@mui/icons-material/Psychology';
+import { ReactComponent as Logo } from '../Polyvox.svg';
 
 const ConversationSearch = ({ conversationId, onClose,query, 
   setQuery, 
@@ -46,55 +47,52 @@ const ConversationSearch = ({ conversationId, onClose,query,
   };
 
   const handleResultTap = (messageId) => {
-  // 1. Close the drawer immediately
   onClose(); 
 
   const el = document.getElementById(messageId);
   if (!el) return;
 
-  // 2. Start the scroll travel
   el.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
-  // 3. Setup the "Observer" to wait for arrival
   const observer = new IntersectionObserver((entries) => {
     entries.forEach((entry) => {
-      // If the message has entered the viewport
       if (entry.isIntersecting) {
-        
-        // 4. TRIGGER THE ANIMATION ONLY NOW
-        entry.target.animate([
-          { 
-            backgroundColor: 'rgba(56, 189, 248, 0.6)', 
-            transform: 'scale(1)',
-            boxShadow: '0 0 0px rgba(56, 189, 248, 0)'
-          },
-          { 
-            backgroundColor: 'rgba(56, 189, 248, 0.3)', 
-            transform: 'scale(1.04)',
-            boxShadow: '0 0 25px rgba(56, 189, 248, 0.5)'
-          },
-          { 
-            backgroundColor: 'transparent', 
-            transform: 'scale(1)',
-            boxShadow: '0 0 0px rgba(56, 189, 248, 0)'
-          }
-        ], {
-          duration: 1200,
-          easing: 'ease-out',
-          fill: 'forwards'
-        });
 
-        // 5. Stop watching this element (we arrived!)
+        // ⏳ small delay before animation starts
+        setTimeout(() => {
+          entry.target.animate([
+            { 
+              backgroundColor: 'rgba(56, 189, 248, 0.6)', 
+              transform: 'scale(1)',
+              boxShadow: '0 0 0px rgba(56, 189, 248, 0)'
+            },
+            { 
+              backgroundColor: 'rgba(56, 189, 248, 0.3)', 
+              transform: 'scale(1.04)',
+              boxShadow: '0 0 25px rgba(56, 189, 248, 0.5)'
+            },
+            { 
+              backgroundColor: 'transparent', 
+              transform: 'scale(1)',
+              boxShadow: '0 0 0px rgba(56, 189, 248, 0)'
+            }
+          ], {
+            duration: 1200,
+            easing: 'ease-out',
+            fill: 'forwards'
+          });
+        }, 200); // 👈 tweak this (150–300ms feels great)
+
         observer.unobserve(entry.target);
       }
     });
   }, { 
-    threshold: 0.5 // Trigger when at least 50% of the message is visible
+    threshold: 0.5
   });
 
-  // Start watching the target message
   observer.observe(el);
 };
+
 
   return (
     <Box sx={{ 
@@ -118,10 +116,39 @@ const ConversationSearch = ({ conversationId, onClose,query,
         borderBottom: '1px solid', 
         borderColor: 'divider' 
       }}>
-        <Stack direction="row" spacing={1} alignItems="center">
-          <PsychologyIcon color="primary" />
-          <Typography variant="subtitle1" fontWeight={700}>AI Search</Typography>
-        </Stack>
+        <Stack direction="row" spacing={1} alignItems="center" sx={{cursor: 'default'}}>
+  <PsychologyIcon color="primary" />
+
+  <Box
+    display="flex"
+    alignItems="center"
+    gap={0.5}
+  >
+    <Typography
+      variant="subtitle1"
+      fontWeight={700}
+      sx={{ display: 'flex', alignItems: 'baseline', gap: '4px' }}
+    >
+      AI Search
+      <Box
+        component="span"
+        sx={{
+          fontSize: '0.75rem',
+          fontWeight: 600,
+          opacity: 0.9
+        }}
+      >
+        by
+      </Box>
+    </Typography>
+  <Logo
+    style={{
+      width: 90,
+      height: 90,
+    }}
+  />
+  </Box>
+</Stack>
         <IconButton onClick={onClose} size="small" sx={{ color: 'inherit' }}><CloseIcon fontSize="small" /></IconButton>
       </Box>
 

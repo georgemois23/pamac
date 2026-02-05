@@ -120,9 +120,32 @@ function PreviewMsg() {
   }, []);
 
   useEffect(() => {
+  const body = document.body;
+  const html = document.documentElement;
+
+  const prevBodyOverflow = body.style.overflow;
+  const prevBodyHeight = body.style.height;
+  const prevHtmlOverflow = html.style.overflow;
+  const prevHtmlHeight = html.style.height;
+
+  body.style.overflow = "hidden";
+  body.style.height = "100%";
+  html.style.overflow = "hidden";
+  html.style.height = "100%";
+
+  return () => {
+    body.style.overflow = prevBodyOverflow;
+    body.style.height = prevBodyHeight;
+    html.style.overflow = prevHtmlOverflow;
+    html.style.height = prevHtmlHeight;
+  };
+}, []);
+
+
+  useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
-    const handleScroll = () => setVisible(Math.abs(container.scrollTop) > 200);
+    const handleScroll = () => setVisible(Math.abs(container.scrollTop) > 1500);
     container.addEventListener("scroll", handleScroll);
     return () => container.removeEventListener("scroll", handleScroll);
   }, []);
@@ -145,7 +168,7 @@ function PreviewMsg() {
   const reversedMessages = [...messages].reverse();
 
   return (
-    <Box sx={{ display: 'flex', width: '100dvw', height: '100dvh', overflow: 'hidden', bgcolor: 'inherit', }}>
+    <Box sx={{ display: 'flex', width: '100dvw', height: '100dvh', overflow: 'hidden', bgcolor: 'inherit',position: 'relative' }}>
       
       {/* LEFT SIDE: COMPLETE CHAT STACK (Header + Messages + Footer) */}
       <Box sx={{ 
@@ -197,9 +220,18 @@ function PreviewMsg() {
         {/* MESSAGES AREA */}
         <Box ref={containerRef} sx={{ 
           flexGrow: 1,minHeight: 0, display: 'flex', flexDirection: 'column-reverse', overflowY: 'auto', px: { xs: 1, sm: 4 }, py: 2,
-          '&::-webkit-scrollbar': { width: '6px' }, '&::-webkit-scrollbar-thumb': { bgcolor: 'divider', borderRadius: 10 }
-        }}>
-          <Container sx={{ display: 'flex', flexDirection: 'column-reverse', p: '0 !important' }}>
+          '&::-webkit-scrollbar': {
+      width: { xs: '0px', sm: '6px' }
+    },
+    '&::-webkit-scrollbar-thumb': {
+      bgcolor: { sm: 'divider' },
+      borderRadius: 10
+    },
+    scrollbarWidth: { xs: 'none', sm: 'thin' },
+    msOverflowStyle: { xs: 'none', sm: 'auto' }
+  }}
+        >
+          <Box sx={{ display: 'flex', flexDirection: 'column-reverse', p: '0 !important' }}>
             {otherIsTyping && <TypingIndicator username={participantUsername} color={stringToColor(participantUsername)} />}
             
             {messages.length > 0 ? reversedMessages.map((msg, index) => {
@@ -244,7 +276,7 @@ function PreviewMsg() {
                 <Typography variant="h6">Start the conversation</Typography>
               </Box>
             )}
-          </Container>
+          </Box>
         </Box>
 
         {/* FOOTER */}
@@ -256,7 +288,6 @@ function PreviewMsg() {
         <Drawer anchor="right" open={isSearchOpen} onClose={() => setIsSearchOpen(false)} keepMounted hideBackdrop  PaperProps={{ sx: { width: '100dvw',bgcolor: 'transparent',backgroundImage: 'none',elevation: 0  } }} sx={{
       // Ensures the drawer doesn't create a secondary scrollbar
       zIndex: 1200, 
-      position: 'absolute' 
     }}>
           <ConversationSearch conversationId={conversationId} onClose={() => setIsSearchOpen(false)} query={searchQuery}
           setQuery={setSearchQuery}
@@ -280,8 +311,8 @@ function PreviewMsg() {
 
       {/* Floating Scroll Button */}
       <Box onClick={scrollToBottom} sx={{ 
-        position: 'fixed', bottom: 100, 
-        right: isSearchOpen && !isMobile ? 380 : 30, 
+        position: 'absolute', bottom: 100, 
+        right: isSearchOpen && !isMobile ? 380 : 15, 
         transition: 'all 0.3s ease', opacity: visible ? 1 : 0, cursor: 'pointer', zIndex: 1100,
         bgcolor: 'background.paper', p: 1, borderRadius: '50%', boxShadow: 3, display: 'flex'
       }}>
