@@ -516,8 +516,8 @@ const HomePage = () => {
               ) : null
             )}
 
-              {conversationSearch.length > 4 &&
-                <Button variant="outlined" size="small" onClick={() => navigate('/inbox')} sx={{ display: 'block', mx: 'auto', mt: 1,borderRadius: 3, 
+              {conversationSearch.length > 4 && tabValue === 0 &&
+                <Button variant="text" size="small" onClick={() => navigate('/inbox')} sx={{ display: 'block', mx: 'auto', mt: 1,borderRadius: 3, 
             py: { xs: 1, md: 1.5 }, 
             px: 2,
             fontSize: { xs: '0.8125rem', md: '0.875rem' },  }}>
