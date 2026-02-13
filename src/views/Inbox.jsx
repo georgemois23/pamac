@@ -21,7 +21,7 @@ export default function Inbox() {
   sx={{
     display: 'flex',
     width: '100%',
-    height: '100%',
+    height: "100dvh",  
     minWidth: 0,
     minHeight: 0,
     overflow: 'hidden',
