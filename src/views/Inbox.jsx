@@ -2,10 +2,12 @@ import React, { useEffect, useState } from "react";
 import { Box } from "@mui/material";
 import Conversations from "../components/Conversations";
 import PreviewMsg from "./PreviewMsg";
+import { useParams } from "react-router-dom";
 
 export default function Inbox() {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 910);
-  const [selectedId, setSelectedId] = useState(null);
+  const {conversationId} = useParams();
+  const [selectedId, setSelectedId] = useState(conversationId || null);
 
   useEffect(() => {
     const onResize = () => setIsMobile(window.innerWidth < 910);
@@ -14,7 +16,8 @@ export default function Inbox() {
   }, []);
 
   // ✅ On mobile we don't render split view; routes handle it
-  if (isMobile) return <Conversations isMobile={true} />;
+  if (isMobile && !selectedId) return <Conversations isMobile={true} />;
+  if (isMobile) return   <PreviewMsg forcedConversationId={selectedId} onClose={() => setSelectedId(null)} />
 
   return (
     <Box

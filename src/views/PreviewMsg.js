@@ -208,7 +208,7 @@ function PreviewMsg({ forcedConversationId, onClose }) {
 
   const handleGoBack = () => {
   if (isMobile) {
-    setConversationId(null);
+    onClose?.();
     navigate("/inbox", { replace: true });
   }
   else {

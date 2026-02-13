@@ -328,7 +328,8 @@ useEffect(() => {
   path="/inbox/:conversationId"
   element={
     <RequireAuth user={user} >
-      <PreviewMsg />
+      {/* <PreviewMsg /> */}
+      <Inbox />
     </RequireAuth>
   }
 />
