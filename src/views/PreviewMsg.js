@@ -30,6 +30,8 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import Chat from './Chat';
 import ConversationSearch from '../components/ConversationSearch';
 import errorSvg from '../assets/nochatt.svg';
+import Conversations from '../components/Conversations';
+import { set } from 'mongoose';
 
 // --- HELPER FUNCTIONS ---
 const isMediaUrl = (text) => {
@@ -53,6 +55,24 @@ const stringToColor = (string) => {
   for (let i = 0; i < 3; i++) color += `00${((hash >> (i * 8)) & 0xff).toString(16)}`.slice(-2);
   return color;
 };
+
+const getBubbleRadius = ({ isOwn, isFirst, isLast }) => {
+  const R = 20;
+  const S = 6;  
+
+  if (isOwn) {
+    if (isFirst && isLast) return `${R}px`;
+    if (isFirst) return `${R}px ${R}px ${S}px ${R}px`;
+    if (isLast)  return `${R}px ${S}px ${R}px ${R}px`;
+    return `${R}px ${S}px ${S}px ${R}px`;
+  } else {
+    if (isFirst && isLast) return `${R}px`;
+    if (isFirst) return `${R}px ${R}px ${R}px ${S}px`;
+    if (isLast)  return `${S}px ${R}px ${R}px ${R}px`;
+    return `${S}px ${R}px ${S}px ${R}px`;
+  }
+};
+
 
 const getInitials = (name) => name ? name.charAt(0).toUpperCase() : '?';
 
@@ -78,28 +98,58 @@ const TypingIndicator = ({ username, color }) => {
   );
 };
 
-// --- MESSAGE CONTENT PREVIEWER ---
 const PreviewThisMsg = React.memo(({ message }) => {
   const [imgError, setImgError] = React.useState(false);
+
   if (isMediaUrl(message) && !imgError) {
     return (
-      <Box component="img" src={message} loading="lazy" onError={() => setImgError(true)}
-        sx={{ maxWidth: '100%', width: { xs: '100%', sm: 320 }, height: 'auto', borderRadius: 2, objectFit: 'contain' }} />
+      <Box sx={{ maxWidth: '100%' }}>
+        <Box
+          component="img"
+          src={message}
+          alt="media"
+          loading="lazy"
+          draggable="false"
+          onError={() => setImgError(true)}
+          sx={{
+            maxWidth: { xs: '100%', sm: 320, md: 360 },
+            width: '100%',
+            height: 'auto',
+            borderRadius: 2,
+            objectFit: 'contain',
+          }}
+        //   onClick={() => window.open(message, '_blank')}
+        />
+      </Box>
     );
   }
+
   if (isLink(message)) {
-    return <Link href={message} target="_blank" rel="noopener noreferrer" underline='none'>{message}</Link>;
+    return (
+      <Typography sx={{ fontSize: '0.95rem', wordBreak: 'break-word' }}>
+        <Link href={message} target="_blank" rel="noopener noreferrer" underline='none'>
+          {message}
+        </Link>
+      </Typography>
+    );
   }
-  return <Typography sx={{ fontSize: '0.95rem', wordBreak: 'break-word', fontFamily: 'Inter, sans-serif' }}>{message}</Typography>;
+
+  return (
+    <Typography sx={{ fontSize: '0.95rem', wordBreak: 'break-word' }}>
+      {message}
+    </Typography>
+  );
 });
 
 // --- MAIN PREVIEW COMPONENT ---
-function PreviewMsg() {
+function PreviewMsg({ forcedConversationId, onClose }) {
   const navigate = useNavigate();
   const theme = useTheme();
-  const { conversationId } = useParams();
+  const { conversationId: routeConversationId } = useParams();
+  const conversationId = forcedConversationId || routeConversationId;
   const { user } = useContext(AuthContext);
   const containerRef = useRef(null);
+  
   
   const { messages, loading, setConversationId, participantUsername, participantId, error, typingUsers } = useMessages();
   const { t } = useTranslation();
@@ -110,7 +160,7 @@ function PreviewMsg() {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 910);
   const [visible, setVisible] = useState(false);
 
-  useEffect(() => { if (conversationId) setConversationId(conversationId); }, [conversationId, setConversationId]);
+  
   useEffect(() => { document.title = participantUsername ? `${participantUsername} • Inbox` : 'Inbox' }, [participantUsername]);
 
   useEffect(() => {
@@ -150,9 +200,21 @@ function PreviewMsg() {
     return () => container.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const handleGoBack = () => navigate('/home');
-  const scrollToBottom = () => containerRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+  const handleGoBack = () => {
+  if (isMobile) {
+    setConversationId(null);
+    navigate("/inbox", { replace: true });
+  }
+  else {
+    onClose?.();
+    navigate("/inbox", { replace: true });
+  }
+};
 
+  const scrollToBottom = () => containerRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+useEffect(() => {
+  if (conversationId) setConversationId(conversationId);
+}, [conversationId, setConversationId]);
   if (error) return (
     <Container sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '100vh', textAlign: 'center', gap: 3 }}>
       <Box component="img" src={errorSvg} sx={{ width: 120, opacity: 0.5 }} />
@@ -161,25 +223,60 @@ function PreviewMsg() {
     </Container>
   );
 
-  if (loading || !participantUsername) return <LoadingSpinner />;
+  if (loading || !participantUsername) {
+  return (
+    <Box sx={{ position: 'relative', width: '100%', height: '100dvh' }}>
+      <LoadingSpinner fullscreen={false} />
+    </Box>
+  );
+}
+
+
 
   const currentTypers = typingUsers[conversationId] || [];
   const otherIsTyping = participantId && currentTypers.some(id => String(id) === String(participantId));
   const reversedMessages = [...messages].reverse();
-
+  
   return (
-    <Box sx={{ display: 'flex', width: '100dvw', height: '100dvh', overflow: 'hidden', bgcolor: 'inherit',position: 'relative' }}>
-      
-      {/* LEFT SIDE: COMPLETE CHAT STACK (Header + Messages + Footer) */}
-      <Box sx={{ 
+    <Box sx={{ 
         display: 'flex', 
-        flexDirection: 'column', 
-        flexGrow: 1, 
-        height: '100%',
-        minHeight: 0,
-        transition: 'all 0.3s ease-in-out',
-        width: isSearchOpen && !isMobile ? 'calc(100% - 350px)' : '100%' 
-      }}>
+        width: '100%',     // Changed from 100dvw
+        height: '100dvh',    // Changed from 100dvh
+        overflow: 'hidden', 
+        bgcolor: 'inherit',
+        position: 'relative' 
+    }}>
+      {/* {!isMobile && (
+      <Box
+        sx={{
+          width: 330,
+          flexShrink: 0,
+          height: '100%',
+          borderRight: '1px solid',
+          borderColor: 'divider',
+          minHeight: 0,
+          display: 'flex',
+          flexDirection: 'column',
+          transition: 'all 0.3s ease-in-out',
+        }}
+      >
+        <Conversations />
+      </Box>
+    )} */}
+      {/* LEFT SIDE: COMPLETE CHAT STACK (Header + Messages + Footer) */}
+      <Box
+  sx={{
+    display: 'flex',
+    flexDirection: 'column',
+    flexGrow: 1,
+    flexBasis: 0,     // ✅ allows proper shrinking
+    minWidth: 0,      // ✅ critical to avoid overflow
+    height: '100%',
+    minHeight: 0,
+    transition: 'all 0.3s ease-in-out',
+  }}
+>
+
         
         {/* HEADER */}
         <Box sx={{ 
@@ -198,7 +295,7 @@ function PreviewMsg() {
   zIndex: 10,
 }}>
           <Stack direction="row" alignItems="center" spacing={1.5}>
-            <IconButton onClick={handleGoBack}><ArrowBackIcon /></IconButton>
+          {isMobile &&  <IconButton onClick={handleGoBack}><ArrowBackIcon /></IconButton>}
             <Stack direction="row" alignItems="center" spacing={1.5} sx={{ cursor: 'pointer' }} onClick={() => navigate(`/profile/${participantId}`)}>
               <Avatar sx={{ bgcolor: stringToColor(participantUsername || 'U'), width: 34, height: 34 }}>
                 {getInitials(participantUsername)}
@@ -256,7 +353,11 @@ function PreviewMsg() {
                   <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: isOwn ? 'flex-end' : 'flex-start', maxWidth: '75%' }}>
                     {!isOwn && isFirst && <Typography variant="caption" sx={{ fontWeight: 700, opacity: 0.5, mb: 0.5, ml: 1 }}>{displayName}</Typography>}
                     <Paper elevation={0} sx={{ 
-                      p: '10px 16px', borderRadius: isOwn ? '20px 20px 4px 20px' : '20px 20px 20px 4px',
+                      p: '10px 16px', borderRadius: getBubbleRadius({
+                            isOwn,
+                            isFirst,
+                            isLast,
+                          }),
                       bgcolor: isOwn 
                     ? (theme.palette.primary.main || '#0084ff') 
                     : (theme.palette.mode === 'dark' ? '#333' : '#e4e6eb'),
@@ -296,8 +397,12 @@ function PreviewMsg() {
         </Drawer>
       ) : (
         <Box sx={{ 
-          width: isSearchOpen ? 350 : 0, transition: 'width 0.3s ease-in-out', 
-          overflow: 'hidden', height: '100%', borderLeft: isSearchOpen ? 1 : 0, 
+          width: isSearchOpen ? 350 : 0,
+          flexShrink: 0, // ✅ keep fixed width
+          transition: 'width 0.3s ease-in-out',
+          overflow: 'hidden',
+          height: '100%',
+          borderLeft: isSearchOpen ? 1 : 0,
           borderColor: 'divider',
         }}>
           <Box sx={{ width: 350, height: '100%' }}>

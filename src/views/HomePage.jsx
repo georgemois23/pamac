@@ -40,6 +40,7 @@ import { useSnackbar } from '../context/SnackbarContext';
 import { get } from 'mongoose';
 import { useFriendContext } from '../context/FriendContext';
 import GlobalDialog from '../components/GlobalDialog';
+import { apiFetch } from '../api/Fetch';
 
 // --- 1. GLASSMORPHISM STYLED COMPONENT ---
 const GlassBox = styled(Box)(({ theme }) => ({
@@ -142,23 +143,6 @@ const HomePage = () => {
       }
     }, [tabValue]);
 
-  // --- FETCH CONVERSATIONS ---
-  useEffect(() => {
-    if (!user?.accessToken) return;
-
-    fetch(`${API_URL}/conversations`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${user.accessToken}`,
-        },
-      })
-      .then(res => res.json())
-      .then(data => {
-         setConversations(data);
-      })
-      .catch(err => console.error('Error fetching conversations:', err));
-  }, [user]);
 
   const handleCloseAddFriends = () => {
       setShowAddFriends(false);
@@ -202,23 +186,18 @@ const HomePage = () => {
     }
     else {
     try {
-      const res = await fetch(`${API_URL}/conversations`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${user.accessToken}`,
-        },
-        body: JSON.stringify({ participantId: participant.id }),
-      });
-      
-      if (!res.ok) throw new Error('Failed to start conversation');
-      
-      const conversation = await res.json();
-      navigate(`/inbox/${conversation.id}`);
+  const conversation = await apiFetch("/conversations", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ participantId: participant.id }),
+  });
 
-    } catch (error) {
-      console.error('Error starting conversation:', error);
-    }
+  navigate(`/inbox/${conversation.id}`);
+} catch (error) {
+  console.error("Error starting conversation:", error);
+}
   }
   };
 
@@ -486,7 +465,7 @@ const HomePage = () => {
                 <List >
                   {tabValue === 0 && (
               conversationSearch.length > 0 ? (
-                conversationSearch.map((chat) => {
+                conversationSearch.slice(0,4).map((chat) => {
                   const { name, initial, msg, time } = getDisplayInfo(chat);
 
                   return (
@@ -536,6 +515,15 @@ const HomePage = () => {
                 </Typography>
               ) : null
             )}
+
+              {conversationSearch.length > 4 &&
+                <Button variant="outlined" size="small" onClick={() => navigate('/inbox')} sx={{ display: 'block', mx: 'auto', mt: 1,borderRadius: 3, 
+            py: { xs: 1, md: 1.5 }, 
+            px: 2,
+            fontSize: { xs: '0.8125rem', md: '0.875rem' },  }}>
+                  View All
+                </Button>
+              }
 
 
                   {tabValue === 1 &&  (

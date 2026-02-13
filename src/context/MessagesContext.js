@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState, useRef, useCallb
 import { io } from 'socket.io-client';
 import AuthContext from '../AuthContext';
 import { useSnackbar } from './SnackbarContext';
+import { apiFetch } from '../api/Fetch';
 
 const MessagesContext = createContext();
 const API_URL = process.env.REACT_APP_API_URL;
@@ -59,19 +60,15 @@ export const MessagesProvider = ({ children }) => {
   // 1. FETCH CONVERSATIONS LIST
   // =========================================================
   const fetchConversations = useCallback(async () => {
-    if (!user?.accessToken) return;
     try {
-      const res = await fetch(`${API_URL}/conversations`, {
-        headers: { 'Authorization': `Bearer ${user.accessToken}` },
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setConversations(data); 
-      }
+      const data = await apiFetch("/conversations");
+      setConversations(Array.isArray(data) ? data : []);
     } catch (err) {
+      // If not logged in / unauthorized, just clear
       console.error(err);
+      setConversations([]);
     }
-  }, [user?.accessToken]);
+  }, []);
 
   useEffect(() => {
     fetchConversations();
@@ -109,13 +106,12 @@ export const MessagesProvider = ({ children }) => {
   // 2. SOCKET CONNECTION & GLOBAL EVENTS
   // =========================================================
   useEffect(() => {
-    if (!user?.accessToken) return;
 
     // Initialize Socket
     const socket = io(API_URL, {
-      auth: { token: user.accessToken },
+      withCredentials: true,
       autoConnect: true,
-      transports: ['websocket'],
+      transports: ["websocket"],
     });
     socketRef.current = socket;
 
@@ -168,7 +164,7 @@ socket.on("typing:update", (payload) => {
     });
 
     return () => socket.disconnect();
-  }, [user?.accessToken, fetchConversations]); 
+  }, [fetchConversations]); 
 
 
   useEffect(() => {
@@ -186,7 +182,7 @@ socket.on("typing:update", (payload) => {
   // 3. FETCH ACTIVE CHAT MESSAGES & PARTICIPANTS
   // =========================================================
   useEffect(() => {
-    if (!user?.accessToken || !conversationId) {
+    if (!conversationId) {
       setLoading(false);
       return;
     }
@@ -194,53 +190,39 @@ socket.on("typing:update", (payload) => {
     const loadConversationData = async () => {
       setLoading(true);
       setError(false);
-      try {
-        // A. Fetch Messages
-        const msgRes = await fetch(`${API_URL}/messages/${conversationId}`, {
-          headers: {
-            'x-frontend-key': process.env.REACT_APP_FRONTEND_KEY || '',
-            'Authorization': `Bearer ${user.accessToken}`,
-          },
-        });
-        if (!msgRes.ok) {
-          setError(true);
-        if (msgRes.status === 404) {
-            
-             throw new Error("Conversation not found");
-        }
-        throw new Error("Failed to fetch messages");
-      }
-        if (msgRes.ok) {
-          const msgData = await msgRes.json();
-          setMessages(msgData);
-        }
 
-        // B. Fetch Participants
-        const partRes = await fetch(`${API_URL}/conversations/${conversationId}/participants`, {
+      try {
+        // A) Messages
+        const msgData = await apiFetch(`/messages/${conversationId}`, {
           headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${user.accessToken}`,
+            "x-frontend-key": process.env.REACT_APP_FRONTEND_KEY || "",
           },
         });
-        if (partRes.ok) {
-          const partData = await partRes.json();
+        setMessages(Array.isArray(msgData) ? msgData : []);
+
+        // B) Participants
+        const partData = await apiFetch(`/conversations/${conversationId}/participants`, {
+          headers: { "Content-Type": "application/json" },
+        });
+
+        if (Array.isArray(partData)) {
           const otherParticipant = partData.find((p) => p.id !== user.id);
           if (otherParticipant) {
             setParticipantUsername(otherParticipant.username);
             setParticipantId(otherParticipant.id);
           }
         }
-
       } catch (err) {
         console.error(err);
-        // showSnackbar({ message: 'Failed to load conversation', severity: 'error' });
+        setError(true);
+        // showSnackbar({ message: "Failed to load conversation", severity: "error" });
       } finally {
         setLoading(false);
       }
     };
 
     loadConversationData();
-  }, [conversationId, user?.accessToken, user?.id, showSnackbar]);
+  }, [conversationId, user, showSnackbar]);
 
 
   // =========================================================
@@ -264,7 +246,7 @@ socket.on("typing:update", (payload) => {
 
 
   useEffect(() => {
-    if (!deleteThisMessage || !user?.accessToken) return;
+    if (!deleteThisMessage ) return;
 
     const deleteMessage = async () => {
       try {
@@ -272,15 +254,11 @@ socket.on("typing:update", (payload) => {
             ? `${API_URL}/messages/admin/${deleteThisMessage}`
             : `${API_URL}/messages/${deleteThisMessage}`;
 
-        const res = await fetch(endpoint, {
-          method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${user.accessToken}`,
-          },
+        await apiFetch(endpoint, {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
         });
 
-        if (!res.ok) throw new Error('Failed to delete');
 
         setMessages((prev) => prev.filter((msg) => msg.id !== deleteThisMessage));
         
@@ -296,7 +274,7 @@ socket.on("typing:update", (payload) => {
     };
 
     deleteMessage();
-  }, [deleteThisMessage, user?.accessToken, user?.role, showSnackbar]);
+  }, [deleteThisMessage, user?.role, showSnackbar]);
 
   const value = {
     conversations, messages, sendMessage, connected, loading,

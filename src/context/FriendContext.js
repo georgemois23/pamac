@@ -3,13 +3,14 @@ import AuthContext from '../AuthContext';
 import { useSnackbar } from './SnackbarContext'; 
 import { useMessages } from './MessagesContext'; // 1. Import Messages Hook
 import { useNavigate } from 'react-router-dom'; // Optional: To redirect to chat
+import { apiFetch } from '../api/Fetch';
 
 const FriendContext = createContext();
 
 export const useFriendContext = () => useContext(FriendContext);
 
 export const FriendProvider = ({ children }) => {
-  const { user } = useContext(AuthContext);
+  const { user, isLoading } = useContext(AuthContext);
   const { showSnackbar } = useSnackbar();
   
   // 2. Consume Messages Context
@@ -45,30 +46,23 @@ export const FriendProvider = ({ children }) => {
 
   // --- 1. GET FRIENDS ---
   const fetchFriends = useCallback(async () => {
-    if (!user?.accessToken) return;
     try {
-      const res = await fetch(`${API_URL}/friendships/friends`, {
-        headers: { Authorization: `Bearer ${user.accessToken}` },
-      });
-      if (res.ok) setFriends(await res.json());
+      const data = await apiFetch("/friendships/friends");
+      setFriends(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Error fetching friends:', error);
+      setFriends([]);
     }
   }, [user, API_URL]);
 
   // --- 2. GET PENDING REQUESTS ---
   const getFriendRequestStatus = useCallback(async () => {
-    if (!user?.accessToken) return;
-    try {
-      const res = await fetch(`${API_URL}/friendships/pending`, {
-        headers: { Authorization: `Bearer ${user.accessToken}` },
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setFriendRequestStatus(Array.isArray(data) ? data : [data]);
-      }
+     try {
+      const data = await apiFetch("/friendships/pending");
+      setFriendRequestStatus(Array.isArray(data) ? data : data ? [data] : []);
     } catch (error) {
-      console.error('Error fetching requests:', error);
+      console.error("Error fetching requests:", error);
+      setFriendRequestStatus([]);
     }
   }, [user, API_URL]);
 
@@ -79,111 +73,93 @@ export const FriendProvider = ({ children }) => {
       return;
     }
     try {
-      const res = await fetch(`${API_URL}/users/search/${query.trim()}`, {
-        headers: { Authorization: `Bearer ${user.accessToken}` },
-      });
-      if (!res.ok) return;
-      const users = await res.json();
-      
-      // Filter out people who are already friends
-      // Note: We check against the current 'friends' state
-      const friendIds = friends.map(f => f.friend ? f.friend.id : f.id);
-      const filteredUsers = users.filter(u => !friendIds.includes(u.id));
-      
+      const users = await apiFetch(`/users/search/${encodeURIComponent(query.trim())}`);
+      const friendIds = friends.map((f) => (f.friend ? f.friend.id : f.id));
+      const filteredUsers = (Array.isArray(users) ? users : []).filter(
+        (u) => !friendIds.includes(u.id)
+      );
       setFriendRequests(filteredUsers);
     } catch (err) {
       console.error(err);
+      setFriendRequests([]);
     }
   };
 
   // --- 4. SEND REQUEST ---
   const handleSendRequest = async (userId) => {
     try {
-      const res = await fetch(`${API_URL}/friendships/request/${userId}`, {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${user.accessToken}` 
-        },
+      await apiFetch(`/friendships/request/${userId}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
       });
-      if (res.ok) {
-        showSnackbar({ message: 'Friend request sent', severity: 'success' });
-        setFriendRequests(prev => prev.filter(u => u.id !== userId));
-        return true; 
-      } else {
-        showSnackbar({ message: res.response?.data?.message || 'Failed to send friend request', severity: 'error' });
-        return false;
-      }
+
+      showSnackbar({ message: "Friend request sent", severity: "success" });
+      setFriendRequests((prev) => prev.filter((u) => u.id !== userId));
+      return true;
     } catch (error) {
-        showSnackbar({ message: 'An error occurred', severity: 'error' });
-        return false;
+      showSnackbar({ message: error.message || "Failed to send friend request", severity: "error" });
+      return false;
     }
   };
 
   // --- 5. RESPOND (ACCEPT/REJECT) ---
   const handleFriendshipResponse = async (requestId, accept) => {
     try {
-      const res = await fetch(`${API_URL}/friendships/respond/${requestId}`, {
-        method: 'POST',
-        headers: { 
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${user.accessToken}` 
-        },
+      await apiFetch(`/friendships/respond/${requestId}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ accept }),
       });
-      
-      if (res.ok) {
-        showSnackbar({ message: accept ? 'Friend request accepted' : 'Friend request rejected', severity: 'success' });
-        getFriendRequestStatus(); 
-        if(accept) fetchFriends();
-        return true;
-      } else {
-        showSnackbar({ message: 'Failed to accept friend request', severity: 'error' });
-      }
+
+      showSnackbar({
+        message: accept ? "Friend request accepted" : "Friend request rejected",
+        severity: "success",
+      });
+
+      await getFriendRequestStatus();
+      if (accept) await fetchFriends();
+      return true;
     } catch (error) {
-        showSnackbar({ message: 'An error occurred', severity: 'error' });
+      showSnackbar({ message: error.message || "Failed to respond", severity: "error" });
+      return false;
     }
-    return false;
   };
 
   // --- 6. REMOVE FRIEND ---
   const handleRemoveFriend = async (friendshipId) => {
-    if(!friendshipId) return;
+    if (!friendshipId) return false;
     try {
-      const res = await fetch(`${API_URL}/friendships/remove/${friendshipId}`, {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${user.accessToken}` },
-      });
-      if (res.ok) {
-        showSnackbar({ message: 'Friend removed', severity: 'success' });
-        fetchFriends(); 
-        return true;
-      } else {
-        showSnackbar({ message: 'Failed to remove friend', severity: 'error' });
-      }
+      await apiFetch(`/friendships/remove/${friendshipId}`, { method: "POST" });
+
+      showSnackbar({ message: "Friend removed", severity: "success" });
+      await fetchFriends();
+      return true;
     } catch (error) {
-        showSnackbar({ message: 'An error occurred', severity: 'error' });
+      showSnackbar({ message: error.message || "Failed to remove friend", severity: "error" });
+      return false;
     }
-    return false;
   };
 
   // --- 7. HELPER FOR PROFILE PAGE ---
-  const checkIsFriend = async (userId) => {
-     try {
-       const res = await fetch(`${API_URL}/friendships/is-friend/${userId}`, {
-        headers: { Authorization: `Bearer ${user.accessToken}` },
-      });
-      if (res.ok) return await res.json();
-     } catch(e) { console.error(e); }
-     return null;
-  }
+   const checkIsFriend = async (userId) => {
+    try {
+      return await apiFetch(`/friendships/is-friend/${userId}`);
+    } catch (e) {
+      console.error(e);
+      return null;
+    }
+  };
 
   useEffect(() => {
-    if (user?.accessToken) {
-      fetchFriends();
-      getFriendRequestStatus();
-    }
-  }, [user, fetchFriends, getFriendRequestStatus]);
+    if (isLoading) return;
+     if (!user) {              
+    setFriends([]);
+    setFriendRequestStatus([]);
+    return;
+  }
+    fetchFriends();
+    getFriendRequestStatus();
+  }, [isLoading, user, fetchFriends, getFriendRequestStatus]);
 
   const refetchFriends = () => {
     fetchFriends();

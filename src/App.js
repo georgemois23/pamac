@@ -33,6 +33,8 @@ import Aurora from './components/Aurora';
 import './NewApp.css';
 import { ArrowBack } from '@mui/icons-material';
 import { tr } from 'date-fns/locale';
+import Conversations from './components/Conversations';
+import Inbox from './views/Inbox';
 
 function RequireAuth({ children, user }) {
   const location = useLocation();
@@ -276,6 +278,7 @@ useEffect(() => {
           <Route path="/friends" element={<FriendshipsPage />} />  
           <Route path="/el" element={<Navigate to="/" replace />} />  
           <Route path="/en" element={<Navigate to="/" replace />} />  
+          <Route path="/inbox" element={<Inbox />} />
               <Route
                 path="/auth"
                 element={user ? <Navigate to="/home" replace /> : <LoginPage />}
@@ -320,10 +323,7 @@ useEffect(() => {
     </RequireAuth>
   }
 />
-  <Route
-  path='/inbox'
-  element={<Navigate to="/home" replace />}
-/>
+  
              <Route
   path="/inbox/:conversationId"
   element={
