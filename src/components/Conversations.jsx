@@ -115,11 +115,14 @@ const Conversations = ({ onSelectConversation, isMobile }) => {
   return (
     <GlassBox sx={{ overflow: 'hidden', display: 'flex', flexDirection: 'column', p: isMobile ? 2 : 0.5 }}>
       {/* Search */}
-      <Box sx={{ height: '60px', p:2, 
+      <Box sx={{ height: '60px', p: 1.5, 
   minHeight: '60px', 
   maxHeight: '60px', 
+  display:'flex',
+  gap:1,      
 //   borderBottom: '1px solid', borderColor: 'divider' 
   }}>
+    <IconButton disableRipple sx={{width:'fit-content', marginInline:'auto', pt:1.5}} onClick={() => navigate("/")}><HomeOutlined/></IconButton>
         <TextField
           fullWidth
           placeholder="Search chats..."
@@ -208,8 +211,7 @@ const Conversations = ({ onSelectConversation, isMobile }) => {
           </Typography>
         ) : null}
       </Box>
-      <IconButton sx={{width:'fit-content', marginInline:'auto'}} onClick={() => navigate("/")}><HomeOutlined/></IconButton>
-    </GlassBox>
+       </GlassBox>
   );
 };
 
