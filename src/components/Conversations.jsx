@@ -177,7 +177,7 @@ const Conversations = ({ onSelectConversation, isMobile }) => {
                     px: 1.5,
                     py: 1.2,
                     borderRadius: 0,
-                    '&:hover': { bgcolor: 'action.hover' },
+                    '&:hover': { bgcolor: 'action.hover', cursor: 'pointer' },
                   }}
                 >
                   <ListItemAvatar sx={{ minWidth: 46 }}>

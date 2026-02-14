@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-
+import { apiFetch } from '../../api/Fetch';
 // MUI Imports
 import {
   Container,
@@ -102,27 +102,24 @@ const UserProfile = () => {
  const [userData, setUserData] = useState(null);
 
 useEffect(() => {
-  if (!id || !user?.accessToken) return;
+  if (!id) return;
 
   // INSIDE your useEffect...
 
 const fetchFriendStatus = async () => {
     try {
-      const res = await fetch(`${API_URL}/friendships/is-friend/${id}`, {
-        headers: { Authorization: `Bearer ${user.accessToken}` },
+      const res = await apiFetch(`/friendships/is-friend/${id}`, {
         cache: 'no-store'
       });
 
-      if (!res.ok) return;
-      const data = await res.json(); // string | null
+      
 
-      console.log('Friend status data:', data);
+      console.log('Friend status data:', res);
 
-      if (data) {
 
-        setIsFriend(data);
+        setIsFriend(res);
 
-      }
+      
 
     } catch (err) {
 
@@ -134,27 +131,23 @@ const fetchFriendStatus = async () => {
 
   const fetchUser = async () => {
     try {
-      const res = await fetch(`${API_URL}/users/data/${id}`, {
-        headers: {
-          Authorization: `Bearer ${user.accessToken}`,
-        },
-      });
+      const res = await apiFetch(`/users/data/${id}`);
 
-      if (!res.ok) {
-        showSnackbar({ message: 'User not found', severity: 'error' });
-        navigate('/');
-        return;
-      }
+        
+      
 
-      setUserData(await res.json());
+      setUserData(res);
     } catch (err) {
-      navigate('/');
+      // navigate('/');
+      showSnackbar({ message: 'User not found', severity: 'error' });
+        // navigate('/');
+        return;
     }
   };
 
   fetchFriendStatus();
   fetchUser();
-}, [id, user?.accessToken, API_URL, navigate, showSnackbar]);
+}, [id, API_URL, navigate, showSnackbar]);
 
 
 
@@ -164,11 +157,10 @@ const fetchFriendStatus = async () => {
   }, [userData]);
 
   const handleFriendButton = () => {
-    fetch(`${API_URL}/friendships/request/${id}`, {
+    apiFetch(`/friendships/request/${id}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${user.accessToken}`,
       },
     })
     .then(res => {
@@ -190,11 +182,10 @@ const fetchFriendStatus = async () => {
   // if (loading) return <LoadingSpinner />;
   const [friendRequestStatus, setFriendRequestStatus] = useState([]);
   const getFriendRequestStatus = () => {
-    fetch(`${API_URL}/friendships/pending`, {
+    apiFetch(`/friendships/pending`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${user.accessToken}`,
       },
     })
     .then(res => res.json())
@@ -208,11 +199,10 @@ const fetchFriendStatus = async () => {
   }
 
   const handleFriendshipResponse = (requestId, accept) => {
-    fetch(`${API_URL}/friendships/respond/${requestId}`, {
+    apiFetch(`/friendships/respond/${requestId}`, {
                   method: 'POST',
                   headers: {
                     'Content-Type': 'application/json',
-                    Authorization: `Bearer ${user.accessToken}`,
                   },
                   body: JSON.stringify({ accept: accept }),
                 })
@@ -236,11 +226,10 @@ const fetchFriendStatus = async () => {
   };
 
   const handleCancleFriendRequest = () => {
-    fetch(`${API_URL}/friendships/cancel/${isFriend.id}`, {
+    apiFetch(`/friendships/cancel/${isFriend.id}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${user.accessToken}`,
       },
     })
     .then(res => {
@@ -259,11 +248,10 @@ const fetchFriendStatus = async () => {
 
   const handleRemoveFriend = () => {
     if(!isFriend) return;
-    fetch(`${API_URL}/friendships/remove/${isFriend.id}`, {
+    apiFetch(`/friendships/remove/${isFriend.id}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${user.accessToken}`,
       },
     })
     .then(res => {

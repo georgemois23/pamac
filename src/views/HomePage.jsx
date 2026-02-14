@@ -477,7 +477,7 @@ const stringToColor = (string) => {
                       key={chat.id}
                       button
                       onClick={() => navigate(`/inbox/${chat.id}`)}
-                      sx={{ borderRadius: 2, mb: 1 }}
+                      sx={{ borderRadius: 2, mb: 1, cursor:'pointer' }}
                     >
                       <ListItemAvatar>
                         <Avatar sx={{ bgcolor: stringToColor(name) }}>
