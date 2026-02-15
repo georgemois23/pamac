@@ -462,7 +462,15 @@ const stringToColor = (string) => {
               gap: 1,
             }}
           >
-            <Box>
+            <Box
+  sx={{
+    textAlign: { xs: "left", md: "center" },
+    flex: { xs: 1, md: "unset" },
+    width: "100%",
+    position: "relative", // 👈 key
+    pr: { xs: 4, md: 0 }, // space for the icon on mobile
+  }}
+>
               <Typography
                 variant="h5"
                 fontWeight="bold"
@@ -485,12 +493,19 @@ const stringToColor = (string) => {
             </Box>
 
             {/* ✅ Toggle only on small screens */}
-            <IconButton
-              onClick={() => setMobileOpen((v) => !v)}
-              sx={{ display: { xs: "inline-flex", md: "none" } }}
-            >
-              {mobileOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-            </IconButton>
+             <IconButton
+    onClick={() => setMobileOpen((v) => !v)}
+    sx={{
+      display: { xs: "inline-flex", md: "none" },
+      position: "absolute",
+      top: mobileOpen ? "25%" : "50%",
+      right: 6,
+      transform: "translateY(-50%)",
+      p: 0.5,
+    }}
+  >
+    {mobileOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+  </IconButton>
           </Box>
         </Box>
 
