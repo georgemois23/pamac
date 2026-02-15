@@ -32,6 +32,8 @@ import ConversationSearch from '../components/ConversationSearch';
 import errorSvg from '../assets/nochatt.svg';
 import Conversations from '../components/Conversations';
 import { set } from 'mongoose';
+import { InfoOutlined, InfoRounded, SearchSharp } from '@mui/icons-material';
+import ConversationInfo from '../components/ConversationInfo';
 
 // --- HELPER FUNCTIONS ---
 const isMediaUrl = (text) => {
@@ -161,6 +163,7 @@ function PreviewMsg({ forcedConversationId, onClose }) {
   const { t } = useTranslation();
 
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isInfoOpen, setIsInfoOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 910);
@@ -237,6 +240,23 @@ useEffect(() => {
   );
 }
 
+  const toggleSearch = () => {
+  setIsSearchOpen((prev) => {
+    const next = !prev;
+    if (next) setIsInfoOpen(false);
+    return next;
+  });
+};
+
+const toggleInfo = () => {
+  setIsInfoOpen((prev) => {
+    const next = !prev;
+    if (next) setIsSearchOpen(false);
+    return next;
+  });
+};
+
+
 
 
   const currentTypers = typingUsers[conversationId] || [];
@@ -312,11 +332,14 @@ useEffect(() => {
 
           <Stack direction="row" alignItems="center" spacing={1}>
             <Tooltip title="AI Search">
-              <IconButton onClick={() => setIsSearchOpen(!isSearchOpen)} color={isSearchOpen ? "primary" : "inherit"}>
-                <SearchIcon />
+              <IconButton onClick={() => toggleSearch()} color={isSearchOpen ? "primary" : "inherit"}>
+                {isSearchOpen ? <SearchSharp/> :<SearchIcon />}
               </IconButton>
             </Tooltip>
             <ThemeOption />
+            <IconButton onClick={() => toggleInfo()}>
+              {isInfoOpen ? <InfoRounded/> : <InfoOutlined/>}
+            </IconButton>
           </Stack>
         </Box>
 
@@ -392,33 +415,75 @@ useEffect(() => {
 
       {/* RIGHT SIDE: SEARCH PILLAR */}
       {isMobile ? (
-        <Drawer anchor="right" open={isSearchOpen} onClose={() => setIsSearchOpen(false)} keepMounted hideBackdrop  PaperProps={{ sx: { width: '100dvw',bgcolor: 'transparent',backgroundImage: 'none',elevation: 0  } }} sx={{
-      // Ensures the drawer doesn't create a secondary scrollbar
-      zIndex: 1200, 
-    }}>
-          <ConversationSearch conversationId={conversationId} onClose={() => setIsSearchOpen(false)} query={searchQuery}
+  <Drawer
+    anchor="right"
+    open={isSearchOpen || isInfoOpen}
+    onClose={() => {
+      setIsSearchOpen(false);
+      setIsInfoOpen(false);
+    }}
+    keepMounted
+    hideBackdrop
+    PaperProps={{
+      sx: {
+        width: "100dvw",
+        bgcolor: "transparent",
+        backgroundImage: "none",
+        boxShadow: "none", // elevation doesn't belong in sx; boxShadow is the visual equivalent
+      },
+    }}
+    sx={{
+      zIndex: 1200,
+    }}
+  >
+    {isSearchOpen ? (
+      <ConversationSearch
+        conversationId={conversationId}
+        onClose={() => setIsSearchOpen(false)}
+        query={searchQuery}
+        setQuery={setSearchQuery}
+        results={searchResults}
+        setResults={setSearchResults}
+      />
+    ) : isInfoOpen ? (
+      <ConversationInfo
+        conversationId={conversationId}
+        onClose={() => setIsInfoOpen(false)}
+      />
+    ) : null}
+  </Drawer>
+) : (
+  <Box
+    sx={{
+      width: isSearchOpen || isInfoOpen ? 350 : 0,
+      flexShrink: 0,
+      transition: "width 0.3s ease-in-out",
+      overflow: "hidden",
+      height: "100%",
+      borderLeft: isSearchOpen || isInfoOpen ? 1 : 0,
+      borderColor: "divider",
+    }}
+  >
+    <Box sx={{ width: 350, height: "100%" }}>
+      {isSearchOpen ? (
+        <ConversationSearch
+          conversationId={conversationId}
+          onClose={() => setIsSearchOpen(false)}
+          query={searchQuery}
           setQuery={setSearchQuery}
           results={searchResults}
-          setResults={setSearchResults} />
-        </Drawer>
-      ) : (
-        <Box sx={{ 
-          width: isSearchOpen ? 350 : 0,
-          flexShrink: 0, // ✅ keep fixed width
-          transition: 'width 0.3s ease-in-out',
-          overflow: 'hidden',
-          height: '100%',
-          borderLeft: isSearchOpen ? 1 : 0,
-          borderColor: 'divider',
-        }}>
-          <Box sx={{ width: 350, height: '100%' }}>
-            <ConversationSearch conversationId={conversationId} onClose={() => setIsSearchOpen(false)}  query={searchQuery}
-            setQuery={setSearchQuery}
-            results={searchResults}
-            setResults={setSearchResults}/>
-          </Box>
-        </Box>
-      )}
+          setResults={setSearchResults}
+        />
+      ) : isInfoOpen ? (
+        <ConversationInfo
+          conversationId={conversationId}
+          onClose={() => setIsInfoOpen(false)}
+        />
+      ) : null}
+    </Box>
+  </Box>
+)}
+
 
       {/* Floating Scroll Button */}
       <Box onClick={scrollToBottom} sx={{ 
