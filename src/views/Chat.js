@@ -63,9 +63,14 @@ function Chat({ user = {} }) {
       elevation={3}
       sx={{ 
         position: 'relative',
-        zIndex: 100, 
-        p: 1,
-        flexShrink: 0, 
+        // bottom: 0, 
+        // left: 0, 
+        // right: 0, 
+        zIndex: 100, // Higher than other content
+        p: 2,
+        flexShrink: 0,
+        // backgroundColor: 'inherit',
+
         backgroundColor: 'background.default',
         borderTopLeftRadius: 2,
         borderTopRightRadius: 2,
@@ -88,44 +93,27 @@ function Chat({ user = {} }) {
           
           {/* The Messenger-style Input Bubble */}
           <TextField
-  id="text"
-  value={message}
-  onChange={handleMessageChange}
-  onKeyDown={handleKeyDown}
-  placeholder="Type a message..."
-  multiline
-  minRows={1}
-  maxRows={5}
-  fullWidth
-  variant="outlined"
-  size="small"
-  sx={{
-    "& .MuiOutlinedInput-root": {
-      borderRadius: "20px",
-      backgroundColor: (theme) =>
-        theme.palette.mode === "dark"
-          ? "rgba(255,255,255,0.05)"
-          : "rgba(0,0,0,0.05)",
-      // remove the default input “min height” feel
-      alignItems: "center",
-    },
-
-    // ✅ this is the main one: actual input padding
-    "& .MuiOutlinedInput-input": {
-      padding: "6px 12px",   // smaller = shorter
-    },
-
-    // ✅ multiline uses this class
-    "& .MuiOutlinedInput-inputMultiline": {
-      padding: "6px 12px",   // override multiline padding too
-      lineHeight: 1.2,
-    },
-
-    // ✅ optional: kill the border
-    "& fieldset": { border: "none" },
-  }}
-/>
-
+            id="text"
+            value={message}
+            onChange={handleMessageChange}
+            onKeyDown={handleKeyDown}
+            placeholder={"Type a message..."}
+            multiline
+            minRows={1}
+             maxRows={5}
+            fullWidth
+            variant="outlined"
+            size="small"
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                borderRadius: '20px', // Pill shape like Messenger
+                backgroundColor: (theme) => theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)',
+                '& fieldset': {
+                  border: 'none', // Remove the default border for a cleaner look
+                },
+              },
+            }}
+          />
 
           {/* The Send Button (Icon) */}
           <IconButton

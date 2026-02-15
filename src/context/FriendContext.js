@@ -64,7 +64,7 @@ export const FriendProvider = ({ children }) => {
       console.error("Error fetching requests:", error);
       setFriendRequestStatus([]);
     }
-  }, [user, API_URL]);
+  }, []);
 
   // --- 3. SEARCH USERS ---
   const handleSearch = async (query) => {

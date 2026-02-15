@@ -20,6 +20,7 @@ import {
   styled,
   Badge,
   Divider,
+  Collapse,
 } from '@mui/material';
 import { 
   Search as SearchIcon, 
@@ -41,6 +42,8 @@ import { get } from 'mongoose';
 import { useFriendContext } from '../context/FriendContext';
 import GlobalDialog from '../components/GlobalDialog';
 import { apiFetch } from '../api/Fetch';
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 
 // --- 1. GLASSMORPHISM STYLED COMPONENT ---
 const GlassBox = styled(Box)(({ theme }) => ({
@@ -101,6 +104,8 @@ const HomePage = () => {
     const handleOpen = () => {
        setDialogOpen(!dialogOpen);
     }
+
+    const [mobileOpen, setMobileOpen] = useState(false);
   // --- STATE CHANGE: Show Add Friends Logic ---
   useEffect(() => {
     if (tabValue === 1)
@@ -246,9 +251,6 @@ const stringToColor = (string) => {
       alignItems: {xs: 'start', md:'center'} 
     }}>
       <Container maxWidth="xl">
-        {/* --- UPDATED GRID CONTAINER --- 
-            Added justifyContent logic: if Add Friends is hidden, center the content.
-        */}
         <Grid 
           container 
           spacing={3} 
@@ -256,8 +258,7 @@ const stringToColor = (string) => {
           justifyContent={showAddFriends ? "flex-start" : "center"}
         >
           
-          {/* --- LEFT COLUMN: PROFILE --- */}
-<Grid item xs={12} md={3} sx={{ height: { md: '100%' } }}>
+{/* <Grid item xs={12} md={3} sx={{ height: { md: '100%' } }}>
   <GlassBox 
     sx={{ 
       display: 'flex', 
@@ -269,7 +270,6 @@ const stringToColor = (string) => {
       bgcolor: 'inherit' 
     }}
   >
-    {/* PROFILE INFO CONTAINER */}
     <Box sx={{ 
       display: 'flex', 
       // Mobile: Row (Side-by-side), Desktop: Column (Stacked)
@@ -280,7 +280,6 @@ const stringToColor = (string) => {
       width: '100%'
     }}>
       
-      {/* AVATAR */}
       <Badge
         overlap="circular"
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
@@ -302,7 +301,6 @@ const stringToColor = (string) => {
       >
         <Avatar 
           sx={{ 
-            // INCREASED SIZE: 32px was too small. 56px is better for mobile.
             width: { xs: 56, md: 100 }, 
             height: { xs: 56, md: 100 }, 
             mb: { xs: 0, md: 2 }, 
@@ -317,7 +315,6 @@ const stringToColor = (string) => {
         </Avatar>
       </Badge>
 
-      {/* TEXT INFO */}
       <Box sx={{ textAlign: { xs: 'left', md: 'center' } }}>
         <Typography 
           variant="h5" 
@@ -337,7 +334,6 @@ const stringToColor = (string) => {
       </Box>
     </Box>
 
-    {/* BUTTONS CONTAINER */}
     <Box 
       sx={{ 
         mt: { xs: 2, md: 4 }, 
@@ -349,11 +345,8 @@ const stringToColor = (string) => {
         width: '100%' 
       }}
     >
-      {/* FIND FRIENDS BUTTON */}
       <Button 
           variant="contained" 
-          // 'startIcon' is only handled automatically if we want text. 
-          // We are doing manual layout for responsive icon-only mode.
           sx={{ 
             borderRadius: 3, 
             py: { xs: 1, md: 1.5 }, 
@@ -367,18 +360,14 @@ const stringToColor = (string) => {
           onClick={() => setShowAddFriends(!showAddFriends)}
       >
         {showAddFriends ? <PersonRemove/> : <AddPersonIcon />}
-        {/* Text is HIDDEN on mobile (xs: none), visible on desktop (md: block) */}
         <Box component="span" sx={{ display: { xs: 'none', md: 'block' }, ml: 1 }}>
            {showAddFriends ? "Hide" : "Find Friends"} 
         </Box>
       </Button>
-
-      {/* LOGOUT BUTTON */}
       <Button 
         variant="outlined" 
         color="error" 
         sx={{ 
-          // FLEX MAGIC: Share width equally
           flex: { xs: 1, md: 'unset' },
           width: { md: '100%' },
           minWidth: 0,
@@ -387,17 +376,224 @@ const stringToColor = (string) => {
         }} 
         onClick={() => {logout(); navigate('/logout', { state: { fromLogout: true } });}}
       >
-        {/* On Mobile: Show Icon Only */}
         <LogoutIcon sx={{ display: { xs: 'block', md: 'none' } }} />
         
-        {/* On Desktop: Show Text Only */}
         <Box component="span" sx={{ display: { xs: 'none', md: 'block' } }}>
           Logout
         </Box>
       </Button>
     </Box>
   </GlassBox>
-</Grid>
+</Grid> */}
+      <Grid item xs={12} md={3} sx={{ height: { md: "100%" } }}>
+      <GlassBox
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          textAlign: "center",
+          p: { xs: 2, md: 4 },
+          bgcolor: "inherit",
+        }}
+      >
+        {/* PROFILE INFO CONTAINER */}
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: { xs: "row", md: "column" },
+            alignItems: "center",
+            justifyContent: { xs: "flex-start", md: "center" },
+            gap: { xs: 2, md: 0 },
+            width: "100%",
+          }}
+          onClick={() => setMobileOpen((v) => !v)}
+        >
+          {/* AVATAR */}
+          <Badge
+            overlap="circular"
+            anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+            badgeContent={
+              <Avatar
+                sx={{
+                  width: { xs: 20, md: 32 },
+                  height: { xs: 20, md: 32 },
+                  border: `2px solid ${theme.palette.background.paper}`,
+                  bgcolor: "background.paper",
+                  cursor: "pointer",
+                  mb: { xs: 0, md: 4 },
+                }}
+                onClick={() => navigate(`/profile`)}
+              >
+                <EditIcon
+                  sx={{
+                    width: { xs: 14, md: 20 },
+                    height: { xs: 14, md: 20 },
+                    color: "text.primary",
+                  }}
+                />
+              </Avatar>
+            }
+          >
+            <Avatar
+              sx={{
+                width: { xs: 56, md: 100 },
+                height: { xs: 56, md: 100 },
+                mb: { xs: 0, md: 2 },
+                fontSize: { xs: "1.5rem", md: "2rem" },
+                bgcolor: stringToColor(user?.username),
+                boxShadow: "0 4px 14px rgba(0,0,0,0.2)",
+                cursor: "pointer",
+              }}
+              onClick={() => navigate(`/profile`)}
+            >
+              {user?.username?.charAt(0).toUpperCase()}
+            </Avatar>
+          </Badge>
+
+          {/* TEXT INFO + MOBILE TOGGLE */}
+          <Box
+            sx={{
+              textAlign: { xs: "left", md: "center" },
+              flex: { xs: 1, md: "unset" },
+              display: "flex",
+              alignItems: { xs: "center", md: "unset" },
+              justifyContent: { xs: "space-between", md: "center" },
+              width: "100%",
+              gap: 1,
+            }}
+          >
+            <Box>
+              <Typography
+                variant="h5"
+                fontWeight="bold"
+                sx={{ fontSize: { xs: "1.25rem", md: "1.5rem" } }}
+              >
+                {user?.username || "Guest"}
+              </Typography>
+
+              {/* ✅ Email visible only when: desktop OR mobileOpen */}
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{
+                  fontSize: { xs: "0.85rem", md: "0.875rem" },
+                  display: { xs: mobileOpen ? "block" : "none", md: "block" },
+                }}
+              >
+                {user?.email || ""}
+              </Typography>
+            </Box>
+
+            {/* ✅ Toggle only on small screens */}
+            <IconButton
+              onClick={() => setMobileOpen((v) => !v)}
+              sx={{ display: { xs: "inline-flex", md: "none" } }}
+            >
+              {mobileOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+            </IconButton>
+          </Box>
+        </Box>
+
+        {/* ✅ Mobile: collapse the rest. Desktop: always shown */}
+        <Box sx={{ width: "100%", display: { xs: "block", md: "none" } }}>
+          <Collapse in={mobileOpen} timeout={200} unmountOnExit>
+            {/* BUTTONS CONTAINER (same as yours) */}
+            <Box
+              sx={{
+                mt: 2,
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 1,
+                width: "100%",
+              }}
+            >
+              <Button
+                variant="contained"
+                sx={{
+                  borderRadius: 3,
+                  py: 1,
+                  px: 2,
+                  fontSize: "0.8125rem",
+                  flex: 1,
+                  minWidth: 0,
+                }}
+                onClick={() => setShowAddFriends(!showAddFriends)}
+              >
+                {showAddFriends ? <PersonRemove /> : <AddPersonIcon />}
+              </Button>
+
+              <Button
+                variant="outlined"
+                color="error"
+                sx={{
+                  flex: 1,
+                  minWidth: 0,
+                  py: 1,
+                  fontSize: "0.8125rem",
+                }}
+                onClick={() => {
+                  logout();
+                  navigate("/logout", { state: { fromLogout: true } });
+                }}
+              >
+                <LogoutIcon />
+              </Button>
+            </Box>
+          </Collapse>
+        </Box>
+
+        {/* ✅ Desktop version stays EXACTLY like before */}
+        <Box sx={{ width: "100%", display: { xs: "none", md: "block" } }}>
+          {/* BUTTONS CONTAINER (your original, unchanged) */}
+          <Box
+            sx={{
+              mt: 4,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: 2,
+              width: "100%",
+            }}
+          >
+            <Button
+              variant="contained"
+              sx={{
+                borderRadius: 3,
+                py: 1.5,
+                px: 2,
+                fontSize: "0.875rem",
+                width: "100%",
+                minWidth: 0,
+              }}
+              onClick={() => setShowAddFriends(!showAddFriends)}
+            >
+              {showAddFriends ? <PersonRemove /> : <AddPersonIcon />}
+              <Box component="span" sx={{ ml: 1 }}>
+                {showAddFriends ? "Hide" : "Find Friends"}
+              </Box>
+            </Button>
+
+            <Button
+              variant="outlined"
+              color="error"
+              sx={{
+                width: "100%",
+                minWidth: 0,
+                py: 1,
+                fontSize: "0.875rem",
+              }}
+              onClick={() => {
+                logout();
+                navigate("/logout", { state: { fromLogout: true } });
+              }}
+            >
+              Logout
+            </Button>
+          </Box>
+        </Box>
+      </GlassBox>
+    </Grid>
 
           {/* --- MIDDLE COLUMN: LISTS --- */}
           {/* UPDATED: I added logic to `md`.
@@ -554,7 +750,7 @@ const stringToColor = (string) => {
             sx={{ borderRadius: 2, mb: 1, bgcolor: 'rgba(0,0,0,0.02)' }}
           >
             <ListItemAvatar>
-              <Avatar sx={{ bgcolor: stringToColor(request.username) }}>
+              <Avatar sx={{ bgcolor: stringToColor((request.requester.username)) }}>
                 {request.requester.username[0].toUpperCase()}
               </Avatar>
             </ListItemAvatar>

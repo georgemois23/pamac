@@ -151,18 +151,35 @@ const Conversations = ({ onSelectConversation, isMobile }) => {
 
       {/* List */}
       <Box
-        sx={{
-          flexGrow: 1,
-          minHeight: 0,
-          overflowY: 'auto',
-          pt: 1,
-          '&::-webkit-scrollbar': { width: '6px' },
-          '&::-webkit-scrollbar-track': { backgroundColor: 'transparent' },
-          '&::-webkit-scrollbar-thumb': { backgroundColor: '#6b6b6b', borderRadius: '20px' },
-          '&::-webkit-scrollbar-thumb:hover': { backgroundColor: '#555' },
-          '&::-webkit-scrollbar-button': { display: 'none' },
-        }}
-      >
+  sx={{ flexGrow: 1,
+        minHeight: 0,
+        overflowY: 'auto',
+        pt: 1,
+
+        '&::-webkit-scrollbar': {
+          width: '6px',
+        },
+        '&::-webkit-scrollbar-track': {
+          backgroundColor: 'transparent',
+        },
+        '&::-webkit-scrollbar-thumb': {
+          backgroundColor: 'transparent',
+          borderRadius: '20px',
+        },
+        '&:hover::-webkit-scrollbar-thumb': {
+      backgroundColor: '#6b6b6b',
+       },
+        '&:hover::-webkit-scrollbar': {
+          width: '6px',
+        },
+        '&::-webkit-scrollbar-thumb:hover': {
+          backgroundColor: '#555',
+        },
+        '&::-webkit-scrollbar-button': {
+          display: 'none',
+        },}}
+  >
+
         {conversationSearch.length > 0 ? (
           <List disablePadding sx={{ p: 0, }}>
             {conversationSearch.map((chat) => {

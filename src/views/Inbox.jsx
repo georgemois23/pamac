@@ -1,19 +1,23 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Box } from "@mui/material";
 import Conversations from "../components/Conversations";
 import PreviewMsg from "./PreviewMsg";
 import { useParams } from "react-router-dom";
+import AuthContext from "../AuthContext";
 
 export default function Inbox() {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 910);
   const {conversationId} = useParams();
   const [selectedId, setSelectedId] = useState(conversationId || null);
+  const {user} = useContext(AuthContext)
 
   useEffect(() => {
     const onResize = () => setIsMobile(window.innerWidth < 910);
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, []);
+
+  document.title = `${user?.username || ''} • Inbox`;
 
   // ✅ On mobile we don't render split view; routes handle it
   if (isMobile && !selectedId) return <Conversations isMobile={true} />;
