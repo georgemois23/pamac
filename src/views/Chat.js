@@ -1,139 +1,165 @@
-import React, { useState,useRef } from 'react';
-import { 
-  Box, 
-  IconButton, 
-  Stack, 
-  TextField, 
-  Paper,
-  InputAdornment
-} from '@mui/material';
-import SendIcon from '@mui/icons-material/Send'; // Import Send Icon
-import { useTranslation } from 'react-i18next';
-import { useMessages } from '../context/MessagesContext';
+import React, { useState, useRef, useLayoutEffect } from "react";
+import { Box, IconButton, TextField, Paper, InputAdornment } from "@mui/material";
+import SendIcon from "@mui/icons-material/Send";
+import { useTranslation } from "react-i18next";
+import { useMessages } from "../context/MessagesContext";
 
-function Chat({ user = {} }) { 
+function Chat({ user = {} }) {
   const { t } = useTranslation();
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
   const { sendMessage, setTyping } = useMessages();
-
-  // Logic for disabling button
-  const isButtonDisabled = !message || message.trim().length === 0;
 
   const typingTimeoutRef = useRef(null);
 
+  // ✅ Ref to the actual textarea element
+  const inputRef = useRef(null);
+
+  // ✅ This becomes true when the input is visually more than 1 line (wrap OR \n)
+  const [isMulti, setIsMulti] = useState(false);
+
+  const isButtonDisabled = !message || message.trim().length === 0;
+
+  // ✅ Detect wrap-based multiline
+  useLayoutEffect(() => {
+    const el = inputRef.current;
+    if (!el) return;
+
+    const computed = window.getComputedStyle(el);
+    const lineHeight = parseFloat(computed.lineHeight || "0") || 0;
+
+    // If lineHeight can't be read for some reason, fallback to a small threshold
+    const threshold = lineHeight ? lineHeight * 1.6 : 28;
+
+    // scrollHeight increases when content wraps / grows
+    setIsMulti(el.scrollHeight > threshold);
+  }, [message]);
+
   const handleMessageChange = (event) => {
     const input = event.target.value;
+
     // Keep your existing regex validation
     const allowedPattern = /^[\p{Script=Greek}\p{Script=Latin}\P{Letter}]*$/u;
-    if (allowedPattern.test(input)) {
-      setMessage(input);
+    if (!allowedPattern.test(input)) return;
 
-      setTyping(true);
-       clearTimeout(typingTimeoutRef.current);
-      typingTimeoutRef.current = setTimeout(() => {
-        setTyping(false);
-      }, 3200);
-    }
-    }
+    setMessage(input);
+
+    setTyping(true);
+    clearTimeout(typingTimeoutRef.current);
+    typingTimeoutRef.current = setTimeout(() => {
+      setTyping(false);
+    }, 3200);
+  };
 
   const handleSend = (event) => {
     event.preventDefault();
-    if (message.trim()) {
-      sendMessage(message);
-      setMessage('');
-      setTyping(false);
-      
-      // We don't need navigate('/messages') if this component is already ON the messages page
-    }
+    const trimmed = message.trim();
+    if (!trimmed) return;
+
+    sendMessage(trimmed);
+    setMessage("");
+    setTyping(false);
+    clearTimeout(typingTimeoutRef.current);
   };
 
   const handleKeyDown = (event) => {
-    // Allow sending with "Enter" key (Shift+Enter for new line)
-    if (event.key === 'Enter' && !event.shiftKey) {
+    // Enter sends, Shift+Enter new line
+    if (event.key === "Enter" && !event.shiftKey) {
       event.preventDefault();
-      if (!isButtonDisabled) {
-        handleSend(event);
-      }
+      if (!isButtonDisabled) handleSend(event);
     }
   };
 
   return (
-    // FIXED FOOTER CONTAINER
-    <Paper 
-      elevation={3}
-      sx={{ 
-        position: 'relative',
-        // bottom: 0, 
-        // left: 0, 
-        // right: 0, 
-        zIndex: 100, // Higher than other content
-        p: 2,
+    <Box
+      sx={{
+        position: "relative",
         flexShrink: 0,
-        // backgroundColor: 'inherit',
-
-        backgroundColor: 'background.default',
-        borderTopLeftRadius: 2,
-        borderTopRightRadius: 2,
-        borderBottomLeftRadius: 0,
-        borderBottomRightRadius: 0,
+        px: { xs: 1, sm: 2 },
+        pb: { xs: 1, sm: 2 },
+        pt: 1,
       }}
     >
-      <Box
-        component="form"
-        onSubmit={handleSend}
-        noValidate
-        autoComplete="off"
-        sx={{ 
-            maxWidth: '1000px', 
-            margin: '0 auto',
-            width: '100%' 
+      <Paper
+        elevation={0}
+        sx={{
+          maxWidth: "1000px",
+          mx: "auto",
+          width: "100%",
+          borderRadius: 3,
+          p: 1,
+          bgcolor: "background.default",
+          backdropFilter: "blur(12px)",
         }}
       >
-        <Stack direction="row" spacing={2} alignItems="flex-end">
-          
-          {/* The Messenger-style Input Bubble */}
+        <Box component="form" onSubmit={handleSend} noValidate autoComplete="off">
           <TextField
-            id="text"
             value={message}
             onChange={handleMessageChange}
             onKeyDown={handleKeyDown}
-            placeholder={"Type a message..."}
+            placeholder={t("Type a message...")}
             multiline
             minRows={1}
-             maxRows={5}
+            maxRows={7}
             fullWidth
             variant="outlined"
             size="small"
+            autoFocus
+            inputRef={inputRef} // ✅ this points to the textarea when multiline
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end" sx={{ alignSelf: "flex-end", mb: 0 }}>
+                  <IconButton
+                    type="submit"
+                    disabled={isButtonDisabled}
+                    sx={{
+                      borderRadius: 2,
+                      p: 1,
+                      mb: 1,
+                      transition: "transform 0.15s ease, opacity 0.15s ease",
+                      opacity: isButtonDisabled ? 0.45 : 1,
+                      "&:hover": {
+                        transform: isButtonDisabled ? "none" : "scale(1.06)",
+                      },
+                    }}
+                  >
+                    <SendIcon />
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
             sx={{
-              '& .MuiOutlinedInput-root': {
-                borderRadius: '20px', // Pill shape like Messenger
-                backgroundColor: (theme) => theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)',
-                '& fieldset': {
-                  border: 'none', // Remove the default border for a cleaner look
+              "& .MuiOutlinedInput-root": {
+                // ✅ pill on 1 line, rounded box when it wraps too
+                borderRadius: isMulti ? 3 : "999px",
+                px: 2,
+                alignItems: "flex-end",
+                bgcolor: (theme) =>
+                  theme.palette.mode === "dark"
+                    ? "rgba(255,255,255,0.06)"
+                    : "rgba(0,0,0,0.05)",
+                "& fieldset": { borderColor: "transparent" },
+                "&:hover fieldset": { borderColor: "transparent" },
+                "&.Mui-focused fieldset": {
+                  borderColor: (theme) => theme.palette.divider,
                 },
+                py: 0.25,
+              },
+
+              "& .MuiOutlinedInput-inputMultiline": {
+                padding: 0,
+                lineHeight: 1.4,
+                overflowY: "auto",
+              },
+
+              "& .MuiOutlinedInput-input": {
+                py: 1.15,
               },
             }}
           />
-
-          {/* The Send Button (Icon) */}
-          <IconButton
-            type="submit"
-            color="primary"
-            disabled={isButtonDisabled}
-            sx={{ 
-              mb: 0.5, // Aligns icon with the first line of text
-              transition: 'transform 0.2s',
-              '&:hover': { transform: 'scale(1.1)' }
-            }}
-          >
-            <SendIcon />
-          </IconButton>
-
-        </Stack>
-      </Box>
-    </Paper>
+        </Box>
+      </Paper>
+    </Box>
   );
 }
-
 
 export default Chat;

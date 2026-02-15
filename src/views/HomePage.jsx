@@ -395,6 +395,7 @@ const stringToColor = (string) => {
           p: { xs: 2, md: 4 },
           bgcolor: "inherit",
         }}
+        onClick={() => setMobileOpen((v) => !v)}
       >
         {/* PROFILE INFO CONTAINER */}
         <Box
@@ -406,7 +407,7 @@ const stringToColor = (string) => {
             gap: { xs: 2, md: 0 },
             width: "100%",
           }}
-          onClick={() => setMobileOpen((v) => !v)}
+          
         >
           {/* AVATAR */}
           <Badge
@@ -463,23 +464,22 @@ const stringToColor = (string) => {
             }}
           >
             <Box
-  sx={{
-    textAlign: { xs: "left", md: "center" },
-    flex: { xs: 1, md: "unset" },
-    width: "100%",
-    position: "relative", // 👈 key
-    pr: { xs: 4, md: 0 }, // space for the icon on mobile
-  }}
->
+            sx={{
+              textAlign: { xs: "left", md: "center" },
+              flex: { xs: 1, md: "unset" },
+              width: "100%",
+              position: "relative", // 👈 key
+              pr: { xs: 4, md: 0 }, // space for the icon on mobile
+            }}
+          >
               <Typography
                 variant="h5"
                 fontWeight="bold"
                 sx={{ fontSize: { xs: "1.25rem", md: "1.5rem" } }}
               >
-                {user?.username || "Guest"}
+                {user?.username}
               </Typography>
 
-              {/* ✅ Email visible only when: desktop OR mobileOpen */}
               <Typography
                 variant="body2"
                 color="text.secondary"
@@ -492,20 +492,22 @@ const stringToColor = (string) => {
               </Typography>
             </Box>
 
-            {/* ✅ Toggle only on small screens */}
              <IconButton
-    onClick={() => setMobileOpen((v) => !v)}
-    sx={{
-      display: { xs: "inline-flex", md: "none" },
-      position: "absolute",
-      top: mobileOpen ? "25%" : "50%",
-      right: 6,
-      transform: "translateY(-50%)",
-      p: 0.5,
-    }}
-  >
-    {mobileOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-  </IconButton>
+            onClick={(e) => {
+              e.stopPropagation();
+              setMobileOpen((v) => !v);
+            }}
+            sx={{
+              display: { xs: "inline-flex", md: "none" },
+              position: "absolute",
+              top: mobileOpen ? "22%" : "50%",
+              right: 8,
+              transform: "translateY(-50%)",
+              p: 0.5,
+            }}
+          >
+            {mobileOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+          </IconButton>
           </Box>
         </Box>
 
